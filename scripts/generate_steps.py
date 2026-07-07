@@ -1,11 +1,11 @@
 """P1.5 pipeline: Anthropic API -> step script + footnotes -> validation -> review queue.
 
-Usage:
-    python3 scripts/generate_steps.py two-sum [valid-anagram ...]
-    python3 scripts/generate_steps.py --all
+Usage (the anthropic SDK lives in scripts/.venv):
+    scripts/.venv/bin/python scripts/generate_steps.py two-sum [valid-anagram ...]
+    scripts/.venv/bin/python scripts/generate_steps.py --all
 
-Requires `pip install anthropic` and credentials (ANTHROPIC_API_KEY or `ant auth login`)
-only when actually generating; the pipeline logic itself is testable without either.
+Requires credentials (ANTHROPIC_API_KEY or `ant auth login`) only when actually
+generating; the pipeline logic itself is testable without them.
 Outputs land in scripts/review/ for human review — never directly in client/src/data/steps/.
 """
 import json
