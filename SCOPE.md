@@ -149,8 +149,10 @@ test-worthy code in the project.
 Execution servers of any kind (the in-browser constraint is the architecture), payments (free is
 the positioning), mobile apps, contests, social feeds. Accounts only after P4.
 
-## 9. Status — June 12, 2026
+## 9. Status — July 7, 2026
 
-P1 substrate running locally on Tah's machine (verified). Today: footnote system v1 shipped into
-the substrate — schema addition, golden script annotated, player markers + apparatus block,
-references, brand update. Next: README + Netlify deploy, then P1.5.
+P1 code-complete: footnote system v1, README, netlify.toml — deploy pending Netlify connect.
+P1.5 pipeline built and tested: schema validator (golden script validates clean), generator
+with validate-repair loop and review queue, manifest for the 8 remaining Arrays & Hashing
+problems; generation run pending API credentials. Vitest on the playback hook (quality bar §7).
+Next: Netlify connect + dev→main PR, run the batch, review scripts, flip live:true.
