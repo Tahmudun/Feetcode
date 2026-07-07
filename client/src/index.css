@@ -78,6 +78,12 @@ button { font: inherit; cursor: pointer; }
   transition: background 0.15s ease;
   border-radius: 3px;
   padding: 0 2px;
+  /* .code-line is a flex row, so the preflight sup trick (relative top:-0.5em,
+     line-height:0) shoves the marker over the line above. Sit it at the top
+     of its own flex slot instead. */
+  position: static;
+  line-height: inherit;
+  align-self: flex-start;
 }
 .fn-marker.is-hot { background: var(--amber-soft); }
 .code-line.is-hot { background: var(--amber-soft); }
