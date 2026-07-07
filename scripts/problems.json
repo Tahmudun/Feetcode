@@ -1,0 +1,58 @@
+[
+  {
+    "id": "two-sum",
+    "title": "Two Sum",
+    "statement": "Given an array of integers nums and an integer target, return the indices of the two numbers that add up to target. Exactly one solution exists; you may not use the same element twice.",
+    "approach": "One-pass hash map: for each number, check whether target minus it has already been seen; if so return both indices, otherwise record the number's index and move on.",
+    "trace_input": "nums = [2, 7, 11, 15], target = 9 -> the answer should land on the second element so the map gets at least one entry first; if it resolves too early, use nums = [3, 2, 4], target = 6"
+  },
+  {
+    "id": "valid-anagram",
+    "title": "Valid Anagram",
+    "statement": "Given two strings s and t, return true if t is an anagram of s: the same letters with the same counts, in any order.",
+    "approach": "Single count array of 26 slots: increment for each character of s, decrement for each character of t, then the strings are anagrams iff every slot is zero.",
+    "trace_input": "s = \"race\", t = \"care\" (visualize the count structure as a compact map of only nonzero letters, not 26 array cells)"
+  },
+  {
+    "id": "contains-duplicate",
+    "title": "Contains Duplicate",
+    "statement": "Given an integer array nums, return true if any value appears at least twice, and false if every element is distinct.",
+    "approach": "Grow a hash set while scanning: if the current number is already in the set, return true immediately; otherwise add it.",
+    "trace_input": "nums = [1, 3, 2, 3] -> returns true on the second 3"
+  },
+  {
+    "id": "top-k-frequent",
+    "title": "Top K Frequent Elements",
+    "statement": "Given an integer array nums and an integer k, return the k most frequent elements, in any order.",
+    "approach": "Bucket sort by frequency: count occurrences in a hash map, place each number into a bucket indexed by its count, then walk buckets from highest count down collecting k elements.",
+    "trace_input": "nums = [1, 1, 1, 2, 2, 3], k = 2 -> answer [1, 2]"
+  },
+  {
+    "id": "product-except-self",
+    "title": "Product of Array Except Self",
+    "statement": "Given an integer array nums, return an array where each position holds the product of every element except the one at that position, without using division and in O(n).",
+    "approach": "Two sweeps over an output array: a forward pass writes the running product of everything to the left, a backward pass multiplies in the running product of everything to the right.",
+    "trace_input": "nums = [1, 2, 3, 4] -> answer [24, 12, 8, 6]"
+  },
+  {
+    "id": "valid-sudoku",
+    "title": "Valid Sudoku",
+    "statement": "Given a 9x9 Sudoku board (digits and empty cells), determine whether the filled cells are valid: no digit repeats in any row, column, or 3x3 box.",
+    "approach": "One scan with hash sets keyed by (row, digit), (column, digit), and (box, digit): a repeat key means invalid. Visualize a small 4x4 analogue or a partial board so state stays readable.",
+    "trace_input": "a 4-row partial board where row 0 = [5, 3, ., .], row 1 = [6, ., ., 5], row 2 = [., 5, ., .], and the second 5 in column-check or box-check produces the interesting collision; keep structures to the three sets plus the scanned cells"
+  },
+  {
+    "id": "encode-decode-strings",
+    "title": "Encode and Decode Strings",
+    "statement": "Design encode(list of strings) -> single string and decode(string) -> original list, robust to any characters including delimiters appearing inside the strings.",
+    "approach": "Length prefixing: encode each string as <length>#<string>; decode by reading digits up to '#', then consuming exactly that many characters. No escaping needed because the length says where the string ends.",
+    "trace_input": "[\"neet\", \"co#de\"] -> encoded \"4#neet5#co#de\" -> decoded back; the '#' inside co#de is the teaching moment"
+  },
+  {
+    "id": "longest-consecutive",
+    "title": "Longest Consecutive Sequence",
+    "statement": "Given an unsorted integer array nums, return the length of the longest run of consecutive integers, in O(n).",
+    "approach": "Hash set of all numbers; only a number with no left neighbor (num - 1 absent) starts a sequence, then count upward while num + 1 exists. Each number is visited at most twice.",
+    "trace_input": "nums = [100, 4, 200, 1, 3, 2] -> the run 1,2,3,4 of length 4"
+  }
+]
