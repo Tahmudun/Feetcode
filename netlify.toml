@@ -1,0 +1,10 @@
+[build]
+  base = "client"
+  command = "npm run build"
+  publish = "dist"
+
+# SPA: let react-router own every path
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
