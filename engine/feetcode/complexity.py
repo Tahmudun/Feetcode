@@ -65,6 +65,8 @@ def fit(points: list, allowed: set | None = None) -> dict | None:
     pts = [(p["n"], p["y"]) for p in points if p.get("y") is not None and p["n"] > 1]
     if len(pts) < 3:
         return None
+    if len(pts) >= 6:
+        pts = pts[-5:]  # asymptotic behaviour: small inputs often sit in a different regime
     ns = [n for n, _ in pts]
     ys = [max(float(y), 1.0) for _, y in pts]
     results = []

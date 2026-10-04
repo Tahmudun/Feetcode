@@ -180,9 +180,9 @@ class Tracer:
                     scope["_taken"] = bool(branch) if branch is not None else None
                     if kind == "return":
                         scope["_return"] = ret
-                    if " || " in template:  # "when the branch is taken || when it is not"
-                        yes, _, no = template.partition(" || ")
-                        template = yes if branch != 0 else no
+                    if "||" in template:  # "when the branch is taken || when it is not"
+                        yes, _, no = template.partition("||")
+                        template = (yes if branch != 0 else no).strip()
                     step["t"] = render_template(template, scope, strict=self.strict,
                                                 errors=self.narration_errors, where=f"line {line}")
                 except Exception as e:  # noqa: BLE001
