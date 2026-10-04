@@ -271,7 +271,7 @@ export function Player({
             hotFootnote={hotNote}
             onFootnoteHover={setHotNote}
             heat={heat}
-            className="max-h-[300px] @4xl:max-h-[460px]"
+            className="max-h-[360px] @4xl:max-h-[460px]"
           />
         )}
         <div className="min-h-0 min-w-0 space-y-4 overflow-auto rounded-xl border border-line bg-bg/40 p-4 bg-grid">

@@ -154,9 +154,13 @@ export function BarsView({ panel }: { panel: ArrayPanel }) {
                     fontSize={10}
                     fontWeight={700}
                     fill={color}
+                    stroke="var(--bg-elev)"
+                    strokeWidth={3}
+                    strokeLinejoin="round"
+                    paintOrder="stroke"
                   >
                     {l.name}={l.value}
-                    {l.bottleneck ? " ← sets the waterline" : ""}
+                    {l.bottleneck ? " · sets the waterline" : ""}
                   </text>
                 </g>
               );

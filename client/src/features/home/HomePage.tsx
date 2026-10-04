@@ -48,7 +48,7 @@ export function HomePage() {
                 </Button>
               </Link>
               <Link to="/problems/trapping-rain-water">
-                <Button size="lg">Watch Trapping Rain Water click</Button>
+                <Button size="lg">See the rain-water trick</Button>
               </Link>
               <Link to="/playground" className="flex items-center gap-1 text-[13px] text-muted hover:text-accent">
                 <Wand2 size={14} /> or visualize any Python
