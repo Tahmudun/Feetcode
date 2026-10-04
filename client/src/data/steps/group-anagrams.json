@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "problemId": "group-anagrams",
+  "solutionId": "char-count-key",
+  "title": "Hash map keyed by character counts",
+  "language": "python",
+  "complexity": { "time": "O(n\u00b7k)", "space": "O(n\u00b7k)" },
+  "footnotes": [
+    {
+      "id": 1,
+      "line": 3,
+      "text": "A fixed 26-slot count array instead of sorting the word: counting is O(k), sorting is O(k log k). Same canonical key, cheaper to build.",
+      "step": 2
+    },
+    {
+      "id": 2,
+      "line": 6,
+      "text": "tuple(count), never the list itself \u2014 dict keys must be hashable, and lists aren't. Freezing the counts is what makes them usable as a key.",
+      "step": 2
+    },
+    {
+      "id": 3,
+      "line": 9,
+      "text": "This append runs whether the bucket was just created or already existed \u2014 both branches converge here. groups.setdefault(key, []).append(word) collapses three lines into one.",
+      "step": 5
+    }
+  ],
+  "code": [
+    "def groupAnagrams(strs):",
+    "    groups = {}",
+    "    for word in strs:",
+    "        count = [0] * 26",
+    "        for ch in word:",
+    "            count[ord(ch) - ord('a')] += 1",
+    "        key = tuple(count)",
+    "        if key not in groups:",
+    "            groups[key] = []",
+    "        groups[key].append(word)",
+    "    return list(groups.values())"
+  ],
+  "steps": [
+    {
+      "line": 0,
+      "phase": "setup",
+      "narration": "The plan: anagrams contain the same letters, so they share the same character counts. We'll use that count as a key \u2014 anagrams collide into the same bucket.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [] }
+      ],
+      "pointers": [],
+      "vars": []
+    },
+    {
+      "line": 1,
+      "phase": "setup",
+      "narration": "Start with an empty hash map. Keys will be character-count signatures; values will be lists of words sharing that signature.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [] }
+      ],
+      "pointers": [],
+      "vars": []
+    },
+    {
+      "line": 6,
+      "phase": "iterate",
+      "narration": "Take \"eat\". Count its letters \u2014 one a, one e, one t \u2014 and freeze that into the key a1e1t1.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "active" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 0, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1e1t1", "state": "new" } ]
+    },
+    {
+      "line": 9,
+      "phase": "iterate",
+      "narration": "a1e1t1 isn't in the map yet, so create an empty bucket for it and drop \"eat\" in.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "active" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat]", "state": "new" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 0, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1e1t1", "state": "idle" } ]
+    },
+    {
+      "line": 6,
+      "phase": "iterate",
+      "narration": "Next, \"tea\". Same letters as \"eat\", so its count signature is identical: a1e1t1.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "active" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat]", "state": "idle" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 1, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1e1t1", "state": "new" } ]
+    },
+    {
+      "line": 9,
+      "phase": "iterate",
+      "narration": "Lookup hits! a1e1t1 already has a bucket \u2014 \"tea\" joins \"eat\". This collision IS the algorithm working.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "active" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea]", "state": "match" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 1, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1e1t1", "state": "idle" } ]
+    },
+    {
+      "line": 6,
+      "phase": "iterate",
+      "narration": "\"tan\" counts to a1n1t1 \u2014 a signature we haven't seen before.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "active" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea]", "state": "idle" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 2, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1n1t1", "state": "new" } ]
+    },
+    {
+      "line": 9,
+      "phase": "iterate",
+      "narration": "No bucket for a1n1t1 yet \u2014 create one and add \"tan\". Two groups now.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "active" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea]", "state": "idle" },
+          { "k": "a1n1t1", "v": "[tan]", "state": "new" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 2, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1n1t1", "state": "idle" } ]
+    },
+    {
+      "line": 6,
+      "phase": "iterate",
+      "narration": "\"ate\" \u2014 different order, same letters. Its signature is a1e1t1 again. Order never mattered, only counts.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "active" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea]", "state": "compare" },
+          { "k": "a1n1t1", "v": "[tan]", "state": "idle" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 3, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1e1t1", "state": "new" } ]
+    },
+    {
+      "line": 9,
+      "phase": "iterate",
+      "narration": "Another hit on a1e1t1 \u2014 \"ate\" joins the first bucket: [eat, tea, ate].",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "active" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea, ate]", "state": "match" },
+          { "k": "a1n1t1", "v": "[tan]", "state": "idle" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 3, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1e1t1", "state": "idle" } ]
+    },
+    {
+      "line": 6,
+      "phase": "iterate",
+      "narration": "\"nat\" counts to a1n1t1 \u2014 the same signature as \"tan\".",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "active" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea, ate]", "state": "idle" },
+          { "k": "a1n1t1", "v": "[tan]", "state": "compare" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 4, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1n1t1", "state": "new" } ]
+    },
+    {
+      "line": 9,
+      "phase": "iterate",
+      "narration": "\"nat\" lands with \"tan\": [tan, nat].",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "active" }, { "v": "bat", "state": "idle" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea, ate]", "state": "idle" },
+          { "k": "a1n1t1", "v": "[tan, nat]", "state": "match" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 4, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1n1t1", "state": "idle" } ]
+    },
+    {
+      "line": 6,
+      "phase": "iterate",
+      "narration": "Last word: \"bat\". Its b gives it a brand-new signature, a1b1t1 \u2014 close to \"tan\" in spelling, but counts don't lie.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "active" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea, ate]", "state": "idle" },
+          { "k": "a1n1t1", "v": "[tan, nat]", "state": "idle" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 5, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1b1t1", "state": "new" } ]
+    },
+    {
+      "line": 9,
+      "phase": "iterate",
+      "narration": "New bucket for a1b1t1; \"bat\" sits alone. Every word has been filed.",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "idle" }, { "v": "tea", "state": "idle" }, { "v": "tan", "state": "idle" },
+          { "v": "ate", "state": "idle" }, { "v": "nat", "state": "idle" }, { "v": "bat", "state": "active" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea, ate]", "state": "idle" },
+          { "k": "a1n1t1", "v": "[tan, nat]", "state": "idle" },
+          { "k": "a1b1t1", "v": "[bat]", "state": "new" } ] }
+      ],
+      "pointers": [ { "structure": "strs", "index": 5, "label": "word" } ],
+      "vars": [ { "name": "key", "value": "a1b1t1", "state": "idle" } ]
+    },
+    {
+      "line": 10,
+      "phase": "resolve",
+      "narration": "Return the buckets. The pattern to remember: when grouping by an equivalence (\u201cthese count as the same\u201d), design a canonical key so equals collide. One pass, O(n\u00b7k).",
+      "structures": [
+        { "id": "strs", "type": "array", "label": "strs", "cells": [
+          { "v": "eat", "state": "done" }, { "v": "tea", "state": "done" }, { "v": "tan", "state": "done" },
+          { "v": "ate", "state": "done" }, { "v": "nat", "state": "done" }, { "v": "bat", "state": "done" } ] },
+        { "id": "groups", "type": "map", "label": "groups", "entries": [
+          { "k": "a1e1t1", "v": "[eat, tea, ate]", "state": "done" },
+          { "k": "a1n1t1", "v": "[tan, nat]", "state": "done" },
+          { "k": "a1b1t1", "v": "[bat]", "state": "done" } ] }
+      ],
+      "pointers": [],
+      "vars": []
+    }
+  ]
+}
