@@ -153,11 +153,18 @@ def passing_neighbour(problem: Problem, user: Runner, ref: Runner, args: dict, l
     return None
 
 
-def match_pitfalls(problem: Problem, source: str, args, expected, actual) -> list:
+def _error_matches(spec: str, error: dict | None) -> bool:
+    if not error:
+        return False
+    kind, _, needle = spec.partition(":")
+    return error.get("type") == kind.strip() and needle.strip().lower() in (error.get("message") or "").lower()
+
+
+def match_pitfalls(problem: Problem, source: str, args, expected, actual, error: dict | None = None) -> list:
     found = []
     for p in problem.pitfalls:
-        hit = False
-        if p.detect is not None and actual is not None:
+        hit = bool(p.error) and _error_matches(p.error, error)
+        if not hit and p.detect is not None and actual is not None:
             try:
                 hit = bool(p.detect(args, expected, actual))
             except Exception:  # noqa: BLE001
@@ -200,7 +207,7 @@ def diagnose(problem: Problem, source: str, args: dict | None = None, *, seed=1,
         "originalSize": original_size,
         "size": problem.measure(minimal),
         "shrinkSteps": steps,
-        "pitfalls": match_pitfalls(problem, source, minimal, expected, actual),
+        "pitfalls": match_pitfalls(problem, source, minimal, expected, actual, u.get("error")),
     }
     if time.perf_counter() < deadline + 3.0:
         report["neighbour"] = passing_neighbour(problem, user, ref, minimal)

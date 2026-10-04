@@ -33,7 +33,8 @@ def discover(only: list[str] | None = None) -> list[Source]:
         if path.name.startswith("_"):
             continue
         module = ".".join(path.relative_to(ROOT).with_suffix("").parts)
-        if only and not any(o == module or o.replace("-", "_") in path.stem for o in only):
+        if only and not any(o == module or o.replace("-", "_") in path.stem or o.replace("-", "_") == path.parent.name
+                            for o in only):
             continue
         out.append(Source(module, path, hashlib.sha256(path.read_bytes()).hexdigest()))
     return out

@@ -185,7 +185,8 @@ def fresh_namespace(code_obj) -> dict:
     return ns
 
 
-def recursion_guard(limit=2500):
-    old = sys.getrecursionlimit()
-    if old < limit:
-        sys.setrecursionlimit(limit)
+# Like LeetCode, allow deep recursion (recursive linked-list solutions on 5000 nodes).
+# Python 3.12+ keeps Python-to-Python calls off the C stack, so this is safe in Pyodide too.
+RECURSION_LIMIT = 10_000
+if sys.getrecursionlimit() < RECURSION_LIMIT:
+    sys.setrecursionlimit(RECURSION_LIMIT)

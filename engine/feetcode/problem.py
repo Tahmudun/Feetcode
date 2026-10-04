@@ -59,13 +59,15 @@ class Solution:
 
 @dataclass
 class Pitfall:
-    """A known mistake. `detect(args, expected, actual)` recognises it from a failure;
-    `code` is a regex that suggests it from the source alone."""
+    """A known mistake, recognised from a failure by any of:
+    `detect(args, expected, actual)` on a wrong answer, `error` (an exception type name
+    raised by the user's code, optionally "Type: substring"), or `code` (a regex on the source)."""
     id: str
     title: str
     explain: str
     detect: Callable[[dict, Any, Any], bool] | None = None
     code: str | None = None
+    error: str | None = None
 
 
 @dataclass

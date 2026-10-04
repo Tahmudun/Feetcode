@@ -162,3 +162,9 @@ def normalize(value):
     if isinstance(value, float) and value.is_integer() and abs(value) < 2**53:
         return value
     return value
+
+
+class CallArgs(list):
+    """Positional call arguments that can carry notes from prepare() to extract()."""
+    original: set = frozenset()
+    keep: list = ()

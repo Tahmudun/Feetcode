@@ -204,6 +204,11 @@ class Checker:
             out[s.id] = pr
             fitted = (pr.get("time") or {}).get("label")
             declared = _declared_rank(s.time)
+            if declared is not None and self.p.signature.kind == "design":
+                # declared per operation; the profile runs n operations
+                times_n = {"O(1)": "O(n)", "O(log n)": "O(n log n)", "O(n)": "O(n²)", "O(n²)": "O(n³)"}
+                label = next(k for k, v in RANK.items() if v == declared)
+                declared = RANK.get(times_n.get(label, label))
             if fitted and declared is not None and RANK.get(fitted) is not None:
                 if RANK[fitted] > declared:
                     self.warn("complexity", f"{s.id} declared {s.time} but measured {fitted}")
