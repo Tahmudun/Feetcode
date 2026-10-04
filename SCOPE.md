@@ -1,158 +1,142 @@
-# Feetcode — Project Scope v2.0
+# Feetcode: Project Scope v3
 
-**A dynamic program analysis lab disguised as a DSA prep site.** Free forever, runs entirely in
-the browser, $0/month to operate.
+**Interview prep that shows you why your code works, or why it doesn't.** It's free forever, runs entirely in the browser and costs $0/month to operate.
 
-LeetCode tells you *that* you failed. Feetcode shows you **where, why, and how expensive** — by
-pointing real program-analysis tooling (a tracer, a fuzzer, a shrinker, an execution differ, an
-invariant miner) at the code *you* wrote, and explaining everything it finds in one unified
-voice:
+LeetCode tells you *that* you failed. NeetCode shows you someone else's solution. Feetcode points real program-analysis tooling at **the code you wrote**:
 
-> **The Footnote Law: everything Feetcode tells you is a footnote anchored to a line of code.**
+- a tracer
+- an operation meter
+- a fuzzer with a shrinker
+- a complexity profiler
 
-Insights on reference solutions, narration during playback, the bug the fuzzer found, the
-invariant your loop violates, the citation to the 1967 paper — all of it renders as numbered
-footnotes pinned to exact lines. The name is a pun¹. The system is the punchline.
+It explains what they find in one voice:
+
+> **The Footnote Law: every insight is anchored to a line of code.**
 
 ¹ *yes, feet. the footnotes are real.*
 
+v3 replaces v2's plan (an AI-generated step-script pipeline, then a tracer) with what was actually built: one Python engine running at build time and in the browser, and problems as code behind a quality gate. Section 9 records what changed and why.
+
 ---
 
-## 1. Why this gets you hired
+## 1. The demo that gets you hired
 
-The interview demo, end to end: *you submit wrong code → Feetcode fuzzes it against the
-reference solution → shrinks the failure to a minimal counterexample (often 2 elements) →
-traces both programs on that tiny input → finds the first step where their states diverge →
-scrubs the visual player to that exact moment → and files the finding as a footnote on the
-guilty line.*
+*Submit a wrong Two Sum.*
 
-Fuzzer → shrinker → tracer → differ → time-travel debugger, fully in-browser, zero servers.
-Every stage is a recognized CS technique (property-based testing with shrinking à la
-Hypothesis/QuickCheck; dynamic tracing; trace differencing; dynamic invariant detection in the
-Daikon lineage). A senior engineer watching this recognizes their own toolbox — that's the
-reaction this project is engineered to produce.
+1. The hidden suite fails.
+2. The fuzzer shrinks the failure to `nums=[5,5], target=10`.
+3. The diagnosis names the mistake ("Paired an element with itself") and shows a passing neighbour input.
+4. One click replays your code on that input, step by step: the map, the probe and the line that returned `[0, 0]`.
 
-The supporting talking points, each a real decision with real tradeoffs:
+*Then submit the brute force.*
 
-1. **One schema, many producers.** The step-script format (§4) is the universal intermediate
-   representation. The AI batch pipeline produces scripts for reference solutions; the live
-   tracer produces them for user code; the differ consumes two of them. The player renders all
-   of it without knowing or caring where a script came from.
-2. **Snapshots over deltas.** Each step is a complete visual state. Costs file size (trivial,
-   gzip), buys free scrubbing, a pure-function renderer, per-step validation, and — critically —
-   trivially diffable traces. The divergence feature falls out of this decision.
-3. **In-browser execution (Pyodide/WebAssembly).** No judge servers, no sandboxing
-   infrastructure, no per-user cost, no abuse surface. The "run my code" feature that costs
-   LeetCode a fleet costs Feetcode nothing.
-4. **One output type for every analyzer: the footnote.** New analyzers don't invent new UI;
-   they emit annotations `{line, text, optional step-jump}`. Uniform voice, uniform rendering,
-   uniform architecture.
+1. It's correct but runs out of operations.
+2. The profiler fits `O(n²)` and draws it against the optimal `O(n)`.
+3. The editor heat-maps line 4, which ran 524,798 times.
+
+All of this runs in the browser with no servers. Each stage is a recognized technique: property-based testing with shrinking (QuickCheck, Hypothesis), dynamic tracing, deterministic cost models and empirical complexity fitting.
+
+Talking points, each a real decision with tradeoffs (see `docs/adr/`):
+
+1. **Deterministic judging.** Budgets in operations, not milliseconds, so verdicts are reproducible on any machine. (ADR 0001)
+2. **One engine, two runtimes.** The same Python runs in CPython at build time and in Pyodide in the browser, and is tested in both. (ADR 0002)
+3. **Snapshots over deltas.** The renderer is a pure function of one step: free scrubbing, and traces that can be compared step by step. (ADR 0003)
+4. **Content as code.** Problems are executable modules behind a quality gate. Content can't silently rot. (ADR 0004)
+5. **Data-engineering discipline in the build.** Deterministic, incremental, content-addressed, drift-checked, with lineage. (ADR 0005)
+6. **Event-sourced state.** Progress is an immutable log, and everything is derived and queryable. (ADR 0006)
 
 ## 2. Positioning
 
-For CS students and self-taught devs who can't pay $200/year. Pattern-first pedagogy. The
-one-sentence pitch: **"the debugger for learning algorithms."** Tagline territory: *the
-footnotes your code was missing.* Irreverent surface, rigorous underneath — the name does the
-marketing, the footnotes do the teaching.
+For CS students and self-taught developers who can't pay $200 a year, and for anyone who learns better by *seeing* than by memorizing. Pattern-first, roadmap-ordered. Pitch: **"the debugger for learning algorithms."** Irreverent surface, rigorous underneath. It should feel fast, fun and slightly magical to code in.
 
 ## 3. Architecture
 
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). In brief:
+
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│ BUILD TIME (your Mac, occasionally)                                 │
-│   scripts/generate_steps.py                                         │
-│     Anthropic API → reference step-scripts + authored footnotes     │
-│     → schema validation → invariant checks → review → git commit    │
-└───────────────────────────────┬────────────────────────────────────┘
-                                │ static JSON, committed
-┌───────────────────────────────▼────────────────────────────────────┐
-│ RUN TIME — React SPA on Netlify, everything below runs in-browser   │
-│                                                                     │
-│  LAYER 3 · the voice      Footnotes (insights, findings, citations) │
-│  LAYER 2 · the analyzers  judge → tracer → fuzzer/shrinker →        │
-│                           differ → invariant miner (phased)         │
-│  LAYER 1 · the substrate  step-script schema + Step Player          │
-│                                                                     │
-│  Pyodide (Python→WASM) executes user code; sys.settrace captures    │
-│  per-line state and emits step-scripts — same format as build time. │
-└────────────────────────────────────────────────────────────────────┘
+problems/*.py ──► pipeline (gate + deterministic build) ──► static JSON ──┐
+engine/feetcode ─┬─► (CPython, build time)                                ▼
+                 └─► Pyodide Web Worker (browser) ◄──► React UI (workspace · visualizer · study)
 ```
 
-**Stack:** React 19 + Vite, Tailwind v3 + token CSS, react-router v7, Netlify. Phase 2 adds
-Pyodide + CodeMirror. Supabase (auth, saved personal footnotes, progress) deferred until the
-analysis suite exists — accounts are not the product.
+**Stack:** React 19 and TypeScript 5.9, Vite, Tailwind v4 with CSS-variable tokens, react-router 7, zustand, CodeMirror 6 and Pyodide. Python 3.12+ for the engine and pipeline. Netlify or any static host.
 
-## 4. The step-script schema (the substrate)
+## 4. The lens (the design problem you own)
 
-Spec: `docs/step-script-schema.md`. Snapshot-based (every step carries complete state of every
-structure), fixed structure-type vocabulary, semantic cell states (`active/match/compare/new/
-done`) mapped to presentation in exactly one CSS block. v2.0 addition: an optional `footnotes`
-array — annotations anchored to code lines, optionally deep-linking to a step. Additive fields
-don't bump the schema version; the renderer ignores what it doesn't know.
+The tracer sees raw locals. Something has to know that `l, r` are pointers *into* `height`, that `dq` holds *indices* into `nums`, that `[r - k + 1, r]` is a window, and that Trapping Rain Water deserves water levels while Container With Most Water deserves a rectangle. The answer is a small per-problem **lens**: a declarative map from variable names to views, pointers, windows and overlays, plus heuristics for code with no lens, such as the user's own code and the playground. It lives in `client/src/viz/scene.ts` and `overlays.ts`, and docs/authoring.md §4 lists its keys. Expect interviewers to probe it.
 
-**The lens problem (the design problem you personally own):** the tracer sees raw locals like
-`groups = {(1,0,...): ['eat']}`; something must know to render that as a map with compact keys,
-and that `l, r` are pointers *into* `s`. Solution: a small per-problem "lens" config mapping
-variable names → structure types + display transforms, plus fallback heuristics. Designing the
-lens format is the deepest individual contribution in this project — expect interviewers to
-probe it, and welcome that.
+## 5. Status: built (v3)
 
-## 5. Phases — each independently demoable
+**Content**
+- 38 problems: the NeetCode 150 core for Arrays & Hashing (9), Two Pointers (5), Sliding Window (6), Stack (7) and Linked List (11).
+- Each has 2–3 narrated solutions, pitfalls, hints, an insight card, company tags and a hidden suite (46 cases on average).
 
-**P1 · Substrate + identity (current).** Step Player (code/state/narration on one scrubbable
-timeline), golden hand-crafted Group Anagrams script, footnote system v1: superscript markers in
-the code pane, hover-linked footnote block styled like a real text's apparatus, step-jump links,
-scholarly references per problem, brand carrying the superscript (`feetcode¹`). Deployed to
-Netlify. *Done when: one URL, no apologies.*
+**Engine**
+- Snapshot tracer with an identity-preserving heap and per-line access facts.
+- Deterministic op meter with hidden-cost probes.
+- Judge, fuzzer, greedy shrinker, pitfall matcher and passing-neighbour search.
+- Complexity profiler (time, auxiliary space, recursion depth).
 
-**P1.5 · Reference content pipeline.** `generate_steps.py`: prompt template → step script +
-footnotes; JSON schema validation; invariant checks (final state = expected output, line indices
-valid, states in enum); review queue. Generate Arrays & Hashing (9 problems). Claude Code
-territory — agentic scripting, not your learning surface.
+**Pipeline**
+- Quality gate: schema, examples, cross-checked references, strict narration, pitfall false positives, measured vs declared complexity.
+- Deterministic, incremental, parallel build with a sha256 manifest and `--check` drift detection.
 
-**P2 · The runtime (table stakes, done cheap).** CodeMirror editor + Pyodide + test runner →
-accept/fail. Deliberately minimal: the judge is a commodity and gets exactly commodity effort.
-Its real purpose is to put *user code execution* in the browser, which everything after depends
-on.
+**Client**
+- Workspace: editor (Vim optional), run, submit, diagnosis, *Watch it fail*, heat map, growth charts, notes, timer, submissions.
+- Visualizer: arrays, bars, chars, grids, maps, sets, stacks and deques, linked lists with stable layout, random-pointer graphs.
+- Lens overlays: water, container, histogram, index graph.
+- Narrated lessons, auto-narration and Predict mode.
+- Pattern primers, spaced-repetition review, stats with streaks, a heat map and mastery, NDJSON export, and a playground with share links.
+- Command palette, light and dark themes.
 
-**P3 · The tracer.** `sys.settrace` hook captures line + locals each step → lens config maps
-raw state → step script → **the player visualizes code the user wrote**. The moment Feetcode
-stops being a content site and becomes a tool.
+**Quality**
+- Engine tests in CPython 3.12 and 3.13 and in Pyodide; pipeline tests; Vitest; Playwright end-to-end on real Pyodide.
+- CI runs all of them plus the content gate and the drift check.
 
-**P4 · The flagship: fuzz → shrink → diverge.** Property-based input generation per problem;
-on failure, greedy shrinking (delete elements / simplify values / re-test until minimal); trace
-user + reference on the counterexample; first-divergence search across the two timelines; file
-the finding as a footnote on the guilty line with a jump-to-step link. This is the demo.
+## 6. Roadmap
 
-**P5 · The stretch (build one, design-doc the rest).** Invariant mining (infer `left ≤ right`
-from reference traces; report the step where user code breaks it); behavioral fingerprinting
-(classify the user's *approach* from trace dynamics, not source text); the complexity lab
-(empirical big-O: run on growing n, fit the curve, heatmap the line getting hit n² times).
+**Next: the analyzers that make it a lab**
+1. **Divergence finder.** Trace user and reference on the shrunk input, align the two timelines, and find the first step where the states diverge (for example, a variable that the reference has and yours doesn't, or a different value). File it as a footnote on the guilty line with a jump-to-step link. Snapshots make the comparison cheap.
+2. **Invariant miner.** Infer invariants from reference traces, in the spirit of Daikon: `l ≤ r`, "the window has no duplicates", "the stack is monotonic". Report the first step where user code breaks one.
+3. **Approach fingerprinting.** Classify *how* the user solved it (two pointers vs hash map vs sort) from trace dynamics, and suggest the matching lesson.
 
-## 6. Design system
+**Content**
+4. The rest of the NeetCode 150: binary search, trees, tries, heap / priority queue, backtracking, graphs, 1-D and 2-D DP, greedy, intervals, math and bits. Trees and graphs need a tree layout in `viz/graph.ts`, and the engine already preserves identity.
 
-Identity: **late-night study session, annotated.** Ink-blue surfaces, paper text, amber phosphor
-for the active, teal for matches, rose for comparisons. Display: Bricolage Grotesque; data: IBM
-Plex Mono. Superscript numerals are the brand mark. Footnote blocks use the classic apparatus
-convention: short hairline rule, hanging numbers, quiet type. Tokens in `index.css`; nothing
-hardcodes a color.
+**Product**
+5. A mock-interview mode: timer, hidden hints, a scored debrief built from the event log.
+6. Optional device sync of the event log (merge logs, re-fold). Still no execution servers.
+7. More languages are out of scope until the analyzers above exist. Python first, done well.
 
-## 7. Quality bar
+## 7. Design system
 
-Keyboard-operable player, visible focus, `prefers-reduced-motion`, responsive to 380px,
-Lighthouse 90+, conventional commits, README opening with a GIF of the flagship pipeline. Vitest
-on the playback hook, the schema validator, and (P4) the shrinker — the shrinker is the most
-test-worthy code in the project.
+Identity: **a late-night study session, annotated.**
 
-## 8. Out of scope, permanently or for now
+- **Surfaces:** ink.
+- **Text:** paper.
+- **Color:** amber phosphor marks the active line, teal marks matches and success, rose marks comparisons and failures, violet marks footnotes and secondary pointers, and sky marks water and windows.
+- **Type:** Bricolage Grotesque for display, Geist for UI and JetBrains Mono for code and data.
+- **Brand mark:** superscript numerals (`feetcode¹`).
 
-Execution servers of any kind (the in-browser constraint is the architecture), payments (free is
-the positioning), mobile apps, contests, social feeds. Accounts only after P4.
+All tokens live in `client/src/styles/index.css` with light and dark themes. Components never hardcode colors. Cell states (`idle / active / compare / match / new / done`) carry meaning and map to presentation in exactly one place.
 
-## 9. Status — July 7, 2026
+## 8. Quality bar
 
-P1 code-complete: footnote system v1, README, netlify.toml — deploy pending Netlify connect.
-P1.5 pipeline built and tested: schema validator (golden script validates clean), generator
-with validate-repair loop and review queue, manifest for the 8 remaining Arrays & Hashing
-problems; generation run pending API credentials. Vitest on the playback hook (quality bar §7).
-Next: Netlify connect + dev→main PR, run the batch, review scripts, flip live:true.
+- Keyboard-operable everything: transport, split panes, palette.
+- Visible focus and `prefers-reduced-motion`. Layouts respond via container queries.
+- Every claim the UI makes is computed, not asserted: complexity labels are measured, and examples are checked.
+- Conventional commits, with CI green before merge.
+
+## 9. What changed from v2
+
+| v2 plan | v3 reality | Why |
+| --- | --- | --- |
+| LLM-generated step scripts and a JSON schema | Problems as code; lessons are *real traces* of reference solutions with `#>` narration | A generated script describes what code should do. A trace shows what it does, and the same tracer then works on user code. |
+| Golden hand-crafted script | Quality gate over executable content | Tests scale; hand review doesn't. |
+| Judge as a "commodity" afterthought | Deterministic op-budget judge | In-browser wall clocks are unfair and noisy, and op counts also power the complexity lab. |
+| JavaScript renderer per structure type | Lens + heuristics over a generic heap | Needed to visualize *arbitrary* user code. |
+| Phased P1 → P5 | Engine, pipeline and client built together; differ and miner next | The engine is the product. Everything else is a view of it. |
+
+## 10. Out of scope
+
+Execution servers of any kind, payments, contests, social feeds and native mobile apps. Accounts only if device sync ships, and even then the event log stays the source of truth.

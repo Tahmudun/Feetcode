@@ -1,44 +1,49 @@
 # Feetcode
 
-Free, in-browser DSA platform: a dynamic program analysis lab disguised as a prep site.
-Read SCOPE.md before any non-trivial task. Schema contract: docs/step-script-schema.md.
+Free, in-browser DSA platform: interview prep that runs, judges and **visualizes the user's own code**,
+backed by a dynamic program analysis engine (tracer, op meter, fuzzer + shrinker, complexity profiler).
+Read docs/ARCHITECTURE.md before any non-trivial task; SCOPE.md has the product scope and roadmap.
 
 ## The Footnote Law
-Every explanation the product emits — authored insights, analyzer findings, citations — is a
-footnote: `{id, line, text, step?}` anchored to a code line. New analyzers emit footnotes, never
-new UI primitives.
+Every explanation the product emits (authored insights, analyzer findings, narration) is anchored to a
+code line: footnotes are `{line, text}`, narration rides on a step. New analyzers emit footnotes or
+step annotations, never new UI primitives.
 
 ## Commands
-- Dev server: `cd client && npm run dev`
-- Build check (run before claiming a task done): `cd client && npm run build`
-- Lint: `cd client && npm run lint`
+- Client dev: `cd client && npm run dev`
+- Client checks (run before claiming a task done): `cd client && npm run lint && npm run build && npm test`
+- Engine tests: `python -m pytest -q engine/tests` (Python ≥ 3.12; also `cd client && npm run test:engine` for Pyodide)
+- Content gate: `cd pipeline && python -m feetcode_pipeline check [filter]`
+- Content build: `cd pipeline && python -m feetcode_pipeline build` (incremental), `build --check` (drift)
+- Pipeline tests: `cd pipeline && python -m pytest -q tests`
+- E2E: `cd client && npm run build && npm run e2e` (set `CHROMIUM_PATH` if Playwright's browser is elsewhere)
 
-## Architecture
-- `client/src/data/steps/*.json` — step scripts: SNAPSHOT-based (every step carries complete
-  state of every structure). The renderer is a pure function of `steps[i]`. Never convert to
-  deltas.
-- `client/src/data/steps/group-anagrams.json` — the GOLDEN script. Hand-crafted reference for
-  what generated scripts must look like. Do not regenerate or "improve" it without being asked.
-- `client/src/visualizer/` — StepPlayer (panes + transport + footnote apparatus), Structure
-  (pure renderers per structure type), usePlayback (timeline hook).
-- `client/src/data/problems.js` — problem catalog; `live: true` requires a script in steps/.
-- `client/src/index.css` — ALL colors/fonts live here as tokens (--amber, --teal, --rose,
-  --ink...). Never hardcode a color in a component.
-- `scripts/` — (P1.5+) Python batch pipeline: Anthropic API → step scripts → validation.
+## Architecture (details: docs/ARCHITECTURE.md)
+- `engine/feetcode/`: pure-Python engine, stdlib only. It runs in CPython (pipeline) AND Pyodide (browser,
+  inlined via `?raw`). Never add a dependency or anything Pyodide can't run. JSON in/out via `api.handle`.
+- `problems/<pattern>/*.py`: problems as code (`PROBLEM = Problem(...)`). Narration lives in reference
+  solutions as `#>` / `#!` / `#~` directives. Guide: docs/authoring.md.
+- `pipeline/`: quality gate + deterministic incremental build → `client/src/content/generated/`.
+  Generated files are committed; never edit them by hand. Change the source and rebuild.
+- `client/src/runtime/`: Pyodide Web Worker + watchdog. `client/src/viz/`: `buildScene(trace, i)` is a
+  pure function of one snapshot step. Traces are SNAPSHOTS (docs/trace-format.md). Never convert to deltas.
+- `client/src/store/`: progress is an append-only event log; all progress state is derived. Never
+  store derived state.
+- `client/src/styles/index.css`: ALL colors/fonts live here as tokens (light + dark). Never hardcode a
+  color in a component.
 
 ## Hard rules
-- Schema changes: additive fields only without a version bump; any change updates
-  docs/step-script-schema.md AND the golden script AND the validator together.
-- Cell/entry states come only from: idle, active, compare, match, new, done. States carry
-  meaning; CSS maps meaning → presentation in exactly one block (the `.st-*` classes).
-- Branches: never commit to main. Work on dev or feature/* off dev. Conventional commits
-  (feat:, fix:, docs:, refactor:).
-- No new runtime dependencies without asking. No servers, ever — in-browser execution is the
-  architecture (SCOPE.md §1.3).
-- Accessibility floor: keyboard operability, focus-visible, prefers-reduced-motion. Don't
-  regress it.
+- Trace format: additive fields only; any change updates engine, `runtime/types.ts`, the scene builder and
+  docs/trace-format.md together, then rebuild content.
+- Cell/entry states come only from: idle, active, compare, match, new, done. CSS maps meaning →
+  presentation in exactly one block (the `.st-*` classes).
+- Judging is deterministic: limits are op budgets, never wall-clock (ADR 0001).
+- Problem statements are original prose; never paste statements from other sites.
+- Branches: never commit to main. Conventional commits (feat:, fix:, docs:, refactor:, test:).
+- No new runtime dependencies without asking. No servers, ever: in-browser execution is the architecture.
+- Accessibility floor: keyboard operability, focus-visible, prefers-reduced-motion. Don't regress it.
 
 ## Owner context
-Tah is learning React/full-stack through this project. For visualizer/ and the lens design
-(SCOPE.md §4): explain changes and prefer walking through plans before large edits — he must be
-able to defend this code in interviews. Boilerplate, pipelines, and config: just do it.
+Tah is learning React/full-stack through this project. For viz/ and the lens design: explain changes
+and prefer walking through plans before large edits - he must be able to defend this code in interviews.
+Boilerplate, pipelines, and config: just do it.
