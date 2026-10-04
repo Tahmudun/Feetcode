@@ -3,7 +3,27 @@
   command = "npm run build"
   publish = "dist"
 
-# SPA: let react-router own every path
+[build.environment]
+  NODE_VERSION = "22"
+
+# Pyodide (Python -> WebAssembly) is served from a versioned path: cache it forever.
+[[headers]]
+  for = "/pyodide/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# SPA: let the router own every path
 [[redirects]]
   from = "/*"
   to = "/index.html"

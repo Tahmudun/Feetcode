@@ -21,7 +21,7 @@ function selfHostPyodide(): Plugin {
   return {
     name: "feetcode:self-host-pyodide",
     configureServer(server) {
-      server.middlewares.use("/pyodide/", (req, res, next) => {
+      server.middlewares.use(`/pyodide/v${pyodideVersion}/`, (req, res, next) => {
         const file = (req.url ?? "").split("?")[0].replace(/^\//, "");
         if (!PYODIDE_FILES.includes(file)) return next();
         const type = file.endsWith(".wasm") ? "application/wasm" : file.endsWith(".mjs") ? "text/javascript"
@@ -32,7 +32,8 @@ function selfHostPyodide(): Plugin {
     },
     generateBundle() {
       for (const file of PYODIDE_FILES) {
-        this.emitFile({ type: "asset", fileName: `pyodide/${file}`, source: fs.readFileSync(path.join(pyodideDir, file)) });
+        // Versioned path: the files can be cached forever, and upgrades can't mix versions.
+        this.emitFile({ type: "asset", fileName: `pyodide/v${pyodideVersion}/${file}`, source: fs.readFileSync(path.join(pyodideDir, file)) });
       }
     },
   };

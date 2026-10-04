@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, "claude/**"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engine:
+    name: Engine (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install pytest
+      - run: python -m pytest -q engine/tests
+
+  content:
+    name: Content pipeline (quality gate + drift)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install pytest
+      - name: Validate all problems (examples, cross-checked references, narration, pitfalls)
+        working-directory: pipeline
+        run: python -m feetcode_pipeline check
+      - name: Pipeline tests
+        working-directory: pipeline
+        run: python -m pytest -q tests
+      - name: Generated artifacts are up to date
+        working-directory: pipeline
+        run: python -m feetcode_pipeline build --check
+
+  client:
+    name: Client (lint, types, unit, build, engine-in-Pyodide)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Engine test suite inside Pyodide (WebAssembly)
+        run: npm run test:engine
+
+  e2e:
+    name: End-to-end (Playwright + real Pyodide)
+    runs-on: ubuntu-latest
+    needs: client
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: client/test-results

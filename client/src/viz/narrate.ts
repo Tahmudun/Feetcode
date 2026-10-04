@@ -40,6 +40,8 @@ export function autoNarrate(steps: Step[], index: number, codeLines: string[]): 
   const prev = index > 0 ? steps[index - 1] : undefined;
   const top = step.s[step.s.length - 1];
   const heap = step.h;
+  if (step.k === "call" && top?.f === "<module>") return "The program starts";
+  if (step.k === "return" && top?.f === "<module>") return "The program finishes";
   if (step.k === "call" && top) {
     const args = top.v.filter(([n]) => n !== "self").map(([n, v]) => `${n}=${pyRepr(v, heap, 1)}`).join(", ");
     return `Call ${top.f}(${args})`;

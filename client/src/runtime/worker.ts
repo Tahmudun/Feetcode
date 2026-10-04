@@ -51,9 +51,9 @@ const relFromGlob = (key: string) => key.replace(/^(\.\.\/)+/, "");
 async function boot() {
   const t0 = performance.now();
   post({ type: "status", status: "loading", detail: "Downloading Python (WebAssembly)…" });
-  const base = new URL(import.meta.env.BASE_URL, self.location.origin).href;
-  const mod = (await import(/* @vite-ignore */ `${base}pyodide/pyodide.mjs`)) as typeof import("pyodide");
-  py = await mod.loadPyodide({ indexURL: `${base}pyodide/` });
+  const root = new URL(`${import.meta.env.BASE_URL}pyodide/v${__PYODIDE_VERSION__}/`, self.location.origin).href;
+  const mod = (await import(/* @vite-ignore */ `${root}pyodide.mjs`)) as typeof import("pyodide");
+  py = await mod.loadPyodide({ indexURL: root });
   post({ type: "status", status: "loading", detail: "Mounting the Feetcode engine…" });
   for (const [key, src] of Object.entries(engineFiles)) writeFile(relFromGlob(key).replace(/^engine\//, ""), src);
   for (const [key, src] of Object.entries(packageInits)) writeFile(relFromGlob(key), src);
