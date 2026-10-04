@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { createBrowserRouter, createHashRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, createMemoryRouter, RouterProvider, type RouteObject } from "react-router";
 import { warmUp } from "@/runtime/python";
 import { useSettings } from "@/store/settings";
 import { Layout } from "./Layout";
@@ -27,8 +27,32 @@ function Loading() {
 
 const lazyRoute = (node: React.ReactNode) => <Suspense fallback={<Loading />}>{node}</Suspense>;
 
-// The artifact build can be served from any path, so its routes live in the URL hash.
-const createRouter = import.meta.env.MODE === "artifact" ? createHashRouter : createBrowserRouter;
+const LAST_ROUTE = "fc:route";
+
+/**
+ * The artifact build runs inside a host page that owns the URL (its path and hash are not ours), so its
+ * routes live in memory. The last route is kept in sessionStorage so a reload comes back to it.
+ */
+function artifactRouter(routes: RouteObject[]) {
+  let start = "/";
+  try {
+    const saved = sessionStorage.getItem(LAST_ROUTE);
+    if (saved?.startsWith("/")) start = saved;
+  } catch {
+    /* storage blocked: start at home */
+  }
+  const router = createMemoryRouter(routes, { initialEntries: [start] });
+  router.subscribe(({ location }) => {
+    try {
+      sessionStorage.setItem(LAST_ROUTE, location.pathname + location.search);
+    } catch {
+      /* ignore */
+    }
+  });
+  return router;
+}
+
+const createRouter = import.meta.env.MODE === "artifact" ? artifactRouter : createBrowserRouter;
 
 const router = createRouter([
   {

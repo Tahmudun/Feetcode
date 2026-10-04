@@ -177,7 +177,7 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs all of these: t
 
 The output is a static site. [`netlify.toml`](netlify.toml) builds `client/` and serves `dist/` with immutable caching for the versioned Pyodide assets and an SPA fallback. Any static host works.
 
-`npm run build:artifact` builds a variant that runs from **any URL path**: relative asset URLs, routes in the URL hash, and `index.html` reduced to a page fragment. It also ships Python's standard library as JSON instead of a `.zip`, since some hosts refuse archives. It's useful where you can't configure rewrites (GitHub Pages, a sub-folder, a claude.ai Artifact) and is written to `client/dist-artifact/`.
+`npm run build:artifact` builds a variant that runs from **any URL**: relative asset URLs, routes kept in memory instead of the address bar (the last page survives a reload), and `index.html` reduced to a page fragment. It also ships Python's standard library as JSON instead of a `.zip`, since some hosts refuse archives. It's meant for hosts that own the URL or can't rewrite paths, such as a claude.ai Artifact, an iframe or a sub-folder, and is written to `client/dist-artifact/`.
 
 ## Roadmap
 
