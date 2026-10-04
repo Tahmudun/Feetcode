@@ -11,11 +11,20 @@ function varMap(step: Step | undefined, frameId: number) {
   return new Map<string, PyVal>(f?.v ?? []);
 }
 
+/** A readable name for the container an access touched: `grid`, or `grid[2]` for a nested row. */
 function nameOf(a: Access, step: Step): string {
   if (a.v) return a.v;
   const top = step.s[step.s.length - 1];
-  const hit = top?.v.find(([, v]) => isRef(v) && v.r === a.o);
-  return hit?.[0] ?? "it";
+  const direct = top?.v.find(([, v]) => isRef(v) && v.r === a.o);
+  if (direct) return direct[0];
+  for (const [name, v] of top?.v ?? []) {
+    if (!isRef(v)) continue;
+    const obj = step.h[String(v.r)];
+    if (!obj || obj[0] === "obj" || obj[0] === "dict") continue;
+    const i = obj[1].findIndex((x) => isRef(x) && x.r === a.o);
+    if (i >= 0) return `${name}[${i}]`;
+  }
+  return "a container";
 }
 
 export function describeLine(code: string): "if" | "while" | "for" | "other" {

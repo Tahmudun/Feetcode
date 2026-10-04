@@ -54,20 +54,20 @@ export function CodePane({ code, line, next, branch, branchKind, errorLine, foot
                 </span>
               ))}
               {text === "" && " "}
+              {notes.map((n) => (
+                <sup
+                  key={n.k}
+                  onMouseEnter={() => onFootnoteHover?.(n.k)}
+                  onMouseLeave={() => onFootnoteHover?.(null)}
+                  className={cn(
+                    "ml-1 cursor-help rounded px-1 align-super text-[10px] font-bold",
+                    n.k === hotFootnote ? "bg-accent text-accent-ink" : "text-accent",
+                  )}
+                >
+                  {n.k + 1}
+                </sup>
+              ))}
             </span>
-            {notes.map((n) => (
-              <sup
-                key={n.k}
-                onMouseEnter={() => onFootnoteHover?.(n.k)}
-                onMouseLeave={() => onFootnoteHover?.(null)}
-                className={cn(
-                  "ml-1 cursor-help self-start rounded px-1 text-[10px] font-bold",
-                  n.k === hotFootnote ? "bg-accent text-accent-ink" : "text-accent",
-                )}
-              >
-                {n.k + 1}
-              </sup>
-            ))}
             {current && branch !== undefined && branchKind !== "other" && (
               <span
                 className={cn(

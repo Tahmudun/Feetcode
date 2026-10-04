@@ -61,6 +61,7 @@ export function ArrayView({ panel }: { panel: ArrayPanel }) {
         {panel.marked && <span className="text-[11px] text-violet">● in {panel.marked.by}</span>}
       </PanelLabel>
       <div className="overflow-x-auto pb-1">
+        {panel.overlay?.kind === "index-graph" && <IndexArcs edges={panel.overlay.edges} hot={panel.overlay.hot} cw={cw} n={slots} />}
         <div className="relative inline-flex items-end gap-1.5 pt-7" style={{ ["--cw" as string]: `${cw}px` }}>
           {panel.window && (
             <div
@@ -111,5 +112,38 @@ export function ArrayView({ panel }: { panel: ArrayPanel }) {
         <div className="mt-1 text-[11px] text-rose">Index {panel.oob} is outside {panel.names[0]} (valid: 0…{panel.cells.length - 1}).</div>
       )}
     </div>
+  );
+}
+
+/** Arcs i → nums[i]: an array read as a linked list (Find the Duplicate Number). */
+function IndexArcs({ edges, hot, cw, n }: { edges: [number, number][]; hot: Record<string, number>; cw: number; n: number }) {
+  const x = (i: number) => i * (cw + 6) + cw / 2;
+  const width = n * (cw + 6);
+  const maxSpan = Math.max(1, ...edges.map(([a, b]) => Math.abs(a - b)));
+  const height = 18 + Math.min(70, maxSpan * 14);
+  const hotSet = new Set(Object.values(hot));
+  return (
+    <svg width={width} height={height} className="block" aria-label="index arrows">
+      <defs>
+        <marker id="idx-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--violet)" />
+        </marker>
+      </defs>
+      {edges.map(([a, b]) => {
+        const lift = 10 + Math.abs(a - b) * 14;
+        const isHot = hotSet.has(a);
+        return (
+          <path
+            key={a}
+            d={a === b ? `M ${x(a) - 6} ${height} C ${x(a) - 16} ${height - 22}, ${x(a) + 16} ${height - 22}, ${x(a) + 6} ${height - 2}` : `M ${x(a)} ${height} Q ${(x(a) + x(b)) / 2} ${height - Math.min(height - 4, lift)} ${x(b)} ${height - 2}`}
+            fill="none"
+            stroke="var(--violet)"
+            strokeOpacity={isHot ? 1 : 0.35}
+            strokeWidth={isHot ? 2 : 1.2}
+            markerEnd="url(#idx-arrow)"
+          />
+        );
+      })}
+    </svg>
   );
 }

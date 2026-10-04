@@ -249,7 +249,7 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
             key={p.id}
             to={`/problems/${p.id}`}
             className={cn(
-              "group grid grid-cols-[24px_1fr_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-hover sm:grid-cols-[24px_minmax(0,1fr)_90px_minmax(0,220px)_110px]",
+              "group grid grid-cols-[24px_1fr_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-hover sm:grid-cols-[24px_minmax(0,1fr)_90px_minmax(0,220px)_auto]",
               i > 0 && "border-t border-line",
             )}
           >
@@ -280,8 +280,8 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
                 </>
               )}
             </div>
-            <div className="hidden justify-self-end font-mono text-[11px] text-faint sm:block" title="Optimal time / space">
-              {p.optimal.time} · {p.optimal.space}
+            <div className="hidden justify-self-end whitespace-nowrap font-mono text-[11px] text-faint sm:block" title={`Optimal: ${p.optimal.time} time, ${p.optimal.space} space`}>
+              {p.optimal.time.replace(/ · /g, "·")}
             </div>
           </Link>
         );

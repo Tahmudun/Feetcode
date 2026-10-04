@@ -168,7 +168,7 @@ export function makeContext(trace: Trace, lens: Lens = {}, params: string[] = []
 
 const POINTER_NAME = /^(i|j|l|r|left|right|lo|hi|low|high|mid|start|end|slow|fast|p|q|ptr|idx|index|cur|curr|pos|buy|sell|top|anchor|read|write|first|last|begin|ii|jj)$/;
 const NODE_POINTER_NAME = /^(prev|curr|cur|nxt|next|head|tail|slow|fast|dummy|node|first|second|l1|l2|list1|list2|left|right|kth|group_prev|group_next|p|q|a|b|temp|tmp|new_head|newHead|copy|lru|t1|t2|slow2|odd|even|h)$/;
-const STACK_NAME = /(^|_)(stack|stk|st|path|mins|minstack|min_stack|monostack|dq|deque|queue|q)$/i;
+const STACK_NAME = /(^|_)(stack|stk|st|path|mins|minstack|min_stack|monostack)$/i;
 
 const TONES = 5;
 function toneFor(name: string): number {
@@ -384,13 +384,15 @@ function attachPointers(panels: Panel[], roots: [string, PyVal][], ints: Record<
     arrays.find((a) => a.names.some((n) => ctx.params.includes(n))) ??
     arrays[0];
   for (const a of arrays) {
-    const declared = a.names.flatMap((n) => lensArrays[n]?.pointers ?? []);
-    const names = new Set(declared);
-    if (a === primary) for (const [n] of roots) if (POINTER_NAME.test(n)) names.add(n);
-    for (const name of names) {
+    const declared = new Set(a.names.flatMap((n) => lensArrays[n]?.pointers ?? []));
+    const guessed = new Set<string>();
+    if (a === primary && a.cells.length > 0) for (const [n] of roots) if (POINTER_NAME.test(n) && !declared.has(n)) guessed.add(n);
+    for (const name of [...declared, ...guessed]) {
       const v = ints[name];
       if (v === undefined) continue;
-      if (v >= 0 && v <= a.cells.length) a.pointers.push({ name, index: v, tone: toneFor(name) });
+      // declared pointers may sit one past the end ("r = len(s)"); guessed ones must point at a cell
+      const limit = declared.has(name) ? a.cells.length : a.cells.length - 1;
+      if (v >= 0 && v <= limit) a.pointers.push({ name, index: v, tone: toneFor(name) });
     }
     const win = a.names.map((n) => lensArrays[n]?.window).find(Boolean);
     if (win) {

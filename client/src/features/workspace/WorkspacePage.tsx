@@ -5,6 +5,7 @@ import { loadProblem, neighbours, problemById } from "@/content";
 import type { ProblemDetail } from "@/content/types";
 import { CodeEditor, type CodeEditorHandle } from "@/editor/CodeEditor";
 import { cn, modKey } from "@/lib/utils";
+import { useDesktop } from "@/lib/useMedia";
 import { useSettings } from "@/store/settings";
 import { useStudy } from "@/store/events";
 import { Button, DifficultyBadge, IconButton, Kbd, Spinner, Tabs } from "@/ui/primitives";
@@ -60,6 +61,7 @@ function Workspace({ problem }: { problem: ProblemDetail }) {
   const { prev, next } = neighbours(problem.id);
   const [showSettings, setShowSettings] = useState(false);
   const [mobileView, setMobileView] = useState<"problem" | "code">("problem");
+  const desktop = useDesktop();
 
   // Keep the editor in sync when code changes from outside (reset, load a submission).
   useEffect(() => {
@@ -196,19 +198,23 @@ function Workspace({ problem }: { problem: ProblemDetail }) {
           </Button>
         </div>
       </header>
-      <div className="hidden min-h-0 flex-1 lg:flex">
-        <SplitPane id="ws-main" initial={0.46} min={0.28} max={0.72} first={left} second={right} className="flex-1" />
-      </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-2 lg:hidden">
-        <Tabs
-          tabs={[{ id: "problem", label: "Problem" }, { id: "code", label: "Code" }]}
-          value={mobileView}
-          onChange={(v) => setMobileView(v as "problem" | "code")}
-          size="sm"
-        />
-        <div className={cn("min-h-0 flex-1", mobileView !== "problem" && "hidden")}>{left}</div>
-        <div className={cn("min-h-0 flex-1", mobileView !== "code" && "hidden")}>{right}</div>
-      </div>
+      {desktop ? (
+        <div className="flex min-h-0 flex-1">
+          <SplitPane id="ws-main" initial={0.46} min={0.28} max={0.72} first={left} second={right} className="flex-1" />
+        </div>
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col gap-2">
+          <Tabs
+            tabs={[{ id: "problem", label: "Problem" }, { id: "code", label: "Code" }]}
+            value={mobileView}
+            onChange={(v) => setMobileView(v as "problem" | "code")}
+            size="sm"
+          />
+          {/* both stay mounted so the editor keeps its state; only one is shown */}
+          <div className={cn("min-h-0 flex-1", mobileView !== "problem" && "hidden")}>{left}</div>
+          <div className={cn("min-h-0 flex-1", mobileView !== "code" && "hidden")}>{right}</div>
+        </div>
+      )}
     </div>
   );
 }

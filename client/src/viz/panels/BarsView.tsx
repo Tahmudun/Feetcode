@@ -61,7 +61,7 @@ export function BarsView({ panel }: { panel: ArrayPanel }) {
         )}
       </PanelLabel>
       <div className="overflow-x-auto">
-        <svg width={width} height={height} className="block font-mono" role="img" aria-label={`${panel.names[0]} as bars`}>
+        <svg viewBox={`0 0 ${width} ${height}`} width="100%" style={{ maxWidth: width }} className="block font-mono" role="img" aria-label={`${panel.names[0]} as bars`}>
           {panel.window && (
             <rect
               x={x(panel.window[0]) - 3}
