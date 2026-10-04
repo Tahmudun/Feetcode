@@ -48,7 +48,7 @@ function selfHostPyodide(artifact: boolean): Plugin {
 }
 
 /**
- * `vite build --mode artifact`: a build that works from any URL path (relative asset base + hash routing),
+ * `vite build --mode artifact`: a build that works from any URL (relative asset base, routes kept in memory),
  * with index.html reduced to the fragment a claude.ai Artifact page expects (the host adds the document
  * skeleton, charset and viewport). The regular build is untouched.
  */

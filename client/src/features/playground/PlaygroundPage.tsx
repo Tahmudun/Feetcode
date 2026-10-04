@@ -13,7 +13,7 @@ import { SplitPane } from "@/ui/SplitPane";
 import { Player } from "@/viz/Player";
 import { SAMPLES } from "./samples";
 
-// Share links carry the code in the URL hash, which the artifact build already uses for routing.
+// Share links carry the code in the URL hash, which the artifact build's host page owns.
 const SHAREABLE = import.meta.env.MODE !== "artifact";
 
 async function compress(text: string): Promise<string> {
