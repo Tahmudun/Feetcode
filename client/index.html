@@ -4,10 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>client</title>
+    <meta name="description" content="Feetcode - free DSA prep that visualizes the code you write: every run, every failure, every optimization." />
+    <meta name="theme-color" content="#0a0b10" />
+    <title>feetcode¹ - see why your code works</title>
+    <script>
+      try {
+        const t = localStorage.getItem("fc:theme");
+        const dark = t ? t === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      } catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

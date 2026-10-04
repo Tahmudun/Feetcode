@@ -1,0 +1,305 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/bricolage-grotesque";
+
+/* ── Tokens ────────────────────────────────────────────────────────────────
+   The whole palette lives here; components only ever use these names.
+   Semantic states (active / compare / match / miss / new / done) are what the
+   visualizer speaks - meaning first, presentation second. */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0a0b10;
+  --bg-elev: #0f1118;
+  --bg-elev-2: #151821;
+  --bg-hover: #1b1f2b;
+  --bg-inset: #07080c;
+  --border: #212635;
+  --border-strong: #2e3447;
+  --text: #ebe8e1;
+  --text-muted: #959cad;
+  --text-faint: #646c80;
+  --accent: #ffb454;
+  --accent-strong: #ffc574;
+  --accent-ink: #1d1406;
+  --accent-soft: rgb(255 180 84 / 0.13);
+  --teal: #4fd6be;
+  --teal-soft: rgb(79 214 190 / 0.13);
+  --rose: #f0648c;
+  --rose-soft: rgb(240 100 140 / 0.14);
+  --violet: #a78bfa;
+  --violet-soft: rgb(167 139 250 / 0.15);
+  --sky: #5aa9ff;
+  --sky-soft: rgb(90 169 255 / 0.22);
+  --lime: #b5e655;
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 32px -12px rgb(0 0 0 / 0.6);
+  --glow: 0 0 0 1px rgb(255 180 84 / 0.35), 0 0 24px -4px rgb(255 180 84 / 0.35);
+  --grid-line: rgb(255 255 255 / 0.035);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f4ee;
+  --bg-elev: #fffefb;
+  --bg-elev-2: #f0ede5;
+  --bg-hover: #e9e5db;
+  --bg-inset: #ebe7dd;
+  --border: #e0dbcf;
+  --border-strong: #cfc8b8;
+  --text: #1b1d24;
+  --text-muted: #5b6170;
+  --text-faint: #8b909c;
+  --accent: #c7790f;
+  --accent-strong: #a96508;
+  --accent-ink: #fffaf0;
+  --accent-soft: rgb(199 121 15 / 0.13);
+  --teal: #0e9a82;
+  --teal-soft: rgb(14 154 130 / 0.12);
+  --rose: #d33a68;
+  --rose-soft: rgb(211 58 104 / 0.11);
+  --violet: #7458d6;
+  --violet-soft: rgb(116 88 214 / 0.12);
+  --sky: #2a7bd6;
+  --sky-soft: rgb(42 123 214 / 0.18);
+  --lime: #5f8f12;
+  --shadow: 0 1px 2px rgb(30 25 10 / 0.06), 0 12px 32px -16px rgb(30 25 10 / 0.18);
+  --glow: 0 0 0 1px rgb(199 121 15 / 0.4), 0 0 20px -6px rgb(199 121 15 / 0.45);
+  --grid-line: rgb(0 0 0 / 0.04);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-elev: var(--bg-elev);
+  --color-elev-2: var(--bg-elev-2);
+  --color-hover: var(--bg-hover);
+  --color-inset: var(--bg-inset);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-rose: var(--rose);
+  --color-rose-soft: var(--rose-soft);
+  --color-violet: var(--violet);
+  --color-violet-soft: var(--violet-soft);
+  --color-sky: var(--sky);
+  --color-sky-soft: var(--sky-soft);
+  --color-lime: var(--lime);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", monospace;
+  --font-display: "Bricolage Grotesque Variable", "Geist Variable", ui-sans-serif, sans-serif;
+  --shadow-panel: var(--shadow);
+  --shadow-glow: var(--glow);
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection {
+  background: var(--accent-soft);
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+code,
+kbd,
+pre {
+  font-family: var(--font-mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Brand ────────────────────────────────────────────────────────────── */
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.wordmark sup {
+  color: var(--accent);
+  font-size: 0.6em;
+  margin-left: 1px;
+}
+.bg-grid {
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Prose (problem statements) ───────────────────────────────────────── */
+.prose-fc p {
+  margin: 0 0 0.85em;
+}
+.prose-fc code {
+  font-size: 0.86em;
+  padding: 0.1em 0.38em;
+  border-radius: 5px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.prose-fc strong {
+  font-weight: 650;
+  color: var(--text);
+}
+.prose-fc ul,
+.prose-fc ol {
+  margin: 0 0 0.85em;
+  padding-left: 1.3em;
+}
+.prose-fc ul {
+  list-style: disc;
+}
+.prose-fc ol {
+  list-style: decimal;
+}
+.prose-fc li {
+  margin: 0.2em 0;
+}
+.prose-fc li::marker {
+  color: var(--text-faint);
+}
+
+/* ── Visualizer semantic states ─────────────────────────────────────────
+   One block maps meaning -> presentation for every renderer. */
+.st-idle {
+  --st-bg: var(--bg-elev-2);
+  --st-border: var(--border);
+  --st-fg: var(--text);
+}
+.st-active {
+  --st-bg: var(--accent-soft);
+  --st-border: var(--accent);
+  --st-fg: var(--accent-strong);
+}
+.st-compare {
+  --st-bg: var(--rose-soft);
+  --st-border: var(--rose);
+  --st-fg: var(--rose);
+}
+.st-match {
+  --st-bg: var(--teal-soft);
+  --st-border: var(--teal);
+  --st-fg: var(--teal);
+}
+.st-miss {
+  --st-bg: var(--bg-elev-2);
+  --st-border: var(--rose);
+  --st-fg: var(--text-muted);
+}
+.st-new {
+  --st-bg: var(--violet-soft);
+  --st-border: var(--violet);
+  --st-fg: var(--text);
+}
+.st-changed {
+  --st-bg: var(--accent-soft);
+  --st-border: var(--accent);
+  --st-fg: var(--text);
+}
+.st-done {
+  --st-bg: var(--bg-elev);
+  --st-border: var(--border);
+  --st-fg: var(--text-faint);
+}
+.st-removed {
+  --st-bg: transparent;
+  --st-border: var(--rose);
+  --st-fg: var(--text-faint);
+}
+.st-oob {
+  --st-bg: var(--rose-soft);
+  --st-border: var(--rose);
+  --st-fg: var(--rose);
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes flash {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent);
+  }
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+@keyframes fade-up {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.anim-pop {
+  animation: pop-in 0.28s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.anim-flash {
+  animation: flash 0.6s ease-out;
+}
+.anim-fade-up {
+  animation: fade-up 0.32s ease-out both;
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-elev-2) 0%, var(--bg-hover) 50%, var(--bg-elev-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}

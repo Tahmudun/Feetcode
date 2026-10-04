@@ -57,7 +57,7 @@ def _lstsq_rel(xs, ys):
 
 
 SPACE_MODELS = {"O(1)", "O(log n)", "O(n)", "O(n²)"}
-MEMORY_FLOOR = 4096  # bytes: below this, tracemalloc sees allocator noise, not growth
+MEMORY_FLOOR = 2048  # bytes: below this, tracemalloc sees allocator noise, not growth
 
 
 def fit(points: list, allowed: set | None = None) -> dict | None:
@@ -163,27 +163,48 @@ def profile(problem: Problem, source: str, sizes: list | None = None, cap: int =
     }
 
 
+def _slope_class(points: list) -> dict | None:
+    """Classify growth by log-log slope - robust to step-shaped curves (dict/list resizing)."""
+    pts = [(p["n"], p["y"]) for p in points if p["y"] > 0 and p["n"] > 1]
+    if len(pts) < 2:
+        return None
+    k = max(2, (len(pts) + 1) // 2)
+    (n1, y1), (n2, y2) = pts[-k], pts[-1]
+    slope = math.log(y2 / y1) / math.log(n2 / n1) if n2 > n1 else 0.0
+    if slope < 0.35:
+        label = "O(1)"
+    elif slope < 1.5:
+        label = "O(n)"
+    elif slope < 2.5:
+        label = "O(n²)"
+    else:
+        label = "O(n³)"
+    return {"label": label, "slope": round(slope, 2)}
+
+
 def fit_space(points: list) -> dict | None:
-    """Peak heap growth and recursion depth; whichever grows faster wins."""
+    """Peak heap growth and recursion depth; whichever grows faster wins.
+
+    Points under the allocator-noise floor are dropped (not clamped - clamping
+    fakes curvature), and growth is classified by slope, because memory grows in
+    steps as dicts and lists resize. The floor differs by build: Pyodide is
+    32-bit WebAssembly, so its objects are about half the size of CPython's.
+    """
     done = [p for p in points if p.get("ops") is not None]
     if len(done) < 3:
         return None
-    mem = [{"n": p["n"], "y": p.get("mem", 0)} for p in done]
+    mem = [{"n": p["n"], "y": p.get("mem", 0)} for p in done if p.get("mem", 0) >= MEMORY_FLOOR]
+    best = _slope_class(mem) if len(mem) >= 2 else {"label": "O(1)", "slope": 0.0}
     depth = [{"n": p["n"], "y": p.get("depth", 1)} for p in done]
-    if max(m["y"] for m in mem) < MEMORY_FLOOR:
-        mem_fit = {"label": "O(1)", "slope": 0.0}
-    else:
-        mem_fit = fit([{"n": m["n"], "y": max(m["y"], MEMORY_FLOOR)} for m in mem], SPACE_MODELS)
-    best = mem_fit
     if max(d["y"] for d in depth) > 16:
-        depth_fit = fit(depth, SPACE_MODELS)
+        depth_fit = _slope_class(depth)
         if depth_fit and (best is None or RANK[depth_fit["label"]] > RANK[best["label"]]):
             best = {**depth_fit, "source": "recursion depth"}
     return best
 
 
 def _time_and_memory(problem, code_obj, args) -> dict:
-    """Untraced run for wall time; tracemalloc run for peak memory (input excluded)."""
+    """Untraced run for wall time; tracemalloc run for auxiliary memory (input and output excluded)."""
     out = BoundedIO(limit=1000)
     old = sys.stdout
     result = {}
@@ -198,8 +219,12 @@ def _time_and_memory(problem, code_obj, args) -> dict:
         run, _ = prepare(problem, ns, args)
         tracemalloc.start()
         try:
-            run()
-            result["mem"] = tracemalloc.get_traced_memory()[1]
+            out = run()
+            current, peak = tracemalloc.get_traced_memory()
+            # Auxiliary space, by convention: peak working memory minus what is still
+            # alive at the end - which is the returned answer itself.
+            result["mem"] = max(0, peak - current)
+            del out
         finally:
             tracemalloc.stop()
     except Exception:  # noqa: BLE001

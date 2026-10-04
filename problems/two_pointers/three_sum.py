@@ -98,7 +98,7 @@ The result must not contain the same triplet twice. Triplets, and the numbers in
         ],
     },
     solutions=[
-        Solution("brute", "All triples + a set", "O(n³)", "O(n)", BRUTE,
+        Solution("brute", "All triples + a set", "O(n³)", "O(n²)", BRUTE,
                  "Check every triple and deduplicate by storing sorted tuples in a set."),
         Solution("sort-two-pointers", "Sort + two pointers", "O(n²)", "O(1)", SORT_TWO_POINTERS,
                  "Sort, then for each anchor solve a sorted two-sum on the remainder, skipping duplicates.",

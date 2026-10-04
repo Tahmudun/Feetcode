@@ -123,8 +123,8 @@ A column can only hold water if there is something taller on *both* sides of it 
         ],
     },
     solutions=[
-        Solution("brute", "Scan both sides for every column", "O(n²)", "O(1)", BRUTE,
-                 "Apply the water formula directly, finding each column's left and right maximum by scanning."),
+        Solution("brute", "Scan both sides for every column", "O(n²)", "O(n)", BRUTE,
+                 "Apply the water formula directly, finding each column's left and right maximum by scanning. (Slicing copies the slice, so even the extra space is O(n).)"),
         Solution("prefix-max", "Prefix and suffix maxima", "O(n)", "O(n)", PREFIX_MAX,
                  "The scans repeat work. Precompute left[i] and right[i] in two sweeps, then apply the formula."),
         Solution("two-pointers", "Two pointers", "O(n)", "O(1)", TWO_POINTERS,
