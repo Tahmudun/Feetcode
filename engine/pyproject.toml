@@ -1,0 +1,13 @@
+[project]
+name = "feetcode-engine"
+version = "2.0.0"
+description = "Judge, tracer, fuzzer and complexity lab for Python solutions - runs in CPython and Pyodide."
+requires-python = ">=3.12"  # 3.11 emits no line event for `while True: pass`, so runaway loops can't be metered
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"

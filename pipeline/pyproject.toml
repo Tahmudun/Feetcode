@@ -1,0 +1,9 @@
+[project]
+name = "feetcode-pipeline"
+version = "2.0.0"
+description = "Problem modules -> validated, deterministic, incrementally built static artifacts."
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
