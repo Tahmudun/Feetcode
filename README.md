@@ -1,6 +1,6 @@
 # feetcode¹
 
-[![CI](https://github.com/tahmudun/feetcode/actions/workflows/ci.yml/badge.svg)](https://github.com/tahmudun/feetcode/actions/workflows/ci.yml)
+[![CI](https://github.com/Tahmudun/Feetcode/actions/workflows/ci.yml/badge.svg)](https://github.com/Tahmudun/Feetcode/actions/workflows/ci.yml)
 ![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776ab)
 ![TypeScript](https://img.shields.io/badge/typescript-5.9-3178c6)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
