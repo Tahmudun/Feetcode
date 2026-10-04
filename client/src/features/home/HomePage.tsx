@@ -42,9 +42,9 @@ export function HomePage() {
               grows.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link to={`/problems/${resume?.id ?? fresh?.id ?? "two-sum"}`}>
+              <Link to={`/problems/${(resume ?? fresh)?.id ?? "two-sum"}`}>
                 <Button variant="primary" size="lg">
-                  {started ? "Continue" : "Start with Two Sum"} <ArrowRight size={16} />
+                  {started ? "Continue" : `Start with ${fresh?.title ?? "Two Sum"}`} <ArrowRight size={16} />
                 </Button>
               </Link>
               <Link to="/problems/trapping-rain-water">

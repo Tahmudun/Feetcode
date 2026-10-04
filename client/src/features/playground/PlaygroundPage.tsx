@@ -13,6 +13,9 @@ import { SplitPane } from "@/ui/SplitPane";
 import { Player } from "@/viz/Player";
 import { SAMPLES } from "./samples";
 
+// Share links carry the code in the URL hash, which the artifact build already uses for routing.
+const SHAREABLE = import.meta.env.MODE !== "artifact";
+
 async function compress(text: string): Promise<string> {
   const stream = new Blob([text]).stream().pipeThrough(new CompressionStream("deflate-raw"));
   const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
@@ -121,7 +124,9 @@ export default function PlaygroundPage() {
         <h1 className="font-display text-[17px] font-bold">Playground</h1>
         <span className="hidden text-xs text-faint sm:inline">Python Tutor-style visualization for any code - runs locally in WebAssembly</span>
         <div className="ml-auto flex items-center gap-1.5">
-          <Button onClick={() => void share()}>{copied ? <Check size={14} /> : <Link2 size={14} />} {copied ? "Link copied" : "Share"}</Button>
+          {SHAREABLE && (
+            <Button onClick={() => void share()}>{copied ? <Check size={14} /> : <Link2 size={14} />} {copied ? "Link copied" : "Share"}</Button>
+          )}
           <Button variant="primary" onClick={() => void run()} disabled={busy}>
             {busy ? <Spinner /> : <Eye size={15} />} Visualize <Kbd className="ml-1 border-accent-ink/20 bg-transparent text-accent-ink/70">{modKey()}↵</Kbd>
           </Button>

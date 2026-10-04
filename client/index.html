@@ -8,11 +8,12 @@
     <meta name="theme-color" content="#0a0b10" />
     <title>feetcode¹ - see why your code works</title>
     <script>
-      try {
-        const t = localStorage.getItem("fc:theme");
-        const dark = t ? t === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
-        document.documentElement.dataset.theme = dark ? "dark" : "light";
-      } catch { document.documentElement.dataset.theme = "dark"; }
+      // your own choice, then one the host page already set, then the system setting
+      let stored = null;
+      try { stored = localStorage.getItem("fc:theme"); } catch { /* storage blocked */ }
+      const t = stored || document.documentElement.dataset.theme;
+      const dark = t ? t === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
+      document.documentElement.dataset.theme = dark ? "dark" : "light";
     </script>
   </head>
   <body>

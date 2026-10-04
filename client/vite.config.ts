@@ -39,8 +39,32 @@ function selfHostPyodide(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), selfHostPyodide()],
+/**
+ * `vite build --mode artifact`: a build that works from any URL path (relative asset base + hash routing),
+ * with index.html reduced to the fragment a claude.ai Artifact page expects (the host adds the document
+ * skeleton, charset and viewport). The regular build is untouched.
+ */
+function artifactPage(): Plugin {
+  return {
+    name: "feetcode:artifact-page",
+    transformIndexHtml: {
+      order: "post",
+      handler(html) {
+        const head = /<head>([\s\S]*)<\/head>/.exec(html)?.[1] ?? "";
+        const body = /<body>([\s\S]*)<\/body>/.exec(html)?.[1] ?? "";
+        const kept = head
+          .replace(/<meta (charset|name="viewport"|name="theme-color")[^>]*>\s*/g, "")
+          .replace(/<link rel="icon"[^>]*>\s*/g, "")
+          .replace(/<title>[\s\S]*?<\/title>/, "");
+        return `<title>Feetcode</title>\n${kept.trim()}\n${body.trim()}\n`;
+      },
+    },
+  };
+}
+
+export default defineConfig(({ mode }) => ({
+  base: mode === "artifact" ? "./" : "/",
+  plugins: [react(), tailwindcss(), selfHostPyodide(), mode === "artifact" && artifactPage()],
   resolve: { alias: { "@": path.resolve(here, "src") } },
   define: { __PYODIDE_VERSION__: JSON.stringify(pyodideVersion) },
   server: { fs: { allow: [repoRoot] } },
@@ -48,9 +72,10 @@ export default defineConfig({
   build: {
     target: "es2022",
     chunkSizeWarningLimit: 900,
+    outDir: mode === "artifact" ? "dist-artifact" : "dist",
   },
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.{ts,tsx}"],
   },
-});
+}));

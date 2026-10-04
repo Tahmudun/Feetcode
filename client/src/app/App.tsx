@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, createHashRouter, RouterProvider } from "react-router";
 import { warmUp } from "@/runtime/python";
 import { useSettings } from "@/store/settings";
 import { Layout } from "./Layout";
@@ -27,7 +27,10 @@ function Loading() {
 
 const lazyRoute = (node: React.ReactNode) => <Suspense fallback={<Loading />}>{node}</Suspense>;
 
-const router = createBrowserRouter([
+// The artifact build can be served from any path, so its routes live in the URL hash.
+const createRouter = import.meta.env.MODE === "artifact" ? createHashRouter : createBrowserRouter;
+
+const router = createRouter([
   {
     path: "/",
     element: <Layout />,

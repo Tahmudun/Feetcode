@@ -51,7 +51,11 @@ const relFromGlob = (key: string) => key.replace(/^(\.\.\/)+/, "");
 async function boot() {
   const t0 = performance.now();
   post({ type: "status", status: "loading", detail: "Downloading Python (WebAssembly)…" });
-  const root = new URL(`${import.meta.env.BASE_URL}pyodide/v${__PYODIDE_VERSION__}/`, self.location.origin).href;
+  // An absolute base ("/") is the site root; a relative one ("./") means "wherever index.html is",
+  // which from this worker (emitted into assets/) is one level up.
+  const base = import.meta.env.BASE_URL;
+  const appRoot = base.startsWith("/") ? new URL(base, self.location.origin) : new URL("../", self.location.href);
+  const root = new URL(`pyodide/v${__PYODIDE_VERSION__}/`, appRoot).href;
   const mod = (await import(/* @vite-ignore */ `${root}pyodide.mjs`)) as typeof import("pyodide");
   py = await mod.loadPyodide({ indexURL: root });
   post({ type: "status", status: "loading", detail: "Mounting the Feetcode engine…" });
