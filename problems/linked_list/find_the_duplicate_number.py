@@ -36,11 +36,9 @@ def shrink(args):
 
 
 def worst_case(n):
-    import random
+    # The repeat is the very last element, so a seen-set scans everything; Floyd walks a cycle of ~n/2.
     n = max(1, n)
-    nums = list(range(1, n + 1)) + [n // 2 + 1]
-    random.Random(n).shuffle(nums)
-    return {"nums": nums}
+    return {"nums": list(range(1, n + 1)) + [n // 2 + 1]}
 
 
 SET = '''class Solution:

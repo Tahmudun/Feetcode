@@ -26,15 +26,11 @@ def validate(args):
 
 
 def worst_case(n):
-    # n distinct values with distinct frequencies is impossible; use ~sqrt(n) values, all frequencies distinct.
-    nums, v = [], 0
-    while len(nums) < n:
-        nums.extend([v] * (v + 1))
-        v += 1
-    nums = nums[:n]
-    k = max(1, len(set(nums)) // 2)
-    while not _unique_answer(nums, k) and k > 1:
-        k -= 1
+    # Mostly distinct values, so ranking the counts really costs u log u with u ~ n; a unique top 3
+    # (frequencies 4, 3, 2 against a sea of 1s) keeps the answer well defined.
+    k = 3
+    head = [v for v in range(k) for _ in range(k + 1 - v)]
+    nums = head + list(range(k, k + max(1, n - len(head))))
     return {"nums": nums, "k": k}
 
 

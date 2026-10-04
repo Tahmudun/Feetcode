@@ -28,7 +28,8 @@ def validate(args):
 
 
 def worst_case(n):
-    return {"s": "".join("abcdefg"[(i * 3) % 7] for i in range(max(1, n))), "t": "gfa"}
+    # t's letters sit at the two ends: every start scans to the end before giving up (n²/2 steps).
+    return {"s": "a" + "b" * max(1, n - 2) + "c", "t": "ac"}
 
 
 BRUTE = '''class Solution:

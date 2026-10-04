@@ -1,17 +1,17 @@
 {
  "catalog": "2406216e631b3890",
- "engine": "cfe0f71407b87159",
+ "engine": "4fe929c31f2629be",
  "pipeline": "2.0.0",
  "problems": {
   "3sum": {
    "artifacts": {
-    "baselines": "3ccb63717723bfe6",
+    "baselines": "91cd81c8784093c6",
     "lessons": "3a213f271eca8392",
     "problems": "ced86995ce3ce973",
     "suites": "254e4cf4f18d38bc"
    },
    "cases": 50,
-   "input": "c4fde2ef3b5bed71",
+   "input": "4d227da6258808ca",
    "module": "problems.two_pointers.three_sum",
    "summary": {
     "companies": {
@@ -63,7 +63,7 @@
     "suites": "60c76edff4163491"
    },
    "cases": 48,
-   "input": "3d1a77bef3f6dbd2",
+   "input": "3e07eabca6ca3b63",
    "module": "problems.linked_list.add_two_numbers",
    "summary": {
     "companies": {
@@ -114,7 +114,7 @@
     "suites": "52e8d7dbc141a6e8"
    },
    "cases": 49,
-   "input": "a628d65b2414ac25",
+   "input": "16a116fda8bd9b40",
    "module": "problems.sliding_window.best_time_to_buy_and_sell_stock",
    "summary": {
     "companies": {
@@ -160,13 +160,13 @@
   },
   "car-fleet": {
    "artifacts": {
-    "baselines": "56fa994d3a6f3c61",
+    "baselines": "d0a4a59bcbbf056e",
     "lessons": "7f414ed213a99db9",
     "problems": "e0dea1b63ad0ce67",
-    "suites": "4e10026364ef0e3d"
+    "suites": "362a79f2f19b7888"
    },
    "cases": 49,
-   "input": "622cef7609698d4e",
+   "input": "faa1e9949ff38a44",
    "module": "problems.stack.car_fleet",
    "summary": {
     "companies": {
@@ -216,7 +216,7 @@
     "suites": "3987aa22c13275b0"
    },
    "cases": 49,
-   "input": "23ce9541c6985802",
+   "input": "5fc94da245e2310a",
    "module": "problems.two_pointers.container_with_most_water",
    "summary": {
     "companies": {
@@ -268,7 +268,7 @@
     "suites": "504f5a03f189ecd4"
    },
    "cases": 48,
-   "input": "a7e6d633a55d4bf8",
+   "input": "fe1bc2f4ab06bcb5",
    "module": "problems.arrays_hashing.contains_duplicate",
    "summary": {
     "companies": {
@@ -323,7 +323,7 @@
     "suites": "600e5c900c6819a2"
    },
    "cases": 44,
-   "input": "4d568180d45c2c9e",
+   "input": "8607270be5521b28",
    "module": "problems.linked_list.copy_list_with_random_pointer",
    "summary": {
     "companies": {
@@ -372,7 +372,7 @@
     "suites": "9fd9d768198e41fc"
    },
    "cases": 49,
-   "input": "77d9e60c524b84e5",
+   "input": "a85bfd600b8ac95d",
    "module": "problems.stack.daily_temperatures",
    "summary": {
     "companies": {
@@ -422,7 +422,7 @@
     "suites": "a32e436cce221aa6"
    },
    "cases": 47,
-   "input": "51fbe5aa76850206",
+   "input": "48dfb5c98daa75d7",
    "module": "problems.arrays_hashing.encode_decode_strings",
    "summary": {
     "companies": {
@@ -471,7 +471,7 @@
     "suites": "e40e88b1f62a238c"
    },
    "cases": 50,
-   "input": "1fecfe541497039a",
+   "input": "3d6ffc1778c9cc47",
    "module": "problems.stack.evaluate_rpn",
    "summary": {
     "companies": {
@@ -514,13 +514,13 @@
   },
   "find-the-duplicate-number": {
    "artifacts": {
-    "baselines": "475f9e5247f97a8e",
+    "baselines": "6de5cb33c2bf474d",
     "lessons": "ee07e97087b67416",
     "problems": "e55eddee9c9bb0ab",
-    "suites": "abf154bbb8b01137"
+    "suites": "9bc1c7897a589973"
    },
    "cases": 41,
-   "input": "c2d73c4da99fbbbb",
+   "input": "59a62ca969c6faeb",
    "module": "problems.linked_list.find_the_duplicate_number",
    "summary": {
     "companies": {
@@ -571,7 +571,7 @@
     "suites": "0c541eba8471215e"
    },
    "cases": 6,
-   "input": "b4e50de96a35840a",
+   "input": "74cfdc0c1cc9aa8d",
    "module": "problems.stack.generate_parentheses",
    "summary": {
     "companies": {
@@ -615,13 +615,13 @@
   },
   "group-anagrams": {
    "artifacts": {
-    "baselines": "9be3f63adfd29e75",
+    "baselines": "48985a20a2cc0e62",
     "lessons": "f18484ac92ac8b26",
     "problems": "140bd980ae60a418",
-    "suites": "f64a644107dd28ab"
+    "suites": "29ea8d711a818963"
    },
    "cases": 48,
-   "input": "e366c81b0445f2a0",
+   "input": "db78756021ce05e9",
    "module": "problems.arrays_hashing.group_anagrams",
    "summary": {
     "companies": {
@@ -674,7 +674,7 @@
     "suites": "390d7a405b997dd5"
    },
    "cases": 48,
-   "input": "374363d4c2329cdd",
+   "input": "42e3f64f07af6e7a",
    "module": "problems.stack.largest_rectangle_in_histogram",
    "summary": {
     "companies": {
@@ -725,7 +725,7 @@
     "suites": "d540d3255a7c20af"
    },
    "cases": 46,
-   "input": "7fe82882f9a53ea3",
+   "input": "d56d33314b576ed1",
    "module": "problems.linked_list.linked_list_cycle",
    "summary": {
     "companies": {
@@ -769,13 +769,13 @@
   },
   "longest-consecutive-sequence": {
    "artifacts": {
-    "baselines": "4c81479db8e0e786",
+    "baselines": "82a79142c1df49af",
     "lessons": "61c13ec41a6e075a",
     "problems": "6da8e6812bb3af99",
     "suites": "27c8ba084b9b4b81"
    },
    "cases": 46,
-   "input": "fada6ff82d12e8c6",
+   "input": "f07e80ad57fd1990",
    "module": "problems.arrays_hashing.longest_consecutive",
    "summary": {
     "companies": {
@@ -825,7 +825,7 @@
     "suites": "b2d51f7e47ba0fa4"
    },
    "cases": 45,
-   "input": "ef61d29ce50a5fd6",
+   "input": "522ee2b6060519eb",
    "module": "problems.sliding_window.longest_repeating_character_replacement",
    "summary": {
     "companies": {
@@ -870,11 +870,11 @@
    "artifacts": {
     "baselines": "ac305b6da6d95bae",
     "lessons": "6cb98e396a47f0ae",
-    "problems": "60e959108db2cb06",
+    "problems": "899c359589476859",
     "suites": "fa565d7400f952f4"
    },
    "cases": 48,
-   "input": "5bd03bb08bc75253",
+   "input": "26daadadbf9fcf4a",
    "module": "problems.sliding_window.longest_substring_without_repeating",
    "summary": {
     "companies": {
@@ -931,7 +931,7 @@
     "suites": "cacc0dcd9076e99e"
    },
    "cases": 47,
-   "input": "6eaf51d69a143161",
+   "input": "44d49708f662207d",
    "module": "problems.linked_list.lru_cache",
    "summary": {
     "companies": {
@@ -985,7 +985,7 @@
     "suites": "102e81849b075c44"
    },
    "cases": 40,
-   "input": "0508093a15397f75",
+   "input": "519b28dc2079672e",
    "module": "problems.linked_list.merge_k_sorted_lists",
    "summary": {
     "companies": {
@@ -1042,7 +1042,7 @@
     "suites": "12b427b6955d8860"
    },
    "cases": 44,
-   "input": "93cabe355d25c291",
+   "input": "9442aa0446a0c69a",
    "module": "problems.linked_list.merge_two_sorted_lists",
    "summary": {
     "companies": {
@@ -1093,7 +1093,7 @@
     "suites": "daf7b73a1f2a60e7"
    },
    "cases": 46,
-   "input": "5688b7b25fb89909",
+   "input": "e09ec8b28070b103",
    "module": "problems.stack.min_stack",
    "summary": {
     "companies": {
@@ -1137,13 +1137,13 @@
   },
   "minimum-window-substring": {
    "artifacts": {
-    "baselines": "4935d27bd795db66",
+    "baselines": "0eb6586741e3401c",
     "lessons": "51131e54cb090c59",
     "problems": "489c0a9660fcb2f5",
-    "suites": "32151d860288d434"
+    "suites": "76eedefcd889c1c4"
    },
    "cases": 51,
-   "input": "6c09d57a4e6628ee",
+   "input": "b7c88b2997da2f71",
    "module": "problems.sliding_window.minimum_window_substring",
    "summary": {
     "companies": {
@@ -1178,8 +1178,8 @@
    },
    "verdicts": {
     "brute": {
-     "case": null,
-     "verdict": "accepted"
+     "case": 50,
+     "verdict": "tle"
     },
     "window": {
      "case": null,
@@ -1195,7 +1195,7 @@
     "suites": "278a0885daacfb63"
    },
    "cases": 48,
-   "input": "2109d9093b99479b",
+   "input": "b95343114f6469e5",
    "module": "problems.sliding_window.permutation_in_string",
    "summary": {
     "companies": {
@@ -1245,7 +1245,7 @@
     "suites": "f28944b79cc45b5f"
    },
    "cases": 49,
-   "input": "e9463d75bb774aeb",
+   "input": "1cce471ea5bc22e2",
    "module": "problems.arrays_hashing.product_except_self",
    "summary": {
     "companies": {
@@ -1300,7 +1300,7 @@
     "suites": "5e39492bd4126ddb"
    },
    "cases": 46,
-   "input": "8e1331fb700eec6e",
+   "input": "640516afefb2b422",
    "module": "problems.linked_list.remove_nth_node_from_end",
    "summary": {
     "companies": {
@@ -1349,7 +1349,7 @@
     "suites": "76f754f967ee5484"
    },
    "cases": 46,
-   "input": "c0c0819ea851d5e0",
+   "input": "945de657daeb8da5",
    "module": "problems.linked_list.reorder_list",
    "summary": {
     "companies": {
@@ -1399,7 +1399,7 @@
     "suites": "769397a792a1f25e"
    },
    "cases": 44,
-   "input": "2f681942d9780543",
+   "input": "93f6f536878d6541",
    "module": "problems.linked_list.reverse_linked_list",
    "summary": {
     "companies": {
@@ -1450,7 +1450,7 @@
     "suites": "090d55c3d406c47c"
    },
    "cases": 47,
-   "input": "4a054fdbf4e20a55",
+   "input": "abdd6dd57853d11d",
    "module": "problems.linked_list.reverse_nodes_in_k_group",
    "summary": {
     "companies": {
@@ -1499,7 +1499,7 @@
     "suites": "3f1b1ab401f716ff"
    },
    "cases": 49,
-   "input": "f0a97c697582c922",
+   "input": "e58f6411aab23532",
    "module": "problems.sliding_window.sliding_window_maximum",
    "summary": {
     "companies": {
@@ -1550,13 +1550,13 @@
   },
   "top-k-frequent-elements": {
    "artifacts": {
-    "baselines": "dfa5b5de4e47f61d",
+    "baselines": "d160607c8255ca3d",
     "lessons": "56bf5a9207406267",
     "problems": "04b77091d11eab8a",
-    "suites": "bba50bc895d13359"
+    "suites": "db02161882b13619"
    },
    "cases": 47,
-   "input": "5b183cf32030f2ec",
+   "input": "2d77a9a044556f98",
    "module": "problems.arrays_hashing.top_k_frequent",
    "summary": {
     "companies": {
@@ -1609,12 +1609,12 @@
   "trapping-rain-water": {
    "artifacts": {
     "baselines": "dd949497c66ee5be",
-    "lessons": "bc2126498d53a7a9",
+    "lessons": "5870b4eabdd1844f",
     "problems": "d43a93edeb570800",
     "suites": "c9a1d2d104267d6c"
    },
    "cases": 50,
-   "input": "78d3f9a407db25d7",
+   "input": "7eb6da5634e82e9b",
    "module": "problems.two_pointers.trapping_rain_water",
    "summary": {
     "companies": {
@@ -1673,7 +1673,7 @@
     "suites": "8bbcd6ca0c3a21d1"
    },
    "cases": 49,
-   "input": "bb7491dd83dc94e7",
+   "input": "b2fa4a7612334461",
    "module": "problems.arrays_hashing.two_sum",
    "summary": {
     "companies": {
@@ -1719,13 +1719,13 @@
   },
   "two-sum-ii-input-array-is-sorted": {
    "artifacts": {
-    "baselines": "b2cb8f85bf7bb0b9",
+    "baselines": "e7c3f1f93a6d152f",
     "lessons": "42397b25daee8f40",
     "problems": "a2f012f5fc923369",
-    "suites": "330481c417f6ab18"
+    "suites": "389266fafa1f3d91"
    },
-   "cases": 49,
-   "input": "bdea676d7646b843",
+   "cases": 48,
+   "input": "b414ce096a4bae69",
    "module": "problems.two_pointers.two_sum_ii",
    "summary": {
     "companies": {
@@ -1775,7 +1775,7 @@
     "suites": "0d1a43e42a7d65bb"
    },
    "cases": 48,
-   "input": "7c7b234de7b9c96e",
+   "input": "ae9de38e38c316b9",
    "module": "problems.arrays_hashing.valid_anagram",
    "summary": {
     "companies": {
@@ -1825,7 +1825,7 @@
     "suites": "a122893218e86ac2"
    },
    "cases": 50,
-   "input": "73b8393fc4bf99a7",
+   "input": "e8e443b97d3604ce",
    "module": "problems.two_pointers.valid_palindrome",
    "summary": {
     "companies": {
@@ -1875,7 +1875,7 @@
     "suites": "e425ccd9c74df65e"
    },
    "cases": 44,
-   "input": "bef3b43e5a728407",
+   "input": "dbabf73d9ae7cc72",
    "module": "problems.stack.valid_parentheses",
    "summary": {
     "companies": {
@@ -1926,7 +1926,7 @@
     "suites": "c7e1277ffbc9b5e8"
    },
    "cases": 43,
-   "input": "ed6bf005851de866",
+   "input": "d0de599c9b1baa59",
    "module": "problems.arrays_hashing.valid_sudoku",
    "summary": {
     "companies": {

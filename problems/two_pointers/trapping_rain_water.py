@@ -65,11 +65,11 @@ TWO_POINTERS = '''class Solution:
         while l < r:  #~
             if max_l < max_r:  #> max_l = {max_l} < max_r = {max_r}, so the LEFT side is the bottleneck. Somewhere on the right there is a wall at least {max_r} tall, so the water just right of l is decided by max_l alone. || max_l = {max_l} ≥ max_r = {max_r}, so the RIGHT side is the bottleneck. There is a wall at least {max_l} tall on the left, so the water just left of r is decided by max_r alone. #! The whole trick. Water at i is min(tallest left, tallest right) − height[i]. We don't know both maxima for every column - but we only need the smaller one, and whichever side has the smaller max is already decided.
                 l += 1  #~
-                max_l = max(max_l, height[l])  #> Step l to {l} (height {height[l]}). max_l is now {max_l}.
+                max_l = max(max_l, height[l])  #> Move l to {l} (height {height[l]}). max_l is now {max_l}.
                 water += max_l - height[l]  #> Column {l} holds max_l − height[{l}] = {max_l} − {height[l]} = {max_l - height[l]}. Total: {water}.
             else:
                 r -= 1  #~
-                max_r = max(max_r, height[r])  #> Step r to {r} (height {height[r]}). max_r is now {max_r}.
+                max_r = max(max_r, height[r])  #> Move r to {r} (height {height[r]}). max_r is now {max_r}.
                 water += max_r - height[r]  #> Column {r} holds max_r − height[{r}] = {max_r} − {height[r]} = {max_r - height[r]}. Total: {water}.
         return water  #> The pointers met. Every column was decided exactly once: {_return} units of water, O(1) extra space.
 '''

@@ -24,8 +24,9 @@ def validate(args):
 
 
 def worst_case(n):
+    # The only pair is the last two: binary search misses for every i (n log n), two pointers walk l across (n).
     nums = list(range(max(2, n)))
-    return {"numbers": nums, "target": nums[0] + nums[1]}
+    return {"numbers": nums, "target": nums[-1] + nums[-2]}
 
 
 BINARY_SEARCH = '''class Solution:

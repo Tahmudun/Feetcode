@@ -33,9 +33,9 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install pytest
-      - name: Validate all problems (examples, cross-checked references, narration, pitfalls)
+      - name: Validate all problems (examples, cross-checked references, narration, pitfalls, measured complexity)
         working-directory: pipeline
-        run: python -m feetcode_pipeline check
+        run: python -m feetcode_pipeline check --complexity
       - name: Pipeline tests
         working-directory: pipeline
         run: python -m pytest -q tests

@@ -85,6 +85,19 @@ def _write(path: Path, text: str) -> bool:
     return True
 
 
+def _edited_artifacts(entries: dict, skip_modules: set) -> list:
+    """Generated files whose bytes no longer match the digest recorded when they were built."""
+    edited = []
+    for pid, entry in sorted(entries.items()):
+        if entry["module"] in skip_modules:
+            continue
+        for kind, want in entry.get("artifacts", {}).items():
+            path = OUT / kind / f"{pid}.json"
+            if not path.exists() or digest(path.read_text()) != want:
+                edited.append(f"{kind}/{pid}.json")
+    return edited
+
+
 def _load_manifest() -> dict:
     path = OUT / "manifest.json"
     if path.exists():
@@ -106,9 +119,13 @@ def build(only: list | None = None, force: bool = False, validate: bool = True, 
 
     if check_only:
         stale = [s.module for s in todo]
+        edited = _edited_artifacts(old, {s.module for s in todo})
         if stale:
             print(f"DRIFT: {len(stale)} problem(s) are out of date: {', '.join(stale)}")
-            print("Run `python -m feetcode_pipeline build` and commit the result.")
+        if edited:
+            print(f"DRIFT: {len(edited)} generated file(s) differ from the manifest: {', '.join(edited)}")
+        if stale or edited:
+            print("Run `python -m feetcode_pipeline build` and commit the result (never edit generated files).")
             return 1
         print(f"up to date: {len(sources)} problems, engine {engine[:12]}")
         return 0

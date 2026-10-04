@@ -10,6 +10,8 @@ def validate(args):
 
 
 def worst_case(n):
+    # Every start scans k = 26 characters before a repeat. (A wider alphabet raises k, but moves the bend from
+    # n² to n·k into the profiled sizes and blurs every fit; 26 keeps each curve clean.)
     return {"s": "".join("abcdefghijklmnopqrstuvwxyz"[i % 26] for i in range(n))}
 
 
@@ -92,8 +94,10 @@ Given a string `s`, return the length of the **longest substring** (contiguous!)
         ],
     },
     solutions=[
-        Solution("brute", "Every start, scan forward", "O(n²)", "O(k)", BRUTE,
-                 "From each start, extend until a repeat appears."),
+        Solution("brute", "Every start, scan forward", "O(n·k)", "O(k)", BRUTE,
+                 "From each start, extend until a repeat appears. A scan can't outlast k, the number of "
+                 "distinct characters (at most 95 here), so this is O(n·k): O(n²) while strings are short, "
+                 "and a 95× constant once they're long. The window never rescans at all."),
         Solution("window-set", "Sliding window + set", "O(n)", "O(k)", WINDOW_SET,
                  "Keep the window's characters in a set; shrink from the left whenever a repeat enters.",
                  optimal=True),

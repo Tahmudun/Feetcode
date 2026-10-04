@@ -300,6 +300,35 @@ def _collect_probes(stmt, info, source):
                                          "list concatenation copies both lists - append in place"))
 
 
+_SIZE_PRESERVING = {"set", "frozenset", "list", "tuple", "dict", "sorted", "reversed", "enumerate", "iter",
+                    "Counter", "deque"}
+
+
+def _size_of(node, scope) -> int:
+    """len() of what `node` evaluates to, seeing through size-preserving wrappers.
+
+    safe_eval refuses calls, so `sorted(set(nums))`, `sorted(count.items())` and `sum(d.values())`
+    would otherwise cost nothing - and an O(n log n) solution would be measured as O(n).
+    """
+    if isinstance(node, ast.Call):
+        fn = node.func
+        if isinstance(fn, ast.Name) and node.args:
+            if fn.id in _SIZE_PRESERVING:
+                return _size_of(node.args[0], scope)
+            if fn.id == "zip":
+                return min(_size_of(a, scope) for a in node.args)
+            if fn.id in ("map", "filter") and len(node.args) == 2:
+                return _size_of(node.args[1], scope)
+            if fn.id == "range" and len(node.args) <= 3:
+                bounds = [safe_eval(a, scope) for a in node.args]
+                return len(range(*bounds)) if all(type(b) is int for b in bounds) else 0
+        if isinstance(fn, ast.Attribute) and fn.attr in ("items", "keys", "values") and not node.args:
+            return _size_of(fn.value, scope)
+        return 0
+    v = safe_eval(node, scope)
+    return len(v) if _builtin_container(v) else 0
+
+
 def probe_cost(probe, scope):
     """Primitive operations hidden inside one execution of the probed builtin."""
     k = probe.kind
@@ -307,8 +336,7 @@ def probe_cost(probe, scope):
         v = safe_eval(probe.nodes[0], scope)
         return len(v) if type(v) in (list, tuple, str, collections.deque) else 0
     if k == "walk":
-        v = safe_eval(probe.nodes[0], scope)
-        return len(v) if _builtin_container(v) else 0
+        return _size_of(probe.nodes[0], scope)
     if k == "strlen":
         v = safe_eval(probe.nodes[0], scope)
         return len(v) if type(v) is str and len(v) > 1 else 0
@@ -321,11 +349,8 @@ def probe_cost(probe, scope):
                 return max(0, len(v) - 1 - i)
         return 0
     if k == "sort":
-        v = safe_eval(probe.nodes[0], scope)
-        if _builtin_container(v):
-            n = len(v)
-            return int(n * math.log2(n)) if n > 1 else 0
-        return 0
+        n = _size_of(probe.nodes[0], scope)
+        return int(n * math.log2(n)) if n > 1 else 0
     if k == "heap":
         v = safe_eval(probe.nodes[0], scope)
         if type(v) is list and len(v) > 1:

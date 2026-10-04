@@ -100,6 +100,17 @@ def test_probe_costs_reflect_runtime_types():
     assert probe_cost(p.lines[5].probes[0], {"xs": list(range(16))}) == 64
 
 
+def test_probe_costs_see_through_size_preserving_wrappers():
+    # safe_eval refuses calls; without this an O(n log n) sort of set(nums) would cost nothing
+    p = Program("a = sorted(set(xs))\nb = sorted(d.items())\nc = sum(d.values())\ne = sorted(zip(xs, ys))\n")
+    scope = {"xs": list(range(16)), "ys": list(range(8)), "d": dict.fromkeys(range(32))}
+    sort_of = lambda line: next(q for q in p.lines[line].probes if q.kind == "sort")
+    assert probe_cost(sort_of(1), scope) == 64
+    assert probe_cost(sort_of(2), scope) == 160
+    assert probe_cost(p.lines[3].probes[0], scope) == 32
+    assert probe_cost(sort_of(4), scope) == 24
+
+
 def test_render_template_formats_values():
     assert render_template("{x} and {!s} and {s} {{literal}}", {"x": 3, "s": "ab"}) == "3 and ab and 'ab' {literal}"
     assert render_template("{float('inf')}", {}) == "∞"

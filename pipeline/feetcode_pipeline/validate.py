@@ -211,7 +211,10 @@ class Checker:
                 declared = RANK.get(times_n.get(label, label))
             if fitted and declared is not None and RANK.get(fitted) is not None:
                 if RANK[fitted] > declared:
-                    self.warn("complexity", f"{s.id} declared {s.time} but measured {fitted}")
+                    self.err("complexity", f"{s.id} declared {s.time} but measured {fitted}")
+                elif RANK[fitted] < declared and s.time != "O(2ⁿ)":
+                    self.warn("complexity", f"{s.id} declared {s.time} but measured only {fitted} "
+                                            "- is worst_case really the worst case?")
             if pr.get("stopped") and s.optimal:
                 self.warn("complexity", f"{s.id} profile stopped early: {pr['stopped']}")
         return out
