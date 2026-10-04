@@ -17,7 +17,7 @@ const pyodideVersion = JSON.parse(fs.readFileSync(path.join(pyodideDir, "package
  * version-pinned, works offline once cached, no third-party runtime dependency.
  * Dev: serve /pyodide/* straight from node_modules. Build: copy into dist/pyodide/.
  */
-function selfHostPyodide(): Plugin {
+function selfHostPyodide(artifact: boolean): Plugin {
   return {
     name: "feetcode:self-host-pyodide",
     configureServer(server) {
@@ -32,8 +32,16 @@ function selfHostPyodide(): Plugin {
     },
     generateBundle() {
       for (const file of PYODIDE_FILES) {
+        const source = fs.readFileSync(path.join(pyodideDir, file));
+        if (artifact && file.endsWith(".zip")) {
+          // Artifact hosts don't serve archives, so ship the standard library's bytes as base64 JSON;
+          // the worker turns them back into a blob: URL for loadPyodide({ stdLibURL }).
+          const fileName = `pyodide/v${pyodideVersion}/${file.replace(/\.zip$/, ".json")}`;
+          this.emitFile({ type: "asset", fileName, source: JSON.stringify({ zip: source.toString("base64") }) });
+          continue;
+        }
         // Versioned path: the files can be cached forever, and upgrades can't mix versions.
-        this.emitFile({ type: "asset", fileName: `pyodide/v${pyodideVersion}/${file}`, source: fs.readFileSync(path.join(pyodideDir, file)) });
+        this.emitFile({ type: "asset", fileName: `pyodide/v${pyodideVersion}/${file}`, source });
       }
     },
   };
@@ -64,7 +72,7 @@ function artifactPage(): Plugin {
 
 export default defineConfig(({ mode }) => ({
   base: mode === "artifact" ? "./" : "/",
-  plugins: [react(), tailwindcss(), selfHostPyodide(), mode === "artifact" && artifactPage()],
+  plugins: [react(), tailwindcss(), selfHostPyodide(mode === "artifact"), mode === "artifact" && artifactPage()],
   resolve: { alias: { "@": path.resolve(here, "src") } },
   define: { __PYODIDE_VERSION__: JSON.stringify(pyodideVersion) },
   server: { fs: { allow: [repoRoot] } },
