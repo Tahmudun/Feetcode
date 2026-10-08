@@ -53,7 +53,7 @@ export function DescriptionTab({ problem }: { problem: ProblemDetail }) {
               </div>
               <div>
                 <span className="text-faint">Output: </span>
-                <span className="text-teal">{lit(ex.output)}</span>
+                <span className="text-ref">{lit(ex.output)}</span>
               </div>
             </div>
             {ex.explain && <p className="mt-2 text-[13px] text-muted">{renderInline(ex.explain)}</p>}
@@ -76,8 +76,8 @@ export function DescriptionTab({ problem }: { problem: ProblemDetail }) {
       )}
 
       {problem.followUp && (
-        <p className="rounded-xl border border-violet/30 bg-violet-soft px-3.5 py-2.5 text-[13px] text-fg">
-          <span className="font-semibold text-violet">Follow-up: </span>
+        <p className="rounded-xl border border-note/30 bg-note-soft px-3.5 py-2.5 text-[13px] text-fg">
+          <span className="font-semibold text-note">Follow-up: </span>
           {problem.followUp}
         </p>
       )}

@@ -98,11 +98,11 @@ export default function PlaygroundPage() {
 
   const right = (
     <div className="h-full overflow-y-auto rounded-2xl border border-line bg-elev p-4">
-      {error && <div className="mb-3 rounded-xl border border-rose/40 bg-rose-soft px-3 py-2 text-[13px] text-rose">{error}</div>}
+      {error && <div className="mb-3 rounded-xl border border-warn/40 bg-warn-soft px-3 py-2 text-[13px] text-warn">{error}</div>}
       {trace ? (
         <>
           {trace.error && (
-            <div className="mb-3 rounded-xl border border-rose/40 bg-rose-soft px-3 py-2 font-mono text-[12.5px] text-rose">
+            <div className="mb-3 rounded-xl border border-warn/40 bg-warn-soft px-3 py-2 font-mono text-[12.5px] text-warn">
               {trace.error.type}: {trace.error.message}{trace.error.line ? ` (line ${trace.error.line})` : ""}
             </div>
           )}

@@ -12,17 +12,17 @@ const FILL: Record<string, string> = {
   idle: "var(--bg-elev-2)",
   active: "var(--accent-soft)",
   changed: "var(--accent-soft)",
-  new: "var(--violet-soft)",
-  match: "var(--teal-soft)",
-  compare: "var(--rose-soft)",
+  new: "var(--note-soft)",
+  match: "var(--ref-soft)",
+  compare: "var(--warn-soft)",
 };
 const STROKE: Record<string, string> = {
   idle: "var(--border-strong)",
   active: "var(--accent)",
   changed: "var(--accent)",
-  new: "var(--violet)",
-  match: "var(--teal)",
-  compare: "var(--rose)",
+  new: "var(--note)",
+  match: "var(--ref)",
+  compare: "var(--warn)",
 };
 
 const NAME_TONES: Record<string, number> = { prev: 1, curr: 0, cur: 0, nxt: 2, next: 2, head: 3, dummy: 4, slow: 0, fast: 1, tail: 3 };
@@ -74,12 +74,12 @@ export function GraphView({ panel }: { panel: GraphPanel }) {
         <span className="text-faint">{panel.nodes.length} node{panel.nodes.length === 1 ? "" : "s"}</span>
         <span className="flex items-center gap-1 text-[10px] text-faint"><span className="inline-block h-0.5 w-4 bg-muted" /> next</span>
         {doubly && <span className="flex items-center gap-1 text-[10px] text-faint"><span className="inline-block h-0.5 w-4 border-t border-dashed border-faint" /> prev</span>}
-        {panel.edges.some((e) => e.kind === "random") && <span className="flex items-center gap-1 text-[10px] text-violet"><span className="inline-block h-0.5 w-4 bg-violet" /> random</span>}
+        {panel.edges.some((e) => e.kind === "random") && <span className="flex items-center gap-1 text-[10px] text-note"><span className="inline-block h-0.5 w-4 bg-note" /> random</span>}
       </div>
       <div className="overflow-x-auto">
         <svg width={width} height={height} className="block font-mono" role="img" aria-label="linked list">
           <defs>
-            {[["next", "var(--text-muted)"], ["new", "var(--accent)"], ["random", "var(--violet)"], ["prev", "var(--text-faint)"]].map(([id, color]) => (
+            {[["next", "var(--text-muted)"], ["new", "var(--accent)"], ["random", "var(--note)"], ["prev", "var(--text-faint)"]].map(([id, color]) => (
               <marker key={id} id={`arrow-${id}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill={color} />
               </marker>
@@ -89,7 +89,7 @@ export function GraphView({ panel }: { panel: GraphPanel }) {
             const a = byId.get(e.from);
             const b = byId.get(e.to);
             if (!a || !b) return null;
-            const color = e.state === "new" ? "var(--accent)" : e.kind === "random" ? "var(--violet)" : e.kind === "prev" ? "var(--text-faint)" : "var(--text-muted)";
+            const color = e.state === "new" ? "var(--accent)" : e.kind === "random" ? "var(--note)" : e.kind === "prev" ? "var(--text-faint)" : "var(--text-muted)";
             const marker = e.state === "new" ? "new" : e.kind;
             return (
               <path

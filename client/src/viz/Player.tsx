@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { Brain, ChevronFirst, ChevronLast, Footprints, Pause, Play, SkipBack, SkipForward, Sparkles } from "lucide-react";
+import { Brain, ChevronFirst, ChevronLast, Footprints, Pause, Play, Rows3, SkipBack, SkipForward, Sparkles, TriangleAlert } from "lucide-react";
 import type { Lens } from "@/content/types";
 import type { Trace } from "@/runtime/types";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,8 @@ import { ArrayView } from "./panels/ArrayView";
 import { GraphView } from "./panels/GraphView";
 import { GridView, MapView, ObjectView, SetView, StackView } from "./panels/Collections";
 import { scalarText } from "./decode";
+import { buildTracks, positionOf } from "./tracks";
+import { Tracks } from "./Tracks";
 
 export interface PlayerProps {
   trace: Trace;
@@ -28,6 +30,10 @@ export interface PlayerProps {
   onFinish?: () => void;
   className?: string;
   heat?: Record<number, number>;
+  /** Hide narration (it can explain the code), e.g. when comparing behaviour with a hidden reference. */
+  hideNarration?: boolean;
+  /** A step to call out (raw index), e.g. where this run diverges from the other one. */
+  marker?: { step: number; label: string; var?: string | null; ghost?: string | null; ghostLabel?: string } | null;
 }
 
 function keyStepIndices(trace: Trace): number[] {
@@ -82,7 +88,7 @@ export function VarsBar({ scene }: { scene: Scene }) {
           key={v.name}
           className={cn(
             "inline-flex items-center gap-1 rounded-lg border px-2 py-1 font-mono text-[12px] transition-colors",
-            v.state === "changed" ? "anim-flash border-accent/60 bg-accent-soft" : v.state === "new" ? "border-violet/50 bg-violet-soft" : "border-line bg-elev-2",
+            v.state === "changed" ? "anim-flash border-accent/60 bg-accent-soft" : v.state === "new" ? "border-note/50 bg-note-soft" : "border-line bg-elev-2",
           )}
         >
           <span className="text-muted">{v.name}</span>
@@ -124,20 +130,25 @@ interface Question {
 }
 
 export function Player({
-  trace, lens = {}, params = [], mode = "lesson", showCode = true, footnotes, problemId, initialIndex = 0, onStep, onFinish, className, heat,
+  trace, lens = {}, params = [], mode = "lesson", showCode = true, footnotes, problemId, initialIndex = 0, onStep, onFinish, className, heat, marker, hideNarration = false,
 }: PlayerProps) {
   const ctx = useMemo(() => makeContext(trace, lens, params), [trace, lens, params]);
   const [keySteps, setKeySteps] = useState(mode === "lesson");
   const visible = useMemo(() => (keySteps ? keyStepIndices(trace) : trace.steps.map((_, i) => i)), [keySteps, trace]);
   const speed = useSettings((s) => s.speed);
   const setSettings = useSettings((s) => s.set);
-  const startAt = initialIndex === "end" ? visible.length - 1 : initialIndex;
+  const startAt = initialIndex === "end" ? visible.length - 1 : positionOf(visible, initialIndex);
   const pb = usePlayback(visible.length, speed, startAt);
   const raw = visible[Math.min(pb.index, visible.length - 1)] ?? 0;
   const scene = useMemo(() => buildScene(trace, raw, ctx), [trace, raw, ctx]);
-  const narration = scene.authored ? scene.narration : autoNarrate(trace.steps, raw, ctx.codeLines);
+  const narration = hideNarration
+    ? `Step ${raw + 1}: line ${scene.line}${scene.vars.some((v) => v.state !== "idle") ? ` · changed: ${scene.vars.filter((v) => v.state !== "idle").map((v) => `${v.name} = ${v.text}`).join(", ")}` : ""}`
+    : scene.authored ? scene.narration : autoNarrate(trace.steps, raw, ctx.codeLines);
   const [hotNote, setHotNote] = useState<number | null>(null);
   const notes = footnotes ?? trace.footnotes ?? [];
+  const [showTracks, setShowTracks] = useState(mode === "debug");
+  const tracks = useMemo(() => (showTracks ? buildTracks(trace, visible) : []), [showTracks, trace, visible]);
+  const markerPos = marker ? positionOf(visible, marker.step) : null;
   const finished = useRef(false);
 
   useEffect(() => {
@@ -224,16 +235,16 @@ export function Player({
         <div className="min-w-0 flex-1">
           {question ? (
             <div className="anim-fade-up">
-              <div className="flex items-center gap-2 text-[13px] font-semibold text-violet">
+              <div className="flex items-center gap-2 text-[13px] font-semibold text-note">
                 <Brain size={14} /> Predict: will this {question.kind === "while" ? "loop keep going" : "branch run"}?
               </div>
               <code className="mt-1 block truncate text-[12.5px] text-fg">line {question.line}: {question.code}</code>
               {question.values && <div className="mt-0.5 font-mono text-[11.5px] text-muted">{question.values}</div>}
               <div className="mt-2 flex gap-2">
-                <button onClick={() => answer(true)} className="rounded-lg bg-teal-soft px-3 py-1 text-xs font-semibold text-teal hover:brightness-125">
+                <button onClick={() => answer(true)} className="rounded-lg bg-ref-soft px-3 py-1 text-xs font-semibold text-ref hover:brightness-125">
                   True <Kbd className="ml-1">T</Kbd>
                 </button>
-                <button onClick={() => answer(false)} className="rounded-lg bg-rose-soft px-3 py-1 text-xs font-semibold text-rose hover:brightness-125">
+                <button onClick={() => answer(false)} className="rounded-lg bg-warn-soft px-3 py-1 text-xs font-semibold text-warn hover:brightness-125">
                   False <Kbd className="ml-1">F</Kbd>
                 </button>
               </div>
@@ -241,7 +252,7 @@ export function Player({
           ) : (
             <>
               {reveal && (
-                <div className={cn("anim-pop mb-1 text-[12px] font-bold", reveal.correct ? "text-teal" : "text-rose")}>
+                <div className={cn("anim-pop mb-1 text-[12px] font-bold", reveal.correct ? "text-ref" : "text-warn")}>
                   {reveal.correct ? "✓ Correct" : "✗ Not quite"} - it was {reveal.truth ? "True" : "False"}.
                 </div>
               )}
@@ -252,7 +263,7 @@ export function Player({
           )}
         </div>
         {predict && score.total > 0 && (
-          <span className="shrink-0 rounded-md bg-violet-soft px-2 py-0.5 font-mono text-[11px] font-bold text-violet">
+          <span className="shrink-0 rounded-md bg-note-soft px-2 py-0.5 font-mono text-[11px] font-bold text-note">
             {score.right}/{score.total}
           </span>
         )}
@@ -279,18 +290,28 @@ export function Player({
           <VarsBar scene={scene} />
           <CallStack scene={scene} />
           {scene.ret !== undefined && (
-            <div className="anim-pop inline-flex items-center gap-2 rounded-lg border border-teal/40 bg-teal-soft px-2.5 py-1 font-mono text-[12px] text-teal">
+            <div className="anim-pop inline-flex items-center gap-2 rounded-lg border border-ref/40 bg-ref-soft px-2.5 py-1 font-mono text-[12px] text-ref">
               <Sparkles size={13} /> returns {scene.ret}
             </div>
           )}
           {scene.exc && (
-            <div className="anim-pop rounded-lg border border-rose/40 bg-rose-soft px-2.5 py-1.5 font-mono text-[12px] text-rose">💥 {scene.exc}</div>
+            <div className="anim-pop rounded-lg border border-warn/40 bg-warn-soft px-2.5 py-1.5 font-mono text-[12px] text-warn">💥 {scene.exc}</div>
           )}
           {scene.stdout && (
             <pre className="max-h-24 overflow-auto rounded-lg border border-line bg-inset px-2.5 py-1.5 text-[11.5px] text-muted">{scene.stdout}</pre>
           )}
         </div>
       </div>
+
+      {showTracks && tracks.length > 0 && (
+        <Tracks
+          tracks={tracks}
+          n={visible.length}
+          index={pb.index}
+          onSeek={pb.seek}
+          marker={marker && markerPos !== null ? { ...marker, pos: markerPos } : null}
+        />
+      )}
 
       {/* transport */}
       <div className="flex flex-wrap items-center gap-2">
@@ -307,7 +328,7 @@ export function Player({
           <TBtn label="Next (→)" onClick={pb.next}><SkipForward size={15} /></TBtn>
           <TBtn label="Last step (End)" onClick={() => pb.seek(visible.length - 1)}><ChevronLast size={16} /></TBtn>
         </div>
-        <Scrubber trace={trace} visible={visible} index={pb.index} onSeek={pb.seek} />
+        <Scrubber trace={trace} visible={visible} index={pb.index} onSeek={pb.seek} marker={markerPos} />
         <span className="w-20 text-right font-mono text-[11px] text-faint">
           {pb.index + 1} / {visible.length}
         </span>
@@ -337,9 +358,26 @@ export function Player({
         >
           <Footprints size={13} /> {keySteps ? "Key steps" : "Every line"}
         </button>
+        {marker && markerPos !== null && (
+          <button
+            onClick={() => pb.seek(markerPos)}
+            className="flex h-7 items-center gap-1 rounded-md bg-warn-soft px-2 text-[11px] font-semibold text-warn hover:brightness-125"
+            title={`Jump to step ${markerPos + 1}: ${marker.label}`}
+          >
+            <TriangleAlert size={12} /> {marker.label}
+          </button>
+        )}
+        <button
+          onClick={() => setShowTracks((v) => !v)}
+          aria-pressed={showTracks}
+          className={cn("flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium", showTracks ? "bg-accent-soft text-accent" : "text-muted hover:bg-hover")}
+          title="One row per variable: every value it took, across the whole run"
+        >
+          <Rows3 size={13} /> Tracks
+        </button>
         <button
           onClick={() => { setPredict((p) => !p); setQuestion(null); }}
-          className={cn("flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium", predict ? "bg-violet-soft text-violet" : "text-muted hover:bg-hover")}
+          className={cn("flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium", predict ? "bg-note-soft text-note" : "text-muted hover:bg-hover")}
           title="Pause at every decision and guess the outcome before seeing it"
         >
           <Brain size={13} /> Predict
@@ -379,7 +417,7 @@ function TBtn({ label, onClick, children }: { label: string; onClick: () => void
   );
 }
 
-function Scrubber({ trace, visible, index, onSeek }: { trace: Trace; visible: number[]; index: number; onSeek: (i: number) => void }) {
+function Scrubber({ trace, visible, index, onSeek, marker }: { trace: Trace; visible: number[]; index: number; onSeek: (i: number) => void; marker?: number | null }) {
   const n = visible.length;
   return (
     <div className="relative mx-1 h-8 min-w-40 flex-1">
@@ -388,10 +426,13 @@ function Scrubber({ trace, visible, index, onSeek }: { trace: Trace; visible: nu
       {n <= 400 &&
         visible.map((r, i) => {
           const st = trace.steps[r];
-          const mark = st.k === "exc" ? "bg-rose" : st.k === "call" ? "bg-violet" : st.k === "return" ? "bg-teal" : null;
+          const mark = st.k === "exc" ? "bg-warn" : st.k === "call" ? "bg-note" : st.k === "return" ? "bg-ref" : null;
           if (!mark) return null;
           return <span key={i} className={cn("absolute top-1/2 h-2.5 w-[3px] -translate-y-1/2 rounded-full", mark)} style={{ left: `${n > 1 ? (i / (n - 1)) * 100 : 0}%` }} />;
         })}
+      {marker !== null && marker !== undefined && (
+        <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-warn shadow-[0_0_8px_var(--warn)]" style={{ left: `${n > 1 ? (marker / (n - 1)) * 100 : 0}%` }} />
+      )}
       <input
         type="range"
         min={0}

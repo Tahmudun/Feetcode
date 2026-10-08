@@ -33,9 +33,9 @@ export function HeroDemo() {
     <div className="relative overflow-hidden rounded-2xl border border-line bg-elev p-4 shadow-panel">
       <div className="mb-3 flex items-center gap-2">
         <span className="flex gap-1">
-          <span className="h-2.5 w-2.5 rounded-full bg-rose/70" />
+          <span className="h-2.5 w-2.5 rounded-full bg-warn/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-accent/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-teal/70" />
+          <span className="h-2.5 w-2.5 rounded-full bg-ref/70" />
         </span>
         <span className="font-mono text-[11px] text-faint">trapping-rain-water · two pointers · step {k + 1}/{keySteps.length}</span>
       </div>

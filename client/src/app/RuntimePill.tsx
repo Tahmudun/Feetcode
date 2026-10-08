@@ -18,7 +18,7 @@ export function RuntimePill() {
       title={title}
       className={cn(
         "hidden h-8 items-center gap-2 rounded-lg px-2.5 text-xs font-medium lg:flex",
-        status === "error" ? "text-rose" : "text-muted",
+        status === "error" ? "text-warn" : "text-muted",
       )}
     >
       {status === "loading" || status === "busy" ? (
@@ -27,7 +27,7 @@ export function RuntimePill() {
         <span
           className={cn(
             "h-2 w-2 rounded-full",
-            status === "ready" ? "bg-teal shadow-[0_0_8px_var(--teal)]" : status === "error" ? "bg-rose" : "bg-faint",
+            status === "ready" ? "bg-ref shadow-[0_0_8px_var(--ref)]" : status === "error" ? "bg-warn" : "bg-faint",
           )}
         />
       )}

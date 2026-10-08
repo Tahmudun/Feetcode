@@ -10,6 +10,7 @@
 import type { PatternId, ProblemSummary } from "@/content/types";
 import type { Verdict } from "@/runtime/types";
 import { DAY_MS, dayKey } from "@/lib/utils";
+import type { SessionItem } from "./session";
 
 export type Grade = 0 | 1 | 2 | 3; // again | hard | good | easy
 
@@ -20,7 +21,9 @@ export type StudyEvent =
   | { t: "visualize"; p: string; ts: number }
   | { t: "hint"; p: string; n: number; ts: number }
   | { t: "predict"; p: string; ok: boolean; ts: number }
-  | { t: "review"; p: string; g: Grade; ts: number };
+  | { t: "review"; p: string; g: Grade; ts: number }
+  /** Starting tonight's session: the plan as it was shown. Not about one problem, so `p` is "". */
+  | { t: "session"; p: ""; ts: number; items: SessionItem[] };
 
 export interface Card {
   reps: number;
@@ -38,6 +41,8 @@ export interface ProblemProgress {
   submits: number;
   solvedAt: number | null;
   lastAt: number | null;
+  /** Verdict of the most recent submit, if any. */
+  lastVerdict: Verdict | null;
   bestTime: string | null;
   lessons: Set<string>;
   hints: number;
@@ -84,7 +89,7 @@ export function schedule(card: Card, grade: Grade, ts: number): Card {
 
 function blank(): ProblemProgress {
   return {
-    status: "new", attempts: 0, submits: 0, solvedAt: null, lastAt: null, bestTime: null,
+    status: "new", attempts: 0, submits: 0, solvedAt: null, lastAt: null, lastVerdict: null, bestTime: null,
     lessons: new Set(), hints: 0, predictions: { right: 0, total: 0 }, card: null,
   };
 }
@@ -100,6 +105,7 @@ export function derive(events: StudyEvent[], now = Date.now()): Progress {
     return p;
   };
   for (const e of events) {
+    if (e.t === "session") continue; // a plan, not progress on a problem
     const p = get(e.p);
     p.lastAt = Math.max(p.lastAt ?? 0, e.ts);
     if (ACTIVE.has(e.t)) activity.set(dayKey(e.ts), (activity.get(dayKey(e.ts)) ?? 0) + 1);
@@ -111,6 +117,7 @@ export function derive(events: StudyEvent[], now = Date.now()): Progress {
       case "submit":
         p.attempts += 1;
         p.submits += 1;
+        p.lastVerdict = e.v;
         if (e.v === "accepted") {
           if (p.status !== "solved") {
             p.status = "solved";

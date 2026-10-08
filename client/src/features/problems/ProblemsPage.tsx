@@ -11,7 +11,7 @@ import { Chip, DifficultyBadge, ProgressRing } from "@/ui/primitives";
 const DIFFS: Difficulty[] = ["Easy", "Medium", "Hard"];
 
 export function StatusIcon({ status }: { status: Status | undefined }) {
-  if (status === "solved") return <CircleCheck size={16} className="text-teal" aria-label="Solved" />;
+  if (status === "solved") return <CircleCheck size={16} className="text-ref" aria-label="Solved" />;
   if (status === "attempted") return <CircleDashed size={16} className="text-accent" aria-label="Attempted" />;
   return <Circle size={16} className="text-line-strong" aria-label="Not started" />;
 }
@@ -122,7 +122,7 @@ export function ProblemsPage() {
           {DIFFS.map((d) => {
             const all = problems.filter((p) => p.difficulty === d);
             const done = solved.filter((p) => p.difficulty === d).length;
-            const tone = d === "Easy" ? "var(--teal)" : d === "Medium" ? "var(--accent)" : "var(--rose)";
+            const tone = d === "Easy" ? "var(--ref)" : d === "Medium" ? "var(--note)" : "var(--warn)";
             return (
               <div key={d} className="flex items-center gap-2.5">
                 <ProgressRing value={done / all.length} size={38} tone={tone}>
@@ -224,7 +224,7 @@ export function ProblemsPage() {
                   <span className="text-xs text-faint">{p.tagline}</span>
                   <span className="ml-auto text-xs text-muted">{done}/{all.length}</span>
                   <div className="h-1.5 w-24 overflow-hidden rounded-full bg-elev-2">
-                    <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${(done / all.length) * 100}%` }} />
+                    <div className="h-full rounded-full bg-ref transition-all" style={{ width: `${(done / all.length) * 100}%` }} />
                   </div>
                 </div>
                 <ProblemTable rows={rows} company={company} />
@@ -244,16 +244,19 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
     <div className="overflow-hidden rounded-2xl border border-line bg-elev">
       {rows.map((p, i) => {
         const top = Object.entries(p.companies).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        // The one-liner is the trick and the optimal complexity is a hint: show them only once you've solved it.
+        const mine = progress.byProblem.get(p.id);
+        const solved = mine?.status === "solved";
         return (
           <Link
             key={p.id}
             to={`/problems/${p.id}`}
             className={cn(
-              "group grid grid-cols-[24px_1fr_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-hover sm:grid-cols-[24px_minmax(0,1fr)_90px_minmax(0,220px)_auto]",
+              "group grid grid-cols-[24px_1fr_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-hover sm:grid-cols-[24px_minmax(0,1fr)_90px_minmax(0,220px)_64px]",
               i > 0 && "border-t border-line",
             )}
           >
-            <StatusIcon status={progress.byProblem.get(p.id)?.status} />
+            <StatusIcon status={mine?.status} />
             <div className="min-w-0">
               <div className="truncate text-[14px] font-medium text-fg group-hover:text-accent">
                 <span className="mr-1.5 font-mono text-xs text-faint">{p.number}.</span>
@@ -261,7 +264,7 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
               </div>
               <div className="truncate text-xs text-faint">
                 {showPattern ? patterns.find((x) => x.id === p.pattern)?.name + " · " : ""}
-                {p.oneLiner}
+                {solved ? p.oneLiner : p.topics.join(" · ")}
               </div>
             </div>
             <DifficultyBadge value={p.difficulty} className="justify-self-start" />
@@ -280,8 +283,11 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
                 </>
               )}
             </div>
-            <div className="hidden justify-self-end whitespace-nowrap font-mono text-[11px] text-faint sm:block" title={`Optimal: ${p.optimal.time} time, ${p.optimal.space} space`}>
-              {p.optimal.time.replace(/ · /g, "·")}
+            <div
+              className="hidden justify-self-end whitespace-nowrap font-mono text-[11px] text-faint sm:block"
+              title={solved ? `Your best: ${mine?.bestTime ?? "?"} · optimal: ${p.optimal.time} time, ${p.optimal.space} space` : undefined}
+            >
+              {solved ? (mine?.bestTime ?? p.optimal.time) : ""}
             </div>
           </Link>
         );

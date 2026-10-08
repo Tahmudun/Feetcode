@@ -9,7 +9,7 @@ export function confetti(origin?: { x: number; y: number }) {
   const ctx = canvas.getContext("2d")!;
   ctx.scale(devicePixelRatio, devicePixelRatio);
   const css = getComputedStyle(document.documentElement);
-  const colors = ["--accent", "--teal", "--violet", "--sky", "--rose"].map((v) => css.getPropertyValue(v).trim() || "#ffb454");
+  const colors = ["--accent", "--ref", "--note", "--sky", "--warn"].map((v) => css.getPropertyValue(v).trim() || "#ff4fb0");
   const ox = origin?.x ?? innerWidth * 0.7;
   const oy = origin?.y ?? innerHeight * 0.35;
   const parts = Array.from({ length: 140 }, () => {

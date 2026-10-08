@@ -12,7 +12,7 @@ export function Heatmap({ activity, weeks = 20 }: { activity: Map<string, number
   const columns: (typeof days)[] = [];
   for (let i = 0; i < days.length; i += 7) columns.push(days.slice(i, i + 7));
   const level = (c: number) => (c === 0 ? 0 : Math.ceil((c / max) * 4));
-  const colors = ["var(--bg-elev-2)", "color-mix(in oklab, var(--teal) 30%, var(--bg-elev-2))", "color-mix(in oklab, var(--teal) 55%, var(--bg-elev-2))", "color-mix(in oklab, var(--teal) 78%, var(--bg-elev-2))", "var(--teal)"];
+  const colors = ["var(--bg-elev-2)", "color-mix(in oklab, var(--ref) 30%, var(--bg-elev-2))", "color-mix(in oklab, var(--ref) 55%, var(--bg-elev-2))", "color-mix(in oklab, var(--ref) 78%, var(--bg-elev-2))", "var(--ref)"];
   return (
     <div className="flex gap-[3px]" role="img" aria-label="Study activity over the last weeks">
       {columns.map((col, i) => (

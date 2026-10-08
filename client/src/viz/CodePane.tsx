@@ -40,12 +40,12 @@ export function CodePane({ code, line, next, branch, branchKind, errorLine, foot
             className={cn(
               "relative flex min-w-fit pr-4 transition-colors duration-150",
               current && "bg-accent-soft",
-              ln === errorLine && "bg-rose-soft",
-              hot && !current && "bg-violet-soft",
+              ln === errorLine && "bg-warn-soft",
+              hot && !current && "bg-note-soft",
             )}
-            style={h > 0 && !current ? { background: `color-mix(in oklab, var(--rose) ${Math.round(h * 26)}%, transparent)` } : undefined}
+            style={h > 0 && !current ? { background: `color-mix(in oklab, var(--accent) ${Math.round(h * 26)}%, transparent)` } : undefined}
           >
-            <span className={cn("absolute inset-y-0 left-0 w-[3px]", current ? "bg-accent" : ln === errorLine ? "bg-rose" : "bg-transparent")} />
+            <span className={cn("absolute inset-y-0 left-0 w-[3px]", current ? "bg-accent" : ln === errorLine ? "bg-warn" : "bg-transparent")} />
             <span className={cn("w-10 shrink-0 select-none pr-3 text-right", current ? "text-accent" : "text-faint")}>{ln}</span>
             <span className="whitespace-pre">
               {tokenizeLine(text).map((t, k) => (
@@ -72,7 +72,7 @@ export function CodePane({ code, line, next, branch, branchKind, errorLine, foot
               <span
                 className={cn(
                   "anim-pop ml-3 self-center rounded px-1.5 text-[10px] font-bold",
-                  branch ? "bg-teal-soft text-teal" : "bg-rose-soft text-rose",
+                  branch ? "bg-ref-soft text-ref" : "bg-warn-soft text-warn",
                 )}
               >
                 {branchKind === "for" ? (branch ? "next item" : "done") : branch ? "True" : "False"}

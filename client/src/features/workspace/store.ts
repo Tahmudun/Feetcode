@@ -4,11 +4,12 @@ import type { ProblemDetail } from "@/content/types";
 import { draftKey, storage } from "@/lib/storage";
 import { engine } from "@/runtime/engine";
 import { RuntimeTimeout } from "@/runtime/python";
-import type { RunResult, SubmitResult, Trace } from "@/runtime/types";
+import type { Divergence, RunResult, SubmitResult, Trace } from "@/runtime/types";
 import { logEvent } from "@/store/events";
 import type { EditorMarks } from "@/editor/CodeEditor";
+import { FOOTNOTE_ACTIONS, divergenceFootnote, hasPoint } from "./findings";
 
-export type LeftTab = "description" | "learn" | "visualize" | "submissions" | "notes";
+export type LeftTab = "description" | "learn" | "visualize" | "notes";
 export type ConsoleTab = "tests" | "result" | "analysis";
 
 export interface TestCase {
@@ -33,7 +34,12 @@ export interface TraceView {
   args: Record<string, unknown>;
   expected?: unknown;
   startAt?: "end" | number;
+  /** Your run vs the closest reference on the same input, when the engine could compare them. */
+  divergence?: Divergence | null;
 }
+
+/** Which run the Trace tab shows: yours, or the reference's on the same input. */
+export type TraceSide = "yours" | "reference";
 
 interface WorkspaceState {
   problem: ProblemDetail | null;
@@ -46,7 +52,11 @@ interface WorkspaceState {
   runResult: RunResult | null;
   submitResult: SubmitResult | null;
   traceView: TraceView | null;
-  marks: EditorMarks;
+  traceSide: TraceSide;
+  /** Editor marks from the step the player is on (current line, live values). */
+  stepMarks: EditorMarks;
+  /** Editor marks from analysis (the pinned finding, error line, heat map). Cleared by edits. */
+  analysisMarks: EditorMarks;
   error: string | null;
   submitStage: string;
 
@@ -59,7 +69,10 @@ interface WorkspaceState {
   updateCase: (i: number, args: Record<string, unknown>) => void;
   addCase: () => void;
   removeCase: (i: number) => void;
-  setMarks: (m: EditorMarks) => void;
+  setStepMarks: (m: EditorMarks) => void;
+  setAnalysisMarks: (m: EditorMarks) => void;
+  setTraceSide: (side: TraceSide) => void;
+  footnoteAction: (id: string) => void;
   run: () => Promise<void>;
   submit: () => Promise<void>;
   visualize: (caseIndex?: number) => Promise<void>;
@@ -88,7 +101,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
   runResult: null,
   submitResult: null,
   traceView: null,
-  marks: {},
+  traceSide: "yours",
+  stepMarks: {},
+  analysisMarks: {},
   error: null,
   submitStage: "",
 
@@ -104,12 +119,16 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       runResult: null,
       submitResult: null,
       traceView: null,
-      marks: {},
+      traceSide: "yours",
+      stepMarks: {},
+      analysisMarks: {},
       error: null,
     }),
 
   setCode: (code) => {
-    set({ code });
+    if (code === get().code) return;
+    // A finding pinned to a line is about the code that ran; editing makes it stale.
+    set(Object.keys(get().analysisMarks).length ? { code, analysisMarks: {} } : { code });
     const id = get().problem?.id;
     if (!id) return;
     clearTimeout(saveTimer);
@@ -119,7 +138,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
     const p = get().problem;
     if (!p) return;
     storage.remove(draftKey(p.id));
-    set({ code: p.starter, marks: {} });
+    set({ code: p.starter, analysisMarks: {}, stepMarks: {} });
   },
   setLeftTab: (leftTab) => set({ leftTab }),
   setConsoleTab: (consoleTab) => set({ consoleTab }),
@@ -136,16 +155,27 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       const cases = s.cases.filter((_, k) => k !== i);
       return { cases, activeCase: Math.max(0, Math.min(s.activeCase, cases.length - 1)) };
     }),
-  setMarks: (marks) => set({ marks }),
+  setStepMarks: (stepMarks) => set({ stepMarks }),
+  setAnalysisMarks: (analysisMarks) => set({ analysisMarks }),
+  setTraceSide: (traceSide) => set({ traceSide }),
+  footnoteAction: (id) => {
+    const tv = get().traceView;
+    if (!tv) return;
+    if (id === FOOTNOTE_ACTIONS.jump && hasPoint(tv.divergence)) {
+      set({ traceView: { ...tv, startAt: tv.divergence.step }, traceSide: "yours", leftTab: "visualize" });
+    } else if (id === FOOTNOTE_ACTIONS.compare) {
+      set({ traceSide: "reference", leftTab: "visualize" });
+    }
+  },
 
   run: async () => {
     const { problem, code, cases, busy } = get();
     if (!problem || busy) return;
-    set({ busy: "run", consoleTab: "result", error: null, marks: {} });
+    set({ busy: "run", consoleTab: "result", error: null, analysisMarks: {} });
     try {
       const res = await engine.run(problem, code, cases.map((c) => ({ args: c.args, ...(c.custom ? {} : { expected: c.expected }) })));
       const firstError = res.cases.find((c) => c.error?.line)?.error?.line ?? res.error?.line ?? undefined;
-      set({ runResult: res, marks: firstError ? { errorLine: firstError } : {} });
+      set({ runResult: res, analysisMarks: firstError ? { errorLine: firstError } : {} });
       logEvent({ t: "run", p: problem.id, v: res.verdict, ts: Date.now() });
     } catch (err) {
       set({ error: friendly(err) });
@@ -157,7 +187,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
   submit: async () => {
     const { problem, code, busy } = get();
     if (!problem || busy) return;
-    set({ busy: "submit", consoleTab: "analysis", error: null, submitResult: null, submitStage: "Loading hidden tests…", marks: {} });
+    set({ busy: "submit", consoleTab: "analysis", error: null, submitResult: null, submitStage: "Loading hidden tests…", analysisMarks: {} });
     try {
       const suite = await loadSuite(problem.id);
       set({ submitStage: `Judging ${suite.cases.length} hidden tests, then fuzzing and profiling…` });
@@ -173,15 +203,21 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       const sub: Submission = { ts: Date.now(), verdict: res.verdict, code, passed: res.passed, total: res.total, time, space };
       storage.set(subsKey(problem.id), [sub, ...loadSubmissions(problem.id)].slice(0, 30));
       const errLine = res.failure?.error?.line ?? res.diagnosis?.error?.line ?? res.error?.line ?? undefined;
-      if (res.verdict === "compile") set({ marks: { errorLine: res.error?.line ?? undefined } });
+      if (res.verdict === "compile") set({ analysisMarks: { errorLine: res.error?.line ?? undefined } });
       else if (res.trace && res.diagnosis?.args) {
+        const divergence = res.diagnosis.divergence ?? null;
+        const footnote = divergenceFootnote(divergence, res.diagnosis.pitfalls?.[0]?.title);
         set({
-          traceView: { trace: res.trace, label: "Minimal failing input", args: res.diagnosis.args, expected: res.diagnosis.expected, startAt: "end" },
-          marks: errLine ? { errorLine: errLine } : {},
+          traceView: {
+            trace: res.trace, label: "Smallest failing input", args: res.diagnosis.args, expected: res.diagnosis.expected,
+            startAt: hasPoint(divergence) ? divergence.step : "end", divergence,
+          },
+          traceSide: "yours",
+          analysisMarks: { ...(errLine ? { errorLine: errLine } : {}), ...(footnote ? { footnote } : {}) },
         });
       } else if (res.profile) {
         const notes = res.profile.hidden.map((h, i) => ({ line: h.line, n: i + 1 }));
-        set({ marks: { heat: Object.fromEntries(Object.entries(res.profile.lines).map(([k, v]) => [Number(k), v])), notes } });
+        set({ analysisMarks: { heat: Object.fromEntries(Object.entries(res.profile.lines).map(([k, v]) => [Number(k), v])), notes } });
       }
     } catch (err) {
       set({ error: friendly(err) });
@@ -198,13 +234,24 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
     if (!c) return;
     set({ busy: "trace", error: null });
     try {
-      const trace = await engine.trace(problem, code, c.args);
-      if ((trace as unknown as { verdict?: string }).verdict === "compile") {
-        const e = (trace as unknown as RunResult).error;
-        set({ error: `SyntaxError on line ${e?.line}: ${e?.message}`, marks: { errorLine: e?.line ?? undefined } });
+      // Function problems: trace and compare with the closest reference in one call.
+      const res = problem.kind === "function"
+        ? await engine.compare(problem, code, c.args)
+        : { trace: await engine.trace(problem, code, c.args), divergence: null };
+      const compiled = res as unknown as { verdict?: string; error?: RunResult["error"] };
+      if (compiled.verdict === "compile" || (res.trace as unknown as { verdict?: string })?.verdict === "compile") {
+        const e = compiled.error ?? (res.trace as unknown as RunResult).error;
+        set({ error: `SyntaxError on line ${e?.line}: ${e?.message}`, analysisMarks: { errorLine: e?.line ?? undefined } });
         return;
       }
-      set({ traceView: { trace, label: `Your code · Case ${i + 1}`, args: c.args, expected: c.custom ? undefined : c.expected }, leftTab: "visualize" });
+      const { trace, divergence } = res;
+      const footnote = divergenceFootnote(divergence);
+      set({
+        traceView: { trace, label: `Your code · Case ${i + 1}`, args: c.args, expected: c.custom ? undefined : c.expected, divergence },
+        traceSide: "yours",
+        leftTab: "visualize",
+        analysisMarks: footnote ? { footnote } : {},
+      });
       logEvent({ t: "visualize", p: problem.id, ts: Date.now() });
     } catch (err) {
       set({ error: friendly(err) });
@@ -213,5 +260,5 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
     }
   },
 
-  showTrace: (traceView) => set({ traceView, leftTab: "visualize" }),
+  showTrace: (traceView) => set({ traceView, traceSide: "yours", leftTab: "visualize" }),
 }));

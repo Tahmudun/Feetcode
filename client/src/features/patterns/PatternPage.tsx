@@ -25,10 +25,10 @@ export default function PatternPage() {
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
         <Panel className="p-5">
-          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold"><Radar size={15} className="text-violet" /> Recognize it when you see…</h2>
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold"><Radar size={15} className="text-note" /> Recognize it when you see…</h2>
           <ul className="space-y-2">
             {p.signals.map((s) => (
-              <li key={s} className="flex gap-2 text-[13.5px] text-muted"><Check size={15} className="mt-0.5 shrink-0 text-teal" /> {renderInline(s)}</li>
+              <li key={s} className="flex gap-2 text-[13.5px] text-muted"><Check size={15} className="mt-0.5 shrink-0 text-ref" /> {renderInline(s)}</li>
             ))}
           </ul>
           <p className="mt-4 flex items-start gap-2 border-t border-line pt-3 text-[13px] text-muted">
@@ -65,7 +65,7 @@ export default function PatternPage() {
               <span className="flex-1 font-medium group-hover:text-accent">{x.title}</span>
               <span className="hidden max-w-sm truncate text-xs text-faint md:block">{x.oneLiner}</span>
               <div className="h-1.5 w-16 overflow-hidden rounded-full bg-elev-2" title="mastery">
-                <div className="h-full bg-teal" style={{ width: `${mastery(pr) * 100}%` }} />
+                <div className="h-full bg-ref" style={{ width: `${mastery(pr) * 100}%` }} />
               </div>
               <DifficultyBadge value={x.difficulty} />
             </Link>

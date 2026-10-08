@@ -4,7 +4,8 @@
 `submit` - the whole hidden suite (stops at the first failure, like LeetCode),
            then goes further than LeetCode does:
              * on Wrong Answer / Runtime Error: shrink the failing case to a
-               minimal counterexample, match known pitfalls, trace it;
+               minimal counterexample, match known pitfalls, trace it, and find
+               where it first diverges from the reference (diverge.py);
              * on Time Limit: profile complexity to show *why* it is slow;
              * on all-pass: fuzz small random inputs for bugs the suite missed,
                then profile complexity so "Accepted" comes with a growth curve.
@@ -14,7 +15,7 @@ from __future__ import annotations
 import sys
 import time
 
-from . import complexity, fuzz
+from . import complexity, diverge, fuzz
 from .analysis import Program
 from .harness import (BoundedIO, CompileError, EntryError, OutputError, compile_user, describe_error,
                       fresh_namespace, prepare)
@@ -145,6 +146,11 @@ def submit(problem: Problem, source: str, tests: list, *, fuzz_cases=150, with_t
             result["trace"] = trace_problem(problem, source, diag["args"], max_steps=800)
         except CompileError:
             pass
+        if "trace" in result:
+            try:
+                diag["divergence"] = diverge.analyze(problem, source, diag["args"], result["trace"])
+            except Exception:  # noqa: BLE001 - analysis is a bonus; never fail a verdict over it
+                diag["divergence"] = None
     if result["verdict"] in ("accepted", "tle"):
         result["profile"] = complexity.profile(problem, source)
     return result

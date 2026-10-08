@@ -26,10 +26,10 @@ export function StackView({ panel, all }: { panel: StackPanel; all: Panel[] }) {
         ))}
         {panel.ghost && (
           <div className="flex items-center gap-2 opacity-60">
-            <div className="flex h-10 min-w-16 items-center justify-center rounded-lg border border-dashed border-rose px-2 font-mono text-[13px] text-faint line-through">
+            <div className="flex h-10 min-w-16 items-center justify-center rounded-lg border border-dashed border-warn px-2 font-mono text-[13px] text-faint line-through">
               {panel.ghost.text}
             </div>
-            <span className="font-mono text-[10px] text-rose">popped</span>
+            <span className="font-mono text-[10px] text-warn">popped</span>
           </div>
         )}
       </div>
@@ -59,7 +59,7 @@ export function MapView({ panel }: { panel: MapPanel }) {
               <span className="max-w-72 truncate px-2.5 py-1 text-muted">{e.value}</span>
             </div>
           ))}
-          {panel.ghost && <div className="px-2.5 py-1 text-faint line-through decoration-rose">{panel.ghost.key} (deleted)</div>}
+          {panel.ghost && <div className="px-2.5 py-1 text-faint line-through decoration-warn">{panel.ghost.key} (deleted)</div>}
         </div>
       )}
     </div>

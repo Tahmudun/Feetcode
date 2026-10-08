@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Brain, CalendarClock, Eye, Radar, Repeat, Shuffle } from "lucide-react";
 import { loadProblem, patterns, problemById, problems } from "@/content";
 import type { PatternId, ProblemDetail } from "@/content/types";
@@ -10,7 +10,8 @@ import { Button, DifficultyBadge, Empty, Kbd, Panel, Spinner, Tabs } from "@/ui/
 import { Markdown, renderInline } from "@/ui/Markdown";
 
 export default function ReviewPage() {
-  const [mode, setMode] = useState<"recall" | "patterns">("recall");
+  const [params] = useSearchParams();
+  const [mode, setMode] = useState<"recall" | "patterns">(params.get("mode") === "patterns" ? "patterns" : "recall");
   return (
     <div className="mx-auto max-w-3xl px-4 pb-24 pt-8 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -33,9 +34,9 @@ export default function ReviewPage() {
 }
 
 const GRADES: { g: Grade; label: string; tone: string }[] = [
-  { g: 0, label: "Again", tone: "bg-rose-soft text-rose" },
+  { g: 0, label: "Again", tone: "bg-warn-soft text-warn" },
   { g: 1, label: "Hard", tone: "bg-accent-soft text-accent" },
-  { g: 2, label: "Good", tone: "bg-teal-soft text-teal" },
+  { g: 2, label: "Good", tone: "bg-ref-soft text-ref" },
   { g: 3, label: "Easy", tone: "bg-sky-soft text-sky" },
 ];
 
@@ -126,7 +127,7 @@ function RecallSession() {
             <Markdown text={firstPara} className="mt-2 text-[14px] text-muted" />
             {!revealed && (
               <div className="mt-5 rounded-xl border border-dashed border-line-strong p-4 text-[13px] text-muted">
-                <div className="mb-1 flex items-center gap-2 font-semibold text-fg"><Brain size={15} className="text-violet" /> Before you reveal:</div>
+                <div className="mb-1 flex items-center gap-2 font-semibold text-fg"><Brain size={15} className="text-note" /> Before you reveal:</div>
                 Which pattern? What's the one-line trick? What's the time and space? Say it out loud.
               </div>
             )}
@@ -193,7 +194,7 @@ function PatternQuiz() {
     <div>
       <div className="mb-3 flex items-center justify-between text-xs text-muted">
         <span>Read the problem, then pick its pattern - the skill interviews actually test.</span>
-        <span className="rounded-full bg-violet-soft px-2 py-0.5 font-semibold text-violet">{score.right}/{score.total}</span>
+        <span className="rounded-full bg-note-soft px-2 py-0.5 font-semibold text-note">{score.right}/{score.total}</span>
       </div>
       <Panel className="p-6">
         {statement ? <Markdown text={statement} className="text-[14px] leading-relaxed text-fg/90" /> : <div className="skeleton h-24 rounded-lg" />}
@@ -207,7 +208,7 @@ function PatternQuiz() {
                 onClick={() => choose(p.id)}
                 className={cn(
                   "rounded-xl border px-4 py-3 text-left text-[13.5px] font-medium transition-colors",
-                  right ? "border-teal bg-teal-soft text-teal" : wrong ? "border-rose bg-rose-soft text-rose" : "border-line hover:border-line-strong hover:bg-hover",
+                  right ? "border-ref bg-ref-soft text-ref" : wrong ? "border-warn bg-warn-soft text-warn" : "border-line hover:border-line-strong hover:bg-hover",
                 )}
               >
                 {p.name}

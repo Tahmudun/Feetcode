@@ -49,10 +49,12 @@ def raises(exc):
 
 const started = Date.now();
 const report = JSON.parse(py.runPython(`
-import importlib, json, sys
+import importlib, json, os, sys
 sys.path.insert(0, "/home/pyodide/tests")
 results = []
-for modname in ("test_tracer", "test_core"):
+# Every test module, so a new one can never be silently skipped in WebAssembly.
+modules = sorted(f[:-3] for f in os.listdir("/home/pyodide/tests") if f.startswith("test_") and f.endswith(".py"))
+for modname in modules:
     mod = importlib.import_module(modname)
     for name in sorted(dir(mod)):
         fn = getattr(mod, name)

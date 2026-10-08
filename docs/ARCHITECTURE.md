@@ -41,7 +41,7 @@ Nothing runs on a server. The deploy is a directory of static files.
 The engine is plain Python with no third-party dependencies. It must run unchanged in CPython 3.12+ and in Pyodide.
 
 ```
-api.py         handle(json) -> json: ping · run · submit · trace · profile · diagnose · playground
+api.py         handle(json) -> json: ping · run · submit · trace · compare · profile · diagnose · playground
 problem.py     Problem / Signature / Solution / Pitfall, comparators, shrink_args, generator helpers
 harness.py     compile user code, build a fresh namespace, adapt args (ListNode, design ops, codecs)
 structures.py  ListNode / Node, list <-> linked-list conversion, CallArgs (in-place problems)
@@ -51,6 +51,7 @@ tracer.py      sys.settrace -> snapshot steps
 values.py      identity-preserving value/heap encoder
 judge.py       run (visible cases) and submit (hidden suite -> fuzz -> diagnose -> profile)
 fuzz.py        find_failure, greedy shrink, pitfall matching, passing neighbour
+diverge.py     first divergence from the closest reference run, mined invariants
 complexity.py  sizes -> ops / memory / depth -> best-fitting growth model
 ```
 
@@ -92,7 +93,7 @@ The pipeline renders every template in **strict mode**: a narration that fails t
 `judge.submit` runs in this order:
 
 1. **Hidden suite.** Every case runs with a budget of `max(25 000, 20 × the optimal reference's ops on that case)`. The pipeline precomputes these budgets and ships them with the suite. Outputs are checked with the problem's comparator: `exact`, `unordered`, `unordered_nested`, `float`, or a custom callable.
-2. **On failure: diagnose.** `fuzz.diagnose` takes the failing case, or one the fuzzer finds, and **shrinks** it greedily. It repeatedly tries "smaller" candidates and keeps any that still fail *and* still pass the problem's `validate()`. The minimal input is matched against the problem's **pitfalls**. A pitfall can match on output shape (`detect`), on an exception (`error="IndexError: list index"`) or on a source regex (`code`). The diagnosis also finds a **passing neighbour**: an input one small edit away that your code gets right. If the minimal input is small (n ≤ 40), it is traced so the UI can offer *Watch it fail*.
+2. **On failure: diagnose.** `fuzz.diagnose` takes the failing case, or one the fuzzer finds, and **shrinks** it greedily. It repeatedly tries "smaller" candidates and keeps any that still fail *and* still pass the problem's `validate()`. The minimal input is matched against the problem's **pitfalls**. A pitfall can match on output shape (`detect`), on an exception (`error="IndexError: list index"`) or on a source regex (`code`). The diagnosis also finds a **passing neighbour**: an input one small edit away that your code gets right. If the minimal input is small (n ≤ 40), it is traced so the UI can offer *Watch it go wrong*, and `diverge.analyze` compares that trace with the references' (§1.5).
 3. **If every case passes: fuzz.** 150 random small inputs are checked against the reference. A hidden test suite can miss a bug; a fuzzer is less likely to.
 4. **On accept or TLE: profile.** See below.
 
@@ -105,6 +106,17 @@ The profiler runs the problem's `worst_case(n)` (or its generator) at growing `n
 - **recursion depth**
 
 Time is fitted against `O(1), O(log n), O(n), O(n log n), O(n²), O(n² log n), O(n³), O(2ⁿ)` by weighted least squares on the upper five points, preferring the simpler model when errors are close. Memory is noisier: allocator granularity differs between 64-bit CPython and 32-bit WebAssembly. So space is classified by its log-log slope, and points below a 2 KiB floor are dropped rather than clamped. Per-line hit counts and probe costs become the editor heat map and the "hidden cost" findings.
+
+### 1.5 The divergence finder (`diverge.py`)
+
+A wrong answer says *that* your code is wrong. The divergence finder says *where*: the first step at which your run stops agreeing with a correct one on the same input.
+
+1. **Histories.** For the outermost frame of each trace, record every variable's value history: the steps at which it changed and the value it took. Values are canonicalised structurally (heap refs resolved, dicts and sets order-insensitive), so two runs can be compared even though their object identities differ.
+2. **Pick the closest reference.** Each reference solution is traced on the same input. Only variables both runs share count, and only if their first values have the same type (so a `seen` dict and a `seen` set aren't compared). The reference whose histories match yours for the most changes is the one you were writing.
+3. **Walk in lockstep.** The shared histories are walked change by change. The first mismatch is the divergence: a different value (`value`), a change the reference never makes (`extra`), a change you never make (`missing`), a different return value (`return`), or a crash (`error`). If nothing mismatches, the runs `agree`. A truncated trace stops the walk (`unknown`) rather than inventing a divergence.
+4. **Mine invariants.** A light recorder runs the reference on the failing input plus a dozen generated ones and keeps the facts that held every time: an integer that never decreases or never increases, and `a ≤ b` for pairs the reference's source actually compares. The first such fact your run breaks is reported with the divergence ("in the reference, `l` never decreases").
+
+The result names the step, line, variable, both values and the reference's step, so the client can pin a footnote under the guilty line, jump the player there, and show the reference's run from the matching point. It never says how to fix the code; it states what differs. Design and codec problems, and runs that share no variable names with any reference, get no divergence. The `compare` op runs the same analysis for any case the user visualizes.
 
 ---
 
@@ -160,7 +172,7 @@ These roll up into `catalog.json`, `patterns.json` and `companies.json`.
 runtime/   worker.ts (Pyodide + engine), python.ts (queue, watchdog, restart), engine.ts (typed ops)
 content/   lazy loaders for generated JSON (one chunk per problem)
 viz/       decode → scene → panels;  overlays, auto-narration, playback, CodePane, ComplexityChart
-features/  workspace, problems, patterns, study (review, stats), playground, home
+features/  workspace, problems, patterns, study (review, stats), playground, home, session (tonight's plan, path)
 store/     event log + derived progress (zustand)
 editor/    CodeMirror 6 wrapper with trace/error/heat/note decorations
 ui/        primitives, SplitPane, Markdown, Heatmap, confetti
@@ -193,10 +205,15 @@ The visualizer works on the same principle as the trace: **the renderer is a pur
 5. **Linked structures** (`graph.ts`) get a stable layout. A node's position is fixed the first time it appears, next to an already-placed neighbour, so when `curr.next = prev` runs only the arrow moves. Copied nodes line up under their originals. Doubly linked lists use a flow layout that is recomputed each step, so moving a node to the front visibly slides it. Random pointers draw as arcs.
 6. **Narration**: authored (`t`) for lessons; otherwise `narrate.ts` builds it from branch outcomes, accesses and the snapshot diff.
 7. `usePlayback.ts` drives the timeline: play/pause, speed, "every line" vs "key steps", and a **gate** that Predict mode uses to stop before each branch until the user answers.
+8. **In the editor.** `inline.ts` turns the current step into values shown at the end of the lines that assigned them (`l = 1, best = 2`, `returns 3`, `→ True`). `tracks.ts` turns the whole trace into one row per variable, a segment for each stretch of steps over which it held one value, so a wrong value is visible at a glance; a divergence adds a marker across every row and a dashed lane with the reference's value. Both are pure functions of the trace.
 
 ### 4.3 Study state
 
 Progress is an append-only list of events in `localStorage` (`fc:events:v1`): `run`, `submit`, `lesson`, `review` and so on. `derive(events)` folds them into per-problem status, best complexity, mastery, SM-2-lite review cards, streaks and an activity heat map. The derived state is never stored. The log exports and imports as NDJSON. ([ADR 0006](adr/0006-event-sourced-progress.md))
+
+**Tonight's session** (`store/session.ts`) sits on the same log. `planSession(progress, …)` is a pure function that proposes a short plan in the order to do it: up to three due recall cards as a warm-up, the problem you most recently left broken, the next new problem in the pattern you're working in, and, once that pattern is at least 70% solved, a stretch problem from a pattern that builds on it (`content/roadmap.ts`). At most five items. Starting the session logs one `session` event holding the plan, because the plan is a decision, not derived state. `sessionState(events)` then folds the events that follow it into each item's status (todo, started, done) for as long as the day lasts. The home page, the header's session pill and the accepted-submit view all read that one derived value.
+
+**The path** (`features/session/path.ts`) lays every problem out as a star and every pattern as a constellation: columns by roadmap depth, constellation shapes from a PRNG seeded with the pattern id, so the layout is deterministic and never moves. Stars light up when solved and grow with mastery; tonight's items pulse.
 
 ---
 
@@ -207,5 +224,5 @@ Progress is an append-only list of events in `localStorage` (`fc:events:v1`): `r
 | Engine | pytest: tracer normalization on tricky control flow, identity, access recording, meter and budgets, judge verdicts, shrinking minimality, growth fitting. CI runs it on CPython 3.12 and 3.13 **and inside Pyodide** (`client/scripts/engine-in-pyodide.mjs`), because "same engine in two runtimes" has to be tested, not assumed. |
 | Content | The quality gate *is* the test suite for the 38 problems. CI runs it on every push, plus `build --check`. |
 | Pipeline | pytest: discovery, starter code for each signature kind, deterministic suites and budgets that separate complexity classes, canonical JSON, and the gate catching planted bad content (a wrong example, disagreeing solutions, a trigger-happy pitfall). |
-| Client | Vitest on the pure parts: the scene builder (against real traces from the generated lessons), progress derivation, scheduling, streaks. |
-| End-to-end | Playwright against a production build, booting real Pyodide: run, submit (wrong → shrink → pitfall → replay; TLE; accepted), visualize, lessons with Predict mode, the playground, and an infinite loop that the op budget stops cleanly. |
+| Client | Vitest on the pure parts: the scene builder (against real traces from the generated lessons), inline values and tracks, divergence footnotes, progress derivation, scheduling, streaks, the session planner and session state, the path layout. |
+| End-to-end | Playwright against a production build, booting real Pyodide: run, submit (wrong → shrink → pitfall → divergence footnote → replay; TLE; accepted), visualize with the reference's run, lessons with Predict mode, the playground, an infinite loop that the op budget stops cleanly, and a whole session from the home page to done. |

@@ -1,7 +1,7 @@
 /** Typed wrappers over the engine's JSON API (engine/feetcode/api.py). */
 import type { ProblemSummary } from "@/content/types";
 import { python } from "./python";
-import type { Diagnosis, Profile, RunResult, SubmitResult, Trace } from "./types";
+import type { Diagnosis, Divergence, Profile, RunResult, SubmitResult, Trace } from "./types";
 
 type Args = Record<string, unknown>;
 export interface TestInput {
@@ -19,6 +19,13 @@ export const engine = {
 
   trace: (p: ProblemSummary, code: string, args: Args, maxSteps = 1500) =>
     python.call<Trace>({ op: "trace", module: p.module, code, args, maxSteps }, { module: p.module, timeoutMs: 15_000 }),
+
+  /** Trace your code and compare it with the closest reference on the same input. */
+  compare: (p: ProblemSummary, code: string, args: Args, maxSteps = 1500) =>
+    python.call<{ trace: Trace; divergence: Divergence | null }>(
+      { op: "compare", module: p.module, code, args, maxSteps },
+      { module: p.module, timeoutMs: 20_000 },
+    ),
 
   profile: (p: ProblemSummary, code: string) =>
     python.call<Profile>({ op: "profile", module: p.module, code }, { module: p.module, timeoutMs: 30_000 }),

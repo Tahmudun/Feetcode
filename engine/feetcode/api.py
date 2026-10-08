@@ -9,7 +9,7 @@ import importlib
 import json
 import traceback
 
-from . import __version__, complexity, fuzz, judge
+from . import __version__, complexity, diverge, fuzz, judge
 from .harness import CompileError
 from .tracer import trace_problem, trace_script
 
@@ -47,6 +47,9 @@ def dispatch(req: dict) -> dict:
         return complexity.profile(problem, req["code"], sizes=req.get("sizes"))
     if op == "diagnose":
         return fuzz.diagnose(problem, req["code"], args=req.get("args"))
+    if op == "compare":
+        trace = trace_problem(problem, req["code"], req["args"], max_steps=req.get("maxSteps", 1500))
+        return {"trace": trace, "divergence": diverge.analyze(problem, req["code"], req["args"], trace)}
     raise ValueError(f"unknown op {op!r}")
 
 

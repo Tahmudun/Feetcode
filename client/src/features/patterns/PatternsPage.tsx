@@ -1,81 +1,42 @@
 import { Link } from "react-router";
 import { patterns, problems } from "@/content";
-import type { PatternId } from "@/content/types";
+import { prerequisites } from "@/content/roadmap";
 import { useStudy } from "@/store/events";
 import { patternMastery } from "@/store/progress";
+import { currentPattern } from "@/store/session";
+import { PathMap } from "@/features/session/PathMap";
 import { Panel } from "@/ui/primitives";
-
-/** The roadmap: what each pattern builds on (after NeetCode's ordering). */
-const NODES: Record<PatternId, { x: number; y: number }> = {
-  "arrays-hashing": { x: 50, y: 10 },
-  "two-pointers": { x: 28, y: 46 },
-  stack: { x: 74, y: 46 },
-  "sliding-window": { x: 14, y: 84 },
-  "linked-list": { x: 50, y: 84 },
-};
-const EDGES: [PatternId, PatternId][] = [
-  ["arrays-hashing", "two-pointers"],
-  ["arrays-hashing", "stack"],
-  ["two-pointers", "sliding-window"],
-  ["two-pointers", "linked-list"],
-];
 
 export default function PatternsPage() {
   const progress = useStudy((s) => s.progress);
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-24 pt-8 sm:px-6">
-      <h1 className="font-display text-3xl font-extrabold tracking-tight">Pattern roadmap</h1>
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-8 sm:px-6">
+      <h1 className="font-display text-3xl font-extrabold tracking-tight">Pattern guides</h1>
       <p className="mt-1 max-w-2xl text-muted">
-        Interview problems are variations on a few ideas. Learn each pattern's trick, then recognize it on sight. Arrows show what builds on what.
+        Interview problems are variations on a few ideas. Learn each pattern's trick, then recognize it on sight. The dashed links show
+        what builds on what.
       </p>
 
-      <div className="relative mt-8 hidden h-[420px] md:block">
-        <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden>
-          {EDGES.map(([a, b]) => (
-            <path
-              key={`${a}-${b}`}
-              d={`M ${NODES[a].x} ${NODES[a].y + 7} C ${NODES[a].x} ${(NODES[a].y + NODES[b].y) / 2 + 4}, ${NODES[b].x} ${(NODES[a].y + NODES[b].y) / 2}, ${NODES[b].x} ${NODES[b].y - 7}`}
-              fill="none"
-              stroke="var(--border-strong)"
-              strokeWidth={0.35}
-              vectorEffect="non-scaling-stroke"
-              style={{ strokeWidth: 2 }}
-            />
-          ))}
-        </svg>
+      <Panel className="mt-6 px-4 pb-4 pt-6 sm:px-6">
+        <PathMap progress={progress} current={progress.byProblem.size ? currentPattern(progress, problems) : null} />
+      </Panel>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {patterns.map((p) => {
           const m = patternMastery(progress, problems, p.id);
-          const pos = NODES[p.id];
+          const pre = prerequisites(p.id).map((id) => patterns.find((x) => x.id === id)?.name).filter(Boolean);
           return (
-            <Link
-              key={p.id}
-              to={`/patterns/${p.id}`}
-              className="group absolute w-56 -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-            >
-              <Panel className="p-4 transition-all group-hover:-translate-y-0.5 group-hover:border-accent/50 group-hover:shadow-glow">
+            <Link key={p.id} to={`/patterns/${p.id}`} className="group">
+              <Panel className="h-full p-4 transition-all group-hover:-translate-y-0.5 group-hover:border-accent/50 group-hover:shadow-glow">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold">{p.name}</span>
                   <span className="font-mono text-[11px] text-muted">{m.solved}/{m.total}</span>
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-elev-2">
-                  <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${m.mastery * 100}%` }} />
+                  <div className="h-full rounded-full bg-ref transition-all" style={{ width: `${m.mastery * 100}%` }} />
                 </div>
-                <p className="mt-2 line-clamp-2 text-[11.5px] leading-snug text-muted">{p.tagline}</p>
-              </Panel>
-            </Link>
-          );
-        })}
-      </div>
-
-      <div className="mt-8 grid gap-3 md:hidden">
-        {patterns.map((p) => {
-          const m = patternMastery(progress, problems, p.id);
-          return (
-            <Link key={p.id} to={`/patterns/${p.id}`}>
-              <Panel className="p-4">
-                <div className="flex justify-between font-semibold">{p.name}<span className="font-mono text-xs text-muted">{m.solved}/{m.total}</span></div>
-                <p className="mt-1 text-xs text-muted">{p.tagline}</p>
+                <p className="mt-2 text-[12.5px] leading-snug text-muted">{p.tagline}</p>
+                {pre.length > 0 && <p className="mt-1.5 text-[11.5px] text-faint">Builds on {pre.join(" and ")}</p>}
               </Panel>
             </Link>
           );
