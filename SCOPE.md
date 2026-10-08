@@ -26,7 +26,8 @@ v3 replaces v2's plan (an AI-generated step-script pipeline, then a tracer) with
 1. The hidden suite fails.
 2. The fuzzer shrinks the failure to `nums=[5,5], target=10`.
 3. The diagnosis names the mistake ("Paired an element with itself") and shows a passing neighbour input.
-4. One click replays your code on that input, step by step: the map, the probe and the line that returned `[0, 0]`.
+4. A footnote pinned under the guilty line says where your run first leaves the reference's: you return `[0, 0]`, the reference returns `[0, 1]`.
+5. One click replays your code on that input, step by step, with live values in the editor: the map, the probe and the line that returned `[0, 0]`. Another shows the reference's run from the same point.
 
 *Then submit the brute force.*
 
@@ -43,7 +44,8 @@ Talking points, each a real decision with tradeoffs (see `docs/adr/`):
 3. **Snapshots over deltas.** The renderer is a pure function of one step: free scrubbing, and traces that can be compared step by step. (ADR 0003)
 4. **Content as code.** Problems are executable modules behind a quality gate. Content can't silently rot. (ADR 0004)
 5. **Data-engineering discipline in the build.** Deterministic, incremental, content-addressed, drift-checked, with lineage. (ADR 0005)
-6. **Event-sourced state.** Progress is an immutable log, and everything is derived and queryable. (ADR 0006)
+6. **Event-sourced state.** Progress is an immutable log, and everything is derived and queryable. (ADR 0006) Tonight's session is one more event: the plan is logged once, and its progress is derived from what follows.
+7. **Comparing runs, not just outputs.** Snapshot traces make it cheap to align your run with a reference's and name the first step where they disagree, plus invariants mined from many reference runs.
 
 ## 2. Positioning
 
@@ -76,17 +78,24 @@ The tracer sees raw locals. Something has to know that `l, r` are pointers *into
 - Deterministic op meter with hidden-cost probes.
 - Judge, fuzzer, greedy shrinker, pitfall matcher and passing-neighbour search.
 - Complexity profiler (time, auxiliary space, recursion depth).
+- Divergence finder: compares your trace with the closest reference on the same input and names the first step, line and variable where they disagree.
+- Invariant miner: facts that held in every reference run (a pointer that never decreases, `a ≤ b` for compared pairs), reported when your run breaks one.
 
 **Pipeline**
 - Quality gate: schema, examples, cross-checked references, strict narration, pitfall false positives, measured vs declared complexity.
 - Deterministic, incremental, parallel build with a sha256 manifest and `--check` drift detection.
 
 **Client**
-- Workspace: editor (Vim optional), run, submit, diagnosis, *Watch it fail*, heat map, growth charts, notes, timer, submissions.
+- Workspace: editor (Vim optional), run, submit, diagnosis, heat map, growth charts, notes, timer, submissions.
+- Where it goes wrong: the divergence is a footnote under the guilty line, with *Watch it go wrong* (jumps the player there) and *Compare with the reference* (the reference's run on the same input, code hidden unless you ask).
+- Live values at the end of each line as you step, and variable tracks: one row per variable across the whole run, with the divergence marked.
 - Visualizer: arrays, bars, chars, grids, maps, sets, stacks and deques, linked lists with stable layout, random-pointer graphs.
 - Lens overlays: water, container, histogram, index graph.
 - Narrated lessons, auto-narration and Predict mode.
+- Tonight: a nightly session planned from the event log (recall what's fading, fix what's broken, one new problem, a stretch into the next pattern), walked from a header pill.
+- Your path: every problem as a star on one map of the roadmap, lit as you solve and brighter as you review.
 - Pattern primers, spaced-repetition review, stats with streaks, a heat map and mastery, NDJSON export, and a playground with share links.
+- The problem list hides each problem's trick and optimal complexity until you've solved it.
 - Command palette, light and dark themes.
 
 **Quality**
@@ -96,8 +105,8 @@ The tracer sees raw locals. Something has to know that `l, r` are pointers *into
 ## 6. Roadmap
 
 **Next: the analyzers that make it a lab**
-1. **Divergence finder.** Trace user and reference on the shrunk input, align the two timelines, and find the first step where the states diverge (for example, a variable that the reference has and yours doesn't, or a different value). File it as a footnote on the guilty line with a jump-to-step link. Snapshots make the comparison cheap.
-2. **Invariant miner.** Infer invariants from reference traces, in the spirit of Daikon: `l ≤ r`, "the window has no duplicates", "the stack is monotonic". Report the first step where user code breaks one.
+1. **Richer invariants.** The miner knows monotonic integers and compared pairs. Next: structural facts like "the window has no duplicates" and "the stack is monotonic", and invariants over inner frames.
+2. **Divergence for renamed code.** Today the finder needs at least one variable name in common with a reference. Matching variables by the shape of their histories would cover code that names everything differently.
 3. **Approach fingerprinting.** Classify *how* the user solved it (two pointers vs hash map vs sort) from trace dynamics, and suggest the matching lesson.
 
 **Content**
@@ -112,9 +121,9 @@ The tracer sees raw locals. Something has to know that `l, r` are pointers *into
 
 Identity: **a late-night study session, annotated.**
 
-- **Surfaces:** ink.
+- **Surfaces:** a night sky (deep indigo with a faint starfield) in dark; "daybreak" lavender-white in light.
 - **Text:** paper.
-- **Color:** amber phosphor marks the active line, teal marks matches and success, rose marks comparisons and failures, violet marks footnotes and secondary pointers, and sky marks water and windows.
+- **Color (Nocturne):** one rule, so color always carries meaning. Magenta (`accent`) is you: your code, your run, your next action. Cyan (`ref`) is the reference: what's correct and what matches it. Yellow (`warn`) is where the two disagree. Violet (`note`) is annotations. Sky marks water and windows.
 - **Type:** Bricolage Grotesque for display, Geist for UI and JetBrains Mono for code and data.
 - **Brand mark:** superscript numerals (`feetcode¹`).
 
