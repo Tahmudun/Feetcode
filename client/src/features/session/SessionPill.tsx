@@ -10,12 +10,14 @@ import { useStudy } from "@/store/events";
 import type { SessionEntry } from "@/store/session";
 import { KINDS, itemHref } from "./kinds";
 
-export function SessionPill({ className }: { className?: string }) {
+/** `collapse` hides the words below the lg breakpoint, leaving the dots; screen readers still get them. */
+export function SessionPill({ className, collapse = false }: { className?: string; collapse?: boolean }) {
   const session = useStudy((s) => s.session);
   const { pathname } = useLocation();
   if (!session || !session.items.length) return null;
   const { items, done } = session;
   const base = "flex h-8 items-center gap-2 rounded-full border px-3 text-[12px] transition-colors";
+  const words = collapse ? "sr-only lg:not-sr-only" : "";
 
   if (!session.next) {
     return (
@@ -34,7 +36,7 @@ export function SessionPill({ className }: { className?: string }) {
   if (!target) {
     return (
       <div className={cn(base, "border-accent/40 bg-accent-soft text-fg", className)}>
-        {dots} {count} <span>Last one: <b className="font-semibold text-accent">{KINDS[here!.kind].label}</b></span>
+        {dots} {count} <span className={words}>Last one: <b className="font-semibold text-accent">{KINDS[here!.kind].label}</b></span>
       </div>
     );
   }
@@ -46,7 +48,7 @@ export function SessionPill({ className }: { className?: string }) {
       title={`Tonight's session: ${done} of ${items.length} done`}
     >
       {dots} {count}
-      <span className="max-w-[220px] truncate">
+      <span className={cn("max-w-[220px] truncate", words)}>
         {here ? "Then" : "Next"}: <b className="font-semibold text-fg">{KINDS[target.kind].verb} {title}</b>
       </span>
       <ArrowRight size={13} className="shrink-0 text-accent" />

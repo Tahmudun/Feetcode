@@ -127,7 +127,7 @@ export function TonightPlan({ className }: { className?: string }) {
             </Button>
           )}
           {!session && (
-            <span className="text-[12px] text-faint">Recall first, then the hard part. Each item is one click from here or from the bar up top.</span>
+            <span className="text-[12px] text-faint">Recall first, then the hard part. Each item is one click away, here or in the header while you work.</span>
           )}
         </div>
       </div>

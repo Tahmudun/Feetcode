@@ -9,9 +9,10 @@ import { dueCards } from "@/store/progress";
 import { IconButton, Kbd, Wordmark } from "@/ui/primitives";
 import { SessionPill } from "@/features/session/SessionPill";
 import { CommandPalette } from "./CommandPalette";
+import { MobileNav, type NavItem } from "./MobileNav";
 import { RuntimePill } from "./RuntimePill";
 
-const NAV = [
+const NAV: NavItem[] = [
   { to: "/", label: "Tonight", end: true },
   { to: "/problems", label: "Problems" },
   { to: "/review", label: "Review" },
@@ -39,7 +40,7 @@ export function Layout() {
 
   return (
     <div className={cn("flex min-h-full flex-col", inWorkspace && "h-full")}>
-      <header className="sticky top-0 z-40 flex h-[52px] shrink-0 items-center gap-6 border-b border-line bg-bg/85 px-4 backdrop-blur-md">
+      <header className="sticky top-0 z-40 flex h-[52px] shrink-0 items-center gap-4 border-b border-line bg-bg/85 px-3 backdrop-blur-md sm:gap-6 sm:px-4">
         <Link to="/" className="flex items-center" aria-label="Feetcode home">
           <Wordmark />
         </Link>
@@ -69,7 +70,7 @@ export function Layout() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-1.5">
-          <SessionPill className="mr-1.5 hidden lg:flex" />
+          <SessionPill collapse className="mr-1.5 hidden md:flex" />
           <button
             onClick={() => setPaletteOpen(true)}
             className="hidden h-8 items-center gap-2 rounded-lg border border-line bg-elev px-2.5 text-[13px] text-faint transition-colors hover:border-line-strong hover:text-muted sm:flex"
@@ -97,11 +98,12 @@ export function Layout() {
           <IconButton label={theme === "dark" ? "Light theme" : "Dark theme"} onClick={toggleTheme}>
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
           </IconButton>
-          <a href="https://github.com/Tahmudun/Feetcode" target="_blank" rel="noreferrer" aria-label="Source on GitHub">
+          <a href="https://github.com/Tahmudun/Feetcode" target="_blank" rel="noreferrer" aria-label="Source on GitHub" className="hidden sm:block">
             <IconButton label="Source on GitHub">
               <GithubMark size={16} />
             </IconButton>
           </a>
+          <MobileNav items={NAV} due={due} />
         </div>
       </header>
       <main className={cn("flex-1", inWorkspace && "min-h-0")}>
