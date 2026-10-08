@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { ArrowRight, Bug, Flame, Gauge, Microscope, Play, ScanSearch, Shrink, Sparkles } from "lucide-react";
-import { loadBaselines, neighbours } from "@/content";
+import { loadBaselines, neighbours, problemById } from "@/content";
 import type { Baselines, ProblemDetail } from "@/content/types";
 import { lit } from "@/lib/format";
 import { cn, compact } from "@/lib/utils";
@@ -10,6 +10,8 @@ import { ComplexityChart, SERIES_COLORS, type Series } from "@/viz/ComplexityCha
 import { Button, Spinner } from "@/ui/primitives";
 import { renderInline } from "@/ui/Markdown";
 import { confetti } from "@/ui/confetti";
+import { useStudy } from "@/store/events";
+import { KINDS, itemHref } from "@/features/session/kinds";
 import { Block } from "./ConsolePanel";
 import { describeDivergence, hasPoint } from "./findings";
 import { useWorkspace } from "./store";
@@ -152,6 +154,7 @@ function Accepted({ problem, res, baselines }: { problem: ProblemDetail; res: Su
   const yours = profile?.time?.label;
   const slower = yours && rank(yours) > rank(optimalFit);
   const { next } = neighbours(problem.id);
+  const session = useStudy((s) => s.session);
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-3">
@@ -178,7 +181,19 @@ function Accepted({ problem, res, baselines }: { problem: ProblemDetail; res: Su
         </section>
       )}
       {profile && <Findings profile={profile} />}
-      {next && (
+      {session?.next ? (
+        <Link
+          to={itemHref(session.next)}
+          className="inline-flex items-center gap-2 rounded-xl border border-accent/50 bg-accent-soft px-3 py-2 text-[13px] text-muted hover:border-accent hover:text-fg"
+        >
+          Tonight {session.done}/{session.items.length} · Next: <b className="text-fg">{KINDS[session.next.kind].verb} {problemById.get(session.next.p)?.title}</b>
+          <ArrowRight size={14} className="text-accent" />
+        </Link>
+      ) : session ? (
+        <Link to="/" className="inline-flex items-center gap-2 rounded-xl border border-ref/40 bg-ref-soft px-3 py-2 text-[13px] text-ref hover:border-ref">
+          That was tonight's last item. See your path <ArrowRight size={14} />
+        </Link>
+      ) : next && (
         <Link to={`/problems/${next.id}`} className="inline-flex items-center gap-2 rounded-xl border border-line px-3 py-2 text-[13px] text-muted hover:border-line-strong hover:text-fg">
           Next: <b className="text-fg">{next.title}</b> <ArrowRight size={14} />
         </Link>

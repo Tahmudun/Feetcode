@@ -7,12 +7,13 @@ import { useSettings } from "@/store/settings";
 import { useStudy } from "@/store/events";
 import { dueCards } from "@/store/progress";
 import { IconButton, Kbd, Wordmark } from "@/ui/primitives";
+import { SessionPill } from "@/features/session/SessionPill";
 import { CommandPalette } from "./CommandPalette";
 import { RuntimePill } from "./RuntimePill";
 
 const NAV = [
+  { to: "/", label: "Tonight", end: true },
   { to: "/problems", label: "Problems" },
-  { to: "/patterns", label: "Patterns" },
   { to: "/review", label: "Review" },
   { to: "/playground", label: "Playground" },
 ];
@@ -47,6 +48,7 @@ export function Layout() {
             <NavLink
               key={n.to}
               to={n.to}
+              end={n.end}
               className={({ isActive }) =>
                 cn(
                   "relative rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors",
@@ -67,6 +69,7 @@ export function Layout() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-1.5">
+          <SessionPill className="mr-1.5 hidden lg:flex" />
           <button
             onClick={() => setPaletteOpen(true)}
             className="hidden h-8 items-center gap-2 rounded-lg border border-line bg-elev px-2.5 text-[13px] text-faint transition-colors hover:border-line-strong hover:text-muted sm:flex"

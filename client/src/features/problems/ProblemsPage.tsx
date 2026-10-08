@@ -244,16 +244,19 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
     <div className="overflow-hidden rounded-2xl border border-line bg-elev">
       {rows.map((p, i) => {
         const top = Object.entries(p.companies).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        // The one-liner is the trick and the optimal complexity is a hint: show them only once you've solved it.
+        const mine = progress.byProblem.get(p.id);
+        const solved = mine?.status === "solved";
         return (
           <Link
             key={p.id}
             to={`/problems/${p.id}`}
             className={cn(
-              "group grid grid-cols-[24px_1fr_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-hover sm:grid-cols-[24px_minmax(0,1fr)_90px_minmax(0,220px)_auto]",
+              "group grid grid-cols-[24px_1fr_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-hover sm:grid-cols-[24px_minmax(0,1fr)_90px_minmax(0,220px)_64px]",
               i > 0 && "border-t border-line",
             )}
           >
-            <StatusIcon status={progress.byProblem.get(p.id)?.status} />
+            <StatusIcon status={mine?.status} />
             <div className="min-w-0">
               <div className="truncate text-[14px] font-medium text-fg group-hover:text-accent">
                 <span className="mr-1.5 font-mono text-xs text-faint">{p.number}.</span>
@@ -261,7 +264,7 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
               </div>
               <div className="truncate text-xs text-faint">
                 {showPattern ? patterns.find((x) => x.id === p.pattern)?.name + " · " : ""}
-                {p.oneLiner}
+                {solved ? p.oneLiner : p.topics.join(" · ")}
               </div>
             </div>
             <DifficultyBadge value={p.difficulty} className="justify-self-start" />
@@ -280,8 +283,11 @@ function ProblemTable({ rows, company, showPattern = false }: { rows: ProblemSum
                 </>
               )}
             </div>
-            <div className="hidden justify-self-end whitespace-nowrap font-mono text-[11px] text-faint sm:block" title={`Optimal: ${p.optimal.time} time, ${p.optimal.space} space`}>
-              {p.optimal.time.replace(/ · /g, "·")}
+            <div
+              className="hidden justify-self-end whitespace-nowrap font-mono text-[11px] text-faint sm:block"
+              title={solved ? `Your best: ${mine?.bestTime ?? "?"} · optimal: ${p.optimal.time} time, ${p.optimal.space} space` : undefined}
+            >
+              {solved ? (mine?.bestTime ?? p.optimal.time) : ""}
             </div>
           </Link>
         );

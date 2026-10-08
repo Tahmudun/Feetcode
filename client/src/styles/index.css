@@ -9,7 +9,7 @@
      accent  (magenta) = you: your code, your run, your next action
      ref     (cyan)    = the reference: what's correct, what matches it
      warn    (yellow)  = where the two disagree: wrong answers, errors, comparisons
-     note    (note)  = annotations: footnotes, predictions, new things
+     note    (violet)  = annotations: footnotes, predictions, new things
      sky               = water and windows in the visualizer
    Semantic states (active / compare / match / new / done) are what the
    visualizer speaks - meaning first, presentation second. */
@@ -312,6 +312,19 @@ pre {
 }
 .anim-fade-up {
   animation: fade-up 0.32s ease-out both;
+}
+/* Tonight's items on the path: a slow beacon (one pulse under reduced motion). */
+@keyframes beacon {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+.anim-beacon {
+  animation: beacon 1.9s ease-out infinite;
 }
 .skeleton {
   background: linear-gradient(90deg, var(--bg-elev-2) 0%, var(--bg-hover) 50%, var(--bg-elev-2) 100%);

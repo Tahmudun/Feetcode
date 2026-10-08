@@ -216,7 +216,7 @@ function buildDecorations(state: EditorState, m: EditorMarks): DecorationSet {
     if (ln === m.errorLine) classes.push("cm-error-line");
     const hits = m.heat?.[ln];
     if (hits && ln !== m.line) {
-      const pct = Math.round(6 + (hits / maxHeat) * 26);
+      const pct = Math.round(4 + (hits / maxHeat) * 18);
       style = `background-color: color-mix(in oklab, var(--accent) ${pct}%, transparent)`;
     }
     if (classes.length || style) builder.add(line.from, line.from, Decoration.line({ class: classes.join(" "), attributes: style ? { style } : {} }));

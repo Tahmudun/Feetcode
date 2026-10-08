@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Brain, CalendarClock, Eye, Radar, Repeat, Shuffle } from "lucide-react";
 import { loadProblem, patterns, problemById, problems } from "@/content";
 import type { PatternId, ProblemDetail } from "@/content/types";
@@ -10,7 +10,8 @@ import { Button, DifficultyBadge, Empty, Kbd, Panel, Spinner, Tabs } from "@/ui/
 import { Markdown, renderInline } from "@/ui/Markdown";
 
 export default function ReviewPage() {
-  const [mode, setMode] = useState<"recall" | "patterns">("recall");
+  const [params] = useSearchParams();
+  const [mode, setMode] = useState<"recall" | "patterns">(params.get("mode") === "patterns" ? "patterns" : "recall");
   return (
     <div className="mx-auto max-w-3xl px-4 pb-24 pt-8 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
