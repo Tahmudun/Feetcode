@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { Brain, ChevronFirst, ChevronLast, Footprints, Pause, Play, SkipBack, SkipForward, Sparkles } from "lucide-react";
+import { Brain, ChevronFirst, ChevronLast, Footprints, Pause, Play, Rows3, SkipBack, SkipForward, Sparkles, TriangleAlert } from "lucide-react";
 import type { Lens } from "@/content/types";
 import type { Trace } from "@/runtime/types";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,8 @@ import { ArrayView } from "./panels/ArrayView";
 import { GraphView } from "./panels/GraphView";
 import { GridView, MapView, ObjectView, SetView, StackView } from "./panels/Collections";
 import { scalarText } from "./decode";
+import { buildTracks, positionOf } from "./tracks";
+import { Tracks } from "./Tracks";
 
 export interface PlayerProps {
   trace: Trace;
@@ -28,6 +30,10 @@ export interface PlayerProps {
   onFinish?: () => void;
   className?: string;
   heat?: Record<number, number>;
+  /** Hide narration (it can explain the code), e.g. when comparing behaviour with a hidden reference. */
+  hideNarration?: boolean;
+  /** A step to call out (raw index), e.g. where this run diverges from the other one. */
+  marker?: { step: number; label: string; var?: string | null; ghost?: string | null; ghostLabel?: string } | null;
 }
 
 function keyStepIndices(trace: Trace): number[] {
@@ -124,20 +130,25 @@ interface Question {
 }
 
 export function Player({
-  trace, lens = {}, params = [], mode = "lesson", showCode = true, footnotes, problemId, initialIndex = 0, onStep, onFinish, className, heat,
+  trace, lens = {}, params = [], mode = "lesson", showCode = true, footnotes, problemId, initialIndex = 0, onStep, onFinish, className, heat, marker, hideNarration = false,
 }: PlayerProps) {
   const ctx = useMemo(() => makeContext(trace, lens, params), [trace, lens, params]);
   const [keySteps, setKeySteps] = useState(mode === "lesson");
   const visible = useMemo(() => (keySteps ? keyStepIndices(trace) : trace.steps.map((_, i) => i)), [keySteps, trace]);
   const speed = useSettings((s) => s.speed);
   const setSettings = useSettings((s) => s.set);
-  const startAt = initialIndex === "end" ? visible.length - 1 : initialIndex;
+  const startAt = initialIndex === "end" ? visible.length - 1 : positionOf(visible, initialIndex);
   const pb = usePlayback(visible.length, speed, startAt);
   const raw = visible[Math.min(pb.index, visible.length - 1)] ?? 0;
   const scene = useMemo(() => buildScene(trace, raw, ctx), [trace, raw, ctx]);
-  const narration = scene.authored ? scene.narration : autoNarrate(trace.steps, raw, ctx.codeLines);
+  const narration = hideNarration
+    ? `Step ${raw + 1}: line ${scene.line}${scene.vars.some((v) => v.state !== "idle") ? ` · changed: ${scene.vars.filter((v) => v.state !== "idle").map((v) => `${v.name} = ${v.text}`).join(", ")}` : ""}`
+    : scene.authored ? scene.narration : autoNarrate(trace.steps, raw, ctx.codeLines);
   const [hotNote, setHotNote] = useState<number | null>(null);
   const notes = footnotes ?? trace.footnotes ?? [];
+  const [showTracks, setShowTracks] = useState(mode === "debug");
+  const tracks = useMemo(() => (showTracks ? buildTracks(trace, visible) : []), [showTracks, trace, visible]);
+  const markerPos = marker ? positionOf(visible, marker.step) : null;
   const finished = useRef(false);
 
   useEffect(() => {
@@ -292,6 +303,16 @@ export function Player({
         </div>
       </div>
 
+      {showTracks && tracks.length > 0 && (
+        <Tracks
+          tracks={tracks}
+          n={visible.length}
+          index={pb.index}
+          onSeek={pb.seek}
+          marker={marker && markerPos !== null ? { ...marker, pos: markerPos } : null}
+        />
+      )}
+
       {/* transport */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-0.5">
@@ -307,7 +328,7 @@ export function Player({
           <TBtn label="Next (→)" onClick={pb.next}><SkipForward size={15} /></TBtn>
           <TBtn label="Last step (End)" onClick={() => pb.seek(visible.length - 1)}><ChevronLast size={16} /></TBtn>
         </div>
-        <Scrubber trace={trace} visible={visible} index={pb.index} onSeek={pb.seek} />
+        <Scrubber trace={trace} visible={visible} index={pb.index} onSeek={pb.seek} marker={markerPos} />
         <span className="w-20 text-right font-mono text-[11px] text-faint">
           {pb.index + 1} / {visible.length}
         </span>
@@ -336,6 +357,23 @@ export function Player({
           title="Key steps show only narrated moments; every line shows the full execution"
         >
           <Footprints size={13} /> {keySteps ? "Key steps" : "Every line"}
+        </button>
+        {marker && markerPos !== null && (
+          <button
+            onClick={() => pb.seek(markerPos)}
+            className="flex h-7 items-center gap-1 rounded-md bg-warn-soft px-2 text-[11px] font-semibold text-warn hover:brightness-125"
+            title={`Jump to step ${markerPos + 1}: ${marker.label}`}
+          >
+            <TriangleAlert size={12} /> {marker.label}
+          </button>
+        )}
+        <button
+          onClick={() => setShowTracks((v) => !v)}
+          aria-pressed={showTracks}
+          className={cn("flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium", showTracks ? "bg-accent-soft text-accent" : "text-muted hover:bg-hover")}
+          title="One row per variable: every value it took, across the whole run"
+        >
+          <Rows3 size={13} /> Tracks
         </button>
         <button
           onClick={() => { setPredict((p) => !p); setQuestion(null); }}
@@ -379,7 +417,7 @@ function TBtn({ label, onClick, children }: { label: string; onClick: () => void
   );
 }
 
-function Scrubber({ trace, visible, index, onSeek }: { trace: Trace; visible: number[]; index: number; onSeek: (i: number) => void }) {
+function Scrubber({ trace, visible, index, onSeek, marker }: { trace: Trace; visible: number[]; index: number; onSeek: (i: number) => void; marker?: number | null }) {
   const n = visible.length;
   return (
     <div className="relative mx-1 h-8 min-w-40 flex-1">
@@ -392,6 +430,9 @@ function Scrubber({ trace, visible, index, onSeek }: { trace: Trace; visible: nu
           if (!mark) return null;
           return <span key={i} className={cn("absolute top-1/2 h-2.5 w-[3px] -translate-y-1/2 rounded-full", mark)} style={{ left: `${n > 1 ? (i / (n - 1)) * 100 : 0}%` }} />;
         })}
+      {marker !== null && marker !== undefined && (
+        <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-warn shadow-[0_0_8px_var(--warn)]" style={{ left: `${n > 1 ? (marker / (n - 1)) * 100 : 0}%` }} />
+      )}
       <input
         type="range"
         min={0}

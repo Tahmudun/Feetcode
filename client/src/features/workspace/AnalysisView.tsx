@@ -11,6 +11,7 @@ import { Button, Spinner } from "@/ui/primitives";
 import { renderInline } from "@/ui/Markdown";
 import { confetti } from "@/ui/confetti";
 import { Block } from "./ConsolePanel";
+import { describeDivergence, hasPoint } from "./findings";
 import { useWorkspace } from "./store";
 import { VERDICT } from "./verdicts";
 
@@ -105,7 +106,7 @@ function growthSeries(problem: ProblemDetail, baselines: Baselines | null, profi
 }
 
 function Findings({ profile }: { profile: Profile }) {
-  const setMarks = useWorkspace((s) => s.setMarks);
+  const setMarks = useWorkspace((s) => s.setAnalysisMarks);
   if (!profile.hidden.length && !Object.keys(profile.lines).length) return null;
   const hot = Object.entries(profile.lines).sort((a, b) => b[1] - a[1])[0];
   const apply = () =>
@@ -197,9 +198,18 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: "ref
 }
 
 function Failure({ problem, res }: { problem: ProblemDetail; res: SubmitResult }) {
-  const { showTrace, traceView } = useWorkspace();
+  const { showTrace, traceView, setTraceSide } = useWorkspace();
   const d = res.diagnosis;
   const f = res.failure;
+  const div = hasPoint(d?.divergence) ? d!.divergence! : null;
+  const finding = div ? describeDivergence(div, d?.pitfalls?.[0]?.title) : null;
+  const openTrace = (side: "yours" | "reference" = "yours") => {
+    const view = traceView && traceView.trace === res.trace
+      ? { ...traceView, startAt: div ? div.step : traceView.startAt }
+      : { trace: res.trace!, label: "Smallest failing input", args: d?.args ?? {}, expected: d?.expected, startAt: div ? div.step : ("end" as const), divergence: d?.divergence ?? null };
+    showTrace(view);
+    setTraceSide(side);
+  };
   return (
     <div className="space-y-4">
       {d?.found ? (
@@ -251,13 +261,38 @@ function Failure({ problem, res }: { problem: ProblemDetail; res: SubmitResult }
               ))}
             </div>
           )}
-          {res.trace && (
-            <Button
-              variant="primary"
-              onClick={() =>
-                showTrace(traceView && traceView.trace === res.trace ? traceView : { trace: res.trace!, label: "Minimal failing input", args: d.args ?? {}, expected: d.expected, startAt: "end" })
-              }
-            >
+          {div && finding && (
+            <section className="space-y-2 rounded-xl border border-warn/45 bg-elev-2 p-3.5 shadow-[0_0_30px_-18px_var(--warn)]">
+              <div className="flex flex-wrap items-baseline gap-2">
+                <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-warn">Where it goes wrong · line {div.line}</span>
+              </div>
+              <div className="text-[14px] font-semibold text-fg">{finding.title}</div>
+              {div.var && (
+                <div className="grid grid-cols-2 gap-2 font-mono text-[12.5px]">
+                  <div className="rounded-lg border border-accent/45 bg-accent-soft px-2.5 py-1.5">
+                    <div className="text-[10px] font-semibold uppercase tracking-wider text-accent">yours · step {div.step + 1}</div>
+                    {div.var} = <b>{div.yours}</b>
+                  </div>
+                  <div className="rounded-lg border border-ref/45 bg-ref-soft px-2.5 py-1.5">
+                    <div className="text-[10px] font-semibold uppercase tracking-wider text-ref">reference</div>
+                    {div.var} = <b>{div.ref}</b>
+                  </div>
+                </div>
+              )}
+              <p className="text-[12.5px] leading-relaxed text-muted">{finding.body}</p>
+              {finding.invariant && <p className="text-[12.5px] leading-relaxed text-fg">{finding.invariant}</p>}
+              {res.trace && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button variant="primary" onClick={() => openTrace("yours")}>
+                    <Play size={14} /> Watch it go wrong
+                  </Button>
+                  <Button onClick={() => openTrace("reference")}>Compare with the reference</Button>
+                </div>
+              )}
+            </section>
+          )}
+          {res.trace && !div && (
+            <Button variant="primary" onClick={() => openTrace("yours")}>
               <Play size={14} /> Watch it fail, step by step
             </Button>
           )}

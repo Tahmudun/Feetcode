@@ -110,6 +110,46 @@ export interface Diagnosis {
   shrinkSteps?: number;
   pitfalls?: { id: string; title: string; explain: string }[];
   neighbour?: { args: Record<string, unknown>; output: unknown } | null;
+  /** Where the run first disagrees with the closest reference (engine/feetcode/diverge.py). */
+  divergence?: Divergence | null;
+}
+
+/** An invariant mined from the reference and the first step of your run that breaks it. */
+export interface Invariant {
+  kind: "nondecreasing" | "nonincreasing" | "le";
+  vars: string[];
+  text: string;
+  runs: number;
+  step: number;
+  line: number | null;
+  before: string;
+  after: string;
+}
+
+/**
+ * Your run vs the reference that agrees with it longest. `step` indexes your trace,
+ * `refStep` the reference trace (`trace`). Values are short Python-looking strings.
+ *   value   - a variable took a value the reference's never did
+ *   extra   - a variable kept changing after the reference's had stopped
+ *   missing - the reference changed a variable yours never did
+ *   return  - same path, but a different (or early) answer
+ *   error   - your run raised            agree / unknown - nothing to point at
+ */
+export interface Divergence {
+  solution: string;
+  optimal: boolean;
+  shared: string[];
+  matched: number;
+  kind: "value" | "extra" | "missing" | "return" | "error" | "agree" | "unknown";
+  step: number | null;
+  line: number | null;
+  var: string | null;
+  yours: string | null;
+  ref: string | null;
+  refStep: number | null;
+  refLine: number | null;
+  invariant: Invariant | null;
+  trace: Trace;
 }
 
 export interface FitResult {

@@ -54,7 +54,7 @@ export function IconButton({ label, className, children, ...props }: ButtonHTMLA
 
 const DIFF: Record<Difficulty, string> = {
   Easy: "text-ref bg-ref-soft",
-  Medium: "text-accent bg-accent-soft",
+  Medium: "text-note bg-note-soft",
   Hard: "text-warn bg-warn-soft",
 };
 

@@ -122,7 +122,7 @@ export function ProblemsPage() {
           {DIFFS.map((d) => {
             const all = problems.filter((p) => p.difficulty === d);
             const done = solved.filter((p) => p.difficulty === d).length;
-            const tone = d === "Easy" ? "var(--ref)" : d === "Medium" ? "var(--accent)" : "var(--warn)";
+            const tone = d === "Easy" ? "var(--ref)" : d === "Medium" ? "var(--note)" : "var(--warn)";
             return (
               <div key={d} className="flex items-center gap-2.5">
                 <ProgressRing value={done / all.length} size={38} tone={tone}>

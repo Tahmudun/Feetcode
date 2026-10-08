@@ -160,7 +160,10 @@ def _walk(user_hist: dict, ref_hist: dict, names: list):
     for i, name, k, c in events:
         rh = ref_hist[name]
         if k >= len(rh):
-            return {"kind": "extra", "step": i, "var": name, "yours": c, "ref": rh[-1][1], "refStep": rh[-1][0]}, matched
+            # The reference's variable had stopped changing; its matching moment is as far past
+            # the last point both runs agreed on as yours is.
+            u0, r0 = matched[-1] if matched else (0, 0)
+            return {"kind": "extra", "step": i, "var": name, "yours": c, "ref": rh[-1][1], "refStep": r0 + (i - u0)}, matched
         if rh[k][1] != c:
             return {"kind": "value", "step": i, "var": name, "yours": c, "ref": rh[k][1], "refStep": rh[k][0]}, matched
         matched.append((i, rh[k][0]))
@@ -407,10 +410,10 @@ def analyze(problem: Problem, source: str, args: dict, user_trace: dict | None =
         div = None
     if div is not None:
         st = steps[div["step"]] if 0 <= div["step"] < len(steps) else {}
+        ref_step = max(0, min(div["refStep"], len(ref_trace["steps"]) - 1))
         out.update(kind=div["kind"], step=div["step"], line=st.get("l"), var=div["var"],
-                   yours=show(div["yours"]), ref=show(div["ref"]), refStep=div["refStep"],
-                   refLine=(ref_trace["steps"][div["refStep"]].get("l") if div.get("refStep") is not None
-                            and div["refStep"] < len(ref_trace["steps"]) else None))
+                   yours=show(div["yours"]), ref=show(div["ref"]), refStep=ref_step,
+                   refLine=ref_trace["steps"][ref_step].get("l") if ref_trace["steps"] else None)
     elif user_failed and steps:
         last = len(steps) - 1
         out.update(kind="error", step=last, line=(user_trace["error"] or {}).get("line") or steps[last].get("l"),

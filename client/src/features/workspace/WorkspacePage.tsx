@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { BookOpen, ChevronLeft, ChevronRight, Eye, FileText, History, List, NotebookPen, Play, RotateCcw, Send, Settings2 } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, Eye, FileText, List, NotebookPen, Play, RotateCcw, Send, Settings2 } from "lucide-react";
 import { loadProblem, neighbours, problemById } from "@/content";
 import type { ProblemDetail } from "@/content/types";
 import { CodeEditor, type CodeEditorHandle } from "@/editor/CodeEditor";
@@ -16,7 +16,6 @@ import { useWorkspace, type LeftTab } from "./store";
 import { DescriptionTab } from "./DescriptionTab";
 import { LearnTab } from "./LearnTab";
 import { VisualizeTab } from "./VisualizeTab";
-import { SubmissionsTab } from "./SubmissionsTab";
 import { NotesTab } from "./NotesTab";
 import { ConsolePanel } from "./ConsolePanel";
 import { Timer } from "./Timer";
@@ -62,6 +61,12 @@ function Workspace({ problem }: { problem: ProblemDetail }) {
   const [showSettings, setShowSettings] = useState(false);
   const [mobileView, setMobileView] = useState<"problem" | "code">("problem");
   const desktop = useDesktop();
+  // The editor shows two layers: where the player is (line, live values) over what analysis found (the
+  // pinned finding, heat). An error line from either wins.
+  const marks = useMemo(
+    () => ({ ...ws.analysisMarks, ...ws.stepMarks, errorLine: ws.stepMarks.errorLine ?? ws.analysisMarks.errorLine }),
+    [ws.analysisMarks, ws.stepMarks],
+  );
 
   // Keep the editor in sync when code changes from outside (reset, load a submission).
   useEffect(() => {
@@ -90,7 +95,6 @@ function Workspace({ problem }: { problem: ProblemDetail }) {
     { id: "description", label: <><FileText size={14} /> Problem</> },
     { id: "learn", label: <><BookOpen size={14} /> Learn</> },
     { id: "visualize", label: <><Eye size={14} /> Visualize{ws.traceView && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}</> },
-    { id: "submissions", label: <><History size={14} /> Submissions</> },
     { id: "notes", label: <><NotebookPen size={14} /> Notes</> },
   ];
 
@@ -103,7 +107,6 @@ function Workspace({ problem }: { problem: ProblemDetail }) {
         {ws.leftTab === "description" && <DescriptionTab problem={problem} />}
         {ws.leftTab === "learn" && <LearnTab problem={problem} />}
         {ws.leftTab === "visualize" && <VisualizeTab problem={problem} />}
-        {ws.leftTab === "submissions" && <SubmissionsTab problem={problem} />}
         {ws.leftTab === "notes" && <NotesTab problem={problem} />}
       </div>
     </div>
@@ -153,7 +156,8 @@ function Workspace({ problem }: { problem: ProblemDetail }) {
             onRun={() => void ws.run()}
             onSubmit={() => void ws.submit()}
             onVisualize={() => void ws.visualize()}
-            marks={ws.marks}
+            onFootnoteAction={ws.footnoteAction}
+            marks={marks}
             fontSize={fontSize}
             vimMode={vim}
             className="min-h-0 flex-1 overflow-hidden"
@@ -193,7 +197,7 @@ function Workspace({ problem }: { problem: ProblemDetail }) {
             {ws.busy === "run" ? <Spinner /> : <Play size={15} />} Run
             <Kbd className="hidden xl:inline-flex">{modKey()}↵</Kbd>
           </Button>
-          <Button size="md" variant="success" onClick={() => void ws.submit()} disabled={!!ws.busy} title={`Submit (${modKey()} Shift Enter)`}>
+          <Button size="md" variant="primary" onClick={() => void ws.submit()} disabled={!!ws.busy} title={`Submit (${modKey()} Shift Enter)`}>
             {ws.busy === "submit" ? <Spinner /> : <Send size={14} />} Submit
           </Button>
         </div>
