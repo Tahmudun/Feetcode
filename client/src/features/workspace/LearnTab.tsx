@@ -30,7 +30,7 @@ export function LearnTab({ problem }: { problem: ProblemDetail }) {
   return (
     <div className="space-y-6 px-5 py-5">
       {/* the insight, up front */}
-      <section className="relative overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-accent-soft via-transparent to-violet-soft p-4">
+      <section className="relative overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-accent-soft via-transparent to-note-soft p-4">
         <div className="mb-2 flex items-center gap-2">
           <Lightbulb size={15} className="text-accent" />
           <span className="text-[11px] font-semibold uppercase tracking-wider text-accent">The key insight</span>
@@ -109,7 +109,7 @@ export function LearnTab({ problem }: { problem: ProblemDetail }) {
 
       {baselines && Object.keys(baselines.solutions).length > 1 && (
         <section>
-          <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><Gauge size={15} className="text-teal" /> Why the optimization matters</h3>
+          <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><Gauge size={15} className="text-ref" /> Why the optimization matters</h3>
           <p className="mb-3 text-[12.5px] text-muted">
             Operations each solution performs as the input grows (log-log: steeper line = worse complexity). Counted, not timed - so it's exact.
           </p>
@@ -118,7 +118,7 @@ export function LearnTab({ problem }: { problem: ProblemDetail }) {
               id: s.id,
               label: s.name,
               points: baselines.solutions[s.id]?.points ?? [],
-              color: s.optimal ? "var(--teal)" : SERIES_COLORS[(i + 1) % SERIES_COLORS.length],
+              color: s.optimal ? "var(--ref)" : SERIES_COLORS[(i + 1) % SERIES_COLORS.length],
               dashed: !s.optimal,
               bold: s.optimal,
               fit: baselines.solutions[s.id]?.time,
@@ -133,7 +133,7 @@ export function LearnTab({ problem }: { problem: ProblemDetail }) {
                   <div key={s.id} className="flex items-center gap-2 text-[12px]">
                     <span className="w-40 truncate text-muted">{s.name}</span>
                     <div className="h-2 flex-1 overflow-hidden rounded-full bg-elev-2">
-                      <div className={cn("h-full rounded-full", s.optimal ? "bg-teal" : "bg-line-strong")} style={{ width: `${(n / max) * 100}%` }} />
+                      <div className={cn("h-full rounded-full", s.optimal ? "bg-ref" : "bg-line-strong")} style={{ width: `${(n / max) * 100}%` }} />
                     </div>
                     <span className="w-24 text-right font-mono text-[11px] text-faint">{n} steps</span>
                   </div>
@@ -147,7 +147,7 @@ export function LearnTab({ problem }: { problem: ProblemDetail }) {
 
       {problem.pitfalls.length > 0 && (
         <section>
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold"><TriangleAlert size={15} className="text-rose" /> Common mistakes</h3>
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold"><TriangleAlert size={15} className="text-warn" /> Common mistakes</h3>
           <div className="space-y-2">
             {problem.pitfalls.map((p) => (
               <div key={p.id} className="rounded-xl border border-line bg-elev-2/40 px-3.5 py-2.5 text-[13px]">
@@ -176,7 +176,7 @@ export function RecallCard({ q, a }: { q: string; a: string }) {
       onClick={() => setOpen((o) => !o)}
       className={cn(
         "min-h-24 rounded-xl border p-3.5 text-left text-[13px] transition-all",
-        open ? "border-teal/40 bg-teal-soft" : "border-line bg-elev-2/40 hover:border-line-strong",
+        open ? "border-ref/40 bg-ref-soft" : "border-line bg-elev-2/40 hover:border-line-strong",
       )}
     >
       <div className="font-medium text-fg">{q}</div>

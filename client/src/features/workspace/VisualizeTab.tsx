@@ -56,14 +56,14 @@ export function VisualizeTab({ problem }: { problem: ProblemDetail }) {
       </div>
       {(verdict || trace.truncated) && (
         <div className="flex flex-wrap gap-2 text-[12px]">
-          {verdict === "ok" && <span className="rounded-md bg-teal-soft px-2 py-0.5 font-semibold text-teal">✓ returns {lit(got, 60)} - correct</span>}
+          {verdict === "ok" && <span className="rounded-md bg-ref-soft px-2 py-0.5 font-semibold text-ref">✓ returns {lit(got, 60)} - correct</span>}
           {verdict === "wrong" && (
-            <span className="rounded-md bg-rose-soft px-2 py-0.5 font-semibold text-rose">
+            <span className="rounded-md bg-warn-soft px-2 py-0.5 font-semibold text-warn">
               ✗ returns {lit(got, 50)}, expected {lit(expected, 50)}
             </span>
           )}
           {verdict === "error" && trace.error && (
-            <span className="rounded-md bg-rose-soft px-2 py-0.5 font-semibold text-rose">
+            <span className="rounded-md bg-warn-soft px-2 py-0.5 font-semibold text-warn">
               {trace.error.type}: {trace.error.message}{trace.error.line ? ` (line ${trace.error.line})` : ""}
             </span>
           )}

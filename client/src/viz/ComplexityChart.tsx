@@ -46,8 +46,8 @@ export function ComplexityChart({ series, height = 230, cap }: { series: Series[
         <text x={4} y={pad.t + 2} fontSize={9} fill="var(--text-faint)">ops</text>
         {cap && (
           <g>
-            <line x1={pad.l} x2={width - pad.r} y1={Y(cap)} y2={Y(cap)} stroke="var(--rose)" strokeDasharray="6 4" strokeOpacity={0.6} />
-            <text x={width - pad.r} y={Y(cap) - 4} textAnchor="end" fontSize={9} fill="var(--rose)">budget</text>
+            <line x1={pad.l} x2={width - pad.r} y1={Y(cap)} y2={Y(cap)} stroke="var(--warn)" strokeDasharray="6 4" strokeOpacity={0.6} />
+            <text x={width - pad.r} y={Y(cap) - 4} textAnchor="end" fontSize={9} fill="var(--warn)">budget</text>
           </g>
         )}
         {series.map((s) => {
@@ -84,4 +84,4 @@ export function ComplexityChart({ series, height = 230, cap }: { series: Series[
   );
 }
 
-export const SERIES_COLORS = ["var(--text-faint)", "var(--violet)", "var(--teal)", "var(--sky)"];
+export const SERIES_COLORS = ["var(--text-faint)", "var(--note)", "var(--ref)", "var(--sky)"];

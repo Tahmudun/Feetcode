@@ -58,7 +58,7 @@ export default function StatsPage() {
     { label: "Predictions", value: stats.predictions ? `${Math.round((stats.predictRight / stats.predictions) * 100)}%` : "-", sub: `${stats.predictions} made` },
     { label: "Reviews", value: String(stats.reviews) },
   ];
-  const verdictColors: Record<string, string> = { accepted: "var(--teal)", wrong: "var(--rose)", error: "var(--violet)", tle: "var(--accent)", compile: "var(--text-faint)" };
+  const verdictColors: Record<string, string> = { accepted: "var(--ref)", wrong: "var(--warn)", error: "var(--note)", tle: "var(--accent)", compile: "var(--text-faint)" };
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 pb-24 pt-8 sm:px-6">
@@ -88,7 +88,7 @@ export default function StatsPage() {
               return (
                 <div key={p.id}>
                   <div className="mb-1 flex justify-between text-[13px]"><span>{p.name}</span><span className="font-mono text-xs text-muted">{m.solved}/{m.total} · {Math.round(m.mastery * 100)}%</span></div>
-                  <div className="h-2 overflow-hidden rounded-full bg-elev-2"><div className="h-full rounded-full bg-teal transition-all" style={{ width: `${m.mastery * 100}%` }} /></div>
+                  <div className="h-2 overflow-hidden rounded-full bg-elev-2"><div className="h-full rounded-full bg-ref transition-all" style={{ width: `${m.mastery * 100}%` }} /></div>
                 </div>
               );
             })}

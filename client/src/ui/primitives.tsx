@@ -9,8 +9,8 @@ const VARIANTS: Record<Variant, string> = {
   primary: "bg-accent text-accent-ink hover:bg-accent-strong shadow-[0_6px_20px_-8px_var(--accent)] font-semibold",
   secondary: "bg-elev-2 text-fg border border-line hover:border-line-strong hover:bg-hover",
   ghost: "text-muted hover:text-fg hover:bg-hover",
-  success: "bg-teal text-[#04140f] hover:brightness-110 font-semibold shadow-[0_6px_20px_-8px_var(--teal)]",
-  danger: "bg-rose-soft text-rose border border-rose/40 hover:bg-rose/20",
+  success: "bg-ref text-ref-ink hover:brightness-110 font-semibold shadow-[0_6px_20px_-8px_var(--ref)]",
+  danger: "bg-warn-soft text-warn border border-warn/40 hover:bg-warn/20",
 };
 const SIZES: Record<Size, string> = {
   sm: "h-7 px-2.5 text-xs gap-1.5 rounded-md",
@@ -53,9 +53,9 @@ export function IconButton({ label, className, children, ...props }: ButtonHTMLA
 }
 
 const DIFF: Record<Difficulty, string> = {
-  Easy: "text-teal bg-teal-soft",
+  Easy: "text-ref bg-ref-soft",
   Medium: "text-accent bg-accent-soft",
-  Hard: "text-rose bg-rose-soft",
+  Hard: "text-warn bg-warn-soft",
 };
 
 export function DifficultyBadge({ value, className }: { value: Difficulty; className?: string }) {
@@ -66,13 +66,13 @@ export function DifficultyBadge({ value, className }: { value: Difficulty; class
   );
 }
 
-export function Chip({ children, className, tone = "neutral" }: { children: ReactNode; className?: string; tone?: "neutral" | "accent" | "teal" | "rose" | "violet" | "sky" }) {
+export function Chip({ children, className, tone = "neutral" }: { children: ReactNode; className?: string; tone?: "neutral" | "accent" | "ref" | "warn" | "note" | "sky" }) {
   const tones = {
     neutral: "bg-elev-2 text-muted border-line",
     accent: "bg-accent-soft text-accent border-accent/30",
-    teal: "bg-teal-soft text-teal border-teal/30",
-    rose: "bg-rose-soft text-rose border-rose/30",
-    violet: "bg-violet-soft text-violet border-violet/30",
+    ref: "bg-ref-soft text-ref border-ref/30",
+    warn: "bg-warn-soft text-warn border-warn/30",
+    note: "bg-note-soft text-note border-note/30",
     sky: "bg-sky-soft text-sky border-sky/30",
   };
   return (

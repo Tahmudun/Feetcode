@@ -11,7 +11,7 @@ import { Chip, DifficultyBadge, ProgressRing } from "@/ui/primitives";
 const DIFFS: Difficulty[] = ["Easy", "Medium", "Hard"];
 
 export function StatusIcon({ status }: { status: Status | undefined }) {
-  if (status === "solved") return <CircleCheck size={16} className="text-teal" aria-label="Solved" />;
+  if (status === "solved") return <CircleCheck size={16} className="text-ref" aria-label="Solved" />;
   if (status === "attempted") return <CircleDashed size={16} className="text-accent" aria-label="Attempted" />;
   return <Circle size={16} className="text-line-strong" aria-label="Not started" />;
 }
@@ -122,7 +122,7 @@ export function ProblemsPage() {
           {DIFFS.map((d) => {
             const all = problems.filter((p) => p.difficulty === d);
             const done = solved.filter((p) => p.difficulty === d).length;
-            const tone = d === "Easy" ? "var(--teal)" : d === "Medium" ? "var(--accent)" : "var(--rose)";
+            const tone = d === "Easy" ? "var(--ref)" : d === "Medium" ? "var(--accent)" : "var(--warn)";
             return (
               <div key={d} className="flex items-center gap-2.5">
                 <ProgressRing value={done / all.length} size={38} tone={tone}>
@@ -224,7 +224,7 @@ export function ProblemsPage() {
                   <span className="text-xs text-faint">{p.tagline}</span>
                   <span className="ml-auto text-xs text-muted">{done}/{all.length}</span>
                   <div className="h-1.5 w-24 overflow-hidden rounded-full bg-elev-2">
-                    <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${(done / all.length) * 100}%` }} />
+                    <div className="h-full rounded-full bg-ref transition-all" style={{ width: `${(done / all.length) * 100}%` }} />
                   </div>
                 </div>
                 <ProblemTable rows={rows} company={company} />

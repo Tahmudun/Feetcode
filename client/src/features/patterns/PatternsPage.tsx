@@ -59,7 +59,7 @@ export default function PatternsPage() {
                   <span className="font-mono text-[11px] text-muted">{m.solved}/{m.total}</span>
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-elev-2">
-                  <div className="h-full rounded-full bg-teal transition-all" style={{ width: `${m.mastery * 100}%` }} />
+                  <div className="h-full rounded-full bg-ref transition-all" style={{ width: `${m.mastery * 100}%` }} />
                 </div>
                 <p className="mt-2 line-clamp-2 text-[11.5px] leading-snug text-muted">{p.tagline}</p>
               </Panel>

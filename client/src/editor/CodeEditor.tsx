@@ -44,14 +44,14 @@ interface Props {
 }
 
 const highlight = HighlightStyle.define([
-  { tag: [t.keyword, t.controlKeyword, t.operatorKeyword, t.definitionKeyword, t.moduleKeyword], color: "var(--violet)" },
-  { tag: [t.string, t.special(t.string)], color: "var(--teal)" },
+  { tag: [t.keyword, t.controlKeyword, t.operatorKeyword, t.definitionKeyword, t.moduleKeyword], color: "var(--note)" },
+  { tag: [t.string, t.special(t.string)], color: "var(--ref)" },
   { tag: [t.number, t.bool, t.null], color: "var(--accent)" },
   { tag: t.comment, color: "var(--text-faint)", fontStyle: "italic" },
   { tag: [t.function(t.definition(t.variableName)), t.definition(t.className)], color: "var(--accent-strong)", fontWeight: "600" },
   { tag: [t.function(t.variableName), t.function(t.propertyName)], color: "var(--sky)" },
   { tag: [t.className, t.typeName], color: "var(--sky)" },
-  { tag: t.self, color: "var(--rose)" },
+  { tag: t.self, color: "var(--text-muted)", fontStyle: "italic" },
   { tag: [t.operator, t.punctuation, t.bracket], color: "var(--text-muted)" },
   { tag: t.propertyName, color: "var(--text)" },
   { tag: t.variableName, color: "var(--text)" },
@@ -67,15 +67,15 @@ const baseTheme = EditorView.theme({
   ".cm-cursor, .cm-dropCursor": { borderLeftColor: "var(--accent)", borderLeftWidth: "2px" },
   "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection": { backgroundColor: "color-mix(in oklab, var(--accent) 22%, transparent) !important" },
   ".cm-selectionMatch": { backgroundColor: "color-mix(in oklab, var(--accent) 12%, transparent)" },
-  ".cm-matchingBracket": { backgroundColor: "color-mix(in oklab, var(--teal) 20%, transparent)", outline: "none" },
+  ".cm-matchingBracket": { backgroundColor: "color-mix(in oklab, var(--ref) 20%, transparent)", outline: "none" },
   ".cm-tooltip": { backgroundColor: "var(--bg-elev-2)", border: "1px solid var(--border-strong)", borderRadius: "10px", overflow: "hidden" },
   ".cm-tooltip-autocomplete > ul > li[aria-selected]": { backgroundColor: "var(--accent-soft)", color: "var(--text)" },
   ".cm-panels": { backgroundColor: "var(--bg-elev-2)", color: "var(--text)" },
   ".cm-trace-line": { backgroundColor: "var(--accent-soft) !important", boxShadow: "inset 3px 0 0 var(--accent)" },
   ".cm-trace-next": { boxShadow: "inset 2px 0 0 color-mix(in oklab, var(--accent) 45%, transparent)" },
-  ".cm-error-line": { backgroundColor: "var(--rose-soft) !important", boxShadow: "inset 3px 0 0 var(--rose)" },
+  ".cm-error-line": { backgroundColor: "var(--warn-soft) !important", boxShadow: "inset 3px 0 0 var(--warn)" },
   ".cm-footnote": { color: "var(--accent)", fontSize: "10px", fontWeight: "700", verticalAlign: "super", marginLeft: "6px", cursor: "help" },
-  ".cm-heat-label": { color: "var(--rose)", fontSize: "10px", marginLeft: "10px", opacity: "0.85" },
+  ".cm-heat-label": { color: "var(--accent-strong)", fontSize: "10px", marginLeft: "10px", fontStyle: "italic" },
 });
 
 const setMarks = StateEffect.define<EditorMarks>();
@@ -124,7 +124,7 @@ function buildDecorations(state: EditorState, m: EditorMarks): DecorationSet {
     const hits = m.heat?.[ln];
     if (hits && ln !== m.line) {
       const pct = Math.round(6 + (hits / maxHeat) * 26);
-      style = `background-color: color-mix(in oklab, var(--rose) ${pct}%, transparent)`;
+      style = `background-color: color-mix(in oklab, var(--accent) ${pct}%, transparent)`;
     }
     if (classes.length || style) builder.add(line.from, line.from, Decoration.line({ class: classes.join(" "), attributes: style ? { style } : {} }));
     const widgets: Decoration[] = [];

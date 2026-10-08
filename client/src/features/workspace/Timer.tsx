@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pause, Timer as TimerIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Interview mode: a visible clock. Click to start; turns amber at 20 min and rose at 35. */
+/** Interview mode: a visible clock. Click to start; turns accent at 20 min and warn at 35. */
 export function Timer() {
   const [start, setStart] = useState<number | null>(null);
   const [paused, setPaused] = useState<number | null>(null);
@@ -29,7 +29,7 @@ export function Timer() {
   const m = Math.floor(elapsed / 60000);
   const s = Math.floor((elapsed % 60000) / 1000);
   return (
-    <div className={cn("flex h-8 items-center gap-1 rounded-lg border px-2 font-mono text-xs", m >= 35 ? "border-rose/50 text-rose" : m >= 20 ? "border-accent/50 text-accent" : "border-line text-fg")}>
+    <div className={cn("flex h-8 items-center gap-1 rounded-lg border px-2 font-mono text-xs", m >= 35 ? "border-warn/50 text-warn" : m >= 20 ? "border-accent/50 text-accent" : "border-line text-fg")}>
       {String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
       <button
         aria-label={paused ? "Resume timer" : "Pause timer"}

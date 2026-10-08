@@ -33,13 +33,13 @@ export function tokenizeLine(line: string): { kind: TokenKind; text: string }[] 
 }
 
 export const TOKEN_CLASS: Record<TokenKind, string> = {
-  kw: "text-violet",
+  kw: "text-note",
   builtin: "text-sky",
-  str: "text-teal",
+  str: "text-ref",
   num: "text-accent",
   com: "text-faint italic",
   def: "text-accent-strong font-semibold",
   op: "text-muted",
-  self: "text-rose/80",
+  self: "text-warn/80",
   text: "text-fg",
 };

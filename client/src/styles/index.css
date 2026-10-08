@@ -5,67 +5,78 @@
 
 /* ── Tokens ────────────────────────────────────────────────────────────────
    The whole palette lives here; components only ever use these names.
-   Semantic states (active / compare / match / miss / new / done) are what the
+   Nocturne: one rule for color, so color always carries meaning:
+     accent  (magenta) = you: your code, your run, your next action
+     ref     (cyan)    = the reference: what's correct, what matches it
+     warn    (yellow)  = where the two disagree: wrong answers, errors, comparisons
+     note    (note)  = annotations: footnotes, predictions, new things
+     sky               = water and windows in the visualizer
+   Semantic states (active / compare / match / new / done) are what the
    visualizer speaks - meaning first, presentation second. */
 :root,
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0a0b10;
-  --bg-elev: #0f1118;
-  --bg-elev-2: #151821;
-  --bg-hover: #1b1f2b;
-  --bg-inset: #07080c;
-  --border: #212635;
-  --border-strong: #2e3447;
-  --text: #ebe8e1;
-  --text-muted: #959cad;
-  --text-faint: #646c80;
-  --accent: #ffb454;
-  --accent-strong: #ffc574;
-  --accent-ink: #1d1406;
-  --accent-soft: rgb(255 180 84 / 0.13);
-  --teal: #4fd6be;
-  --teal-soft: rgb(79 214 190 / 0.13);
-  --rose: #f0648c;
-  --rose-soft: rgb(240 100 140 / 0.14);
-  --violet: #a78bfa;
-  --violet-soft: rgb(167 139 250 / 0.15);
+  --bg: #090817;
+  --bg-elev: #110f26;
+  --bg-elev-2: #1a1740;
+  --bg-hover: #231f4e;
+  --bg-inset: #06051a;
+  --border: #262150;
+  --border-strong: #3a3478;
+  --text: #f3f0ff;
+  --text-muted: #aba5db;
+  --text-faint: #8079b6;
+  --accent: #ff4fb0;
+  --accent-strong: #ff7ac4;
+  --accent-ink: #1e0614;
+  --accent-soft: rgb(255 79 176 / 0.14);
+  --ref: #3de3ff;
+  --ref-soft: rgb(61 227 255 / 0.12);
+  --ref-ink: #021418;
+  --warn: #ffe14d;
+  --warn-soft: rgb(255 225 77 / 0.12);
+  --note: #a594ff;
+  --note-soft: rgb(165 148 255 / 0.15);
   --sky: #5aa9ff;
   --sky-soft: rgb(90 169 255 / 0.22);
-  --lime: #b5e655;
-  --shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 32px -12px rgb(0 0 0 / 0.6);
-  --glow: 0 0 0 1px rgb(255 180 84 / 0.35), 0 0 24px -4px rgb(255 180 84 / 0.35);
-  --grid-line: rgb(255 255 255 / 0.035);
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 20px 44px -24px rgb(0 0 0 / 0.85);
+  --glow: 0 0 0 1px rgb(255 79 176 / 0.45), 0 0 26px -6px rgb(255 79 176 / 0.6);
+  --grid-line: rgb(130 120 255 / 0.07);
+  --backdrop: radial-gradient(1000px 480px at 82% -10%, rgb(255 79 176 / 0.1), transparent 70%),
+    radial-gradient(800px 520px at -5% 105%, rgb(61 227 255 / 0.05), transparent 70%),
+    radial-gradient(rgb(220 210 255 / 0.13) 1px, transparent 1.4px),
+    radial-gradient(rgb(220 210 255 / 0.06) 1px, transparent 1.4px);
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f6f4ee;
-  --bg-elev: #fffefb;
-  --bg-elev-2: #f0ede5;
-  --bg-hover: #e9e5db;
-  --bg-inset: #ebe7dd;
-  --border: #e0dbcf;
-  --border-strong: #cfc8b8;
-  --text: #1b1d24;
-  --text-muted: #5b6170;
-  --text-faint: #8b909c;
-  --accent: #c7790f;
-  --accent-strong: #a96508;
-  --accent-ink: #fffaf0;
-  --accent-soft: rgb(199 121 15 / 0.13);
-  --teal: #0e9a82;
-  --teal-soft: rgb(14 154 130 / 0.12);
-  --rose: #d33a68;
-  --rose-soft: rgb(211 58 104 / 0.11);
-  --violet: #7458d6;
-  --violet-soft: rgb(116 88 214 / 0.12);
+  --bg: #f7f6fc;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #efedf8;
+  --bg-hover: #e6e3f3;
+  --bg-inset: #eceaf6;
+  --border: #dedaf0;
+  --border-strong: #c8c2e3;
+  --text: #15122e;
+  --text-muted: #4e4877;
+  --text-faint: #6c6790;
+  --accent: #c8197a;
+  --accent-strong: #a8136a;
+  --accent-ink: #fff5fa;
+  --accent-soft: rgb(200 25 122 / 0.1);
+  --ref: #0a7f99;
+  --ref-soft: rgb(10 127 153 / 0.11);
+  --ref-ink: #ffffff;
+  --warn: #9a6400;
+  --warn-soft: rgb(230 170 0 / 0.17);
+  --note: #6a4fd6;
+  --note-soft: rgb(106 79 214 / 0.11);
   --sky: #2a7bd6;
   --sky-soft: rgb(42 123 214 / 0.18);
-  --lime: #5f8f12;
-  --shadow: 0 1px 2px rgb(30 25 10 / 0.06), 0 12px 32px -16px rgb(30 25 10 / 0.18);
-  --glow: 0 0 0 1px rgb(199 121 15 / 0.4), 0 0 20px -6px rgb(199 121 15 / 0.45);
-  --grid-line: rgb(0 0 0 / 0.04);
+  --shadow: 0 1px 2px rgb(21 18 46 / 0.06), 0 14px 32px -18px rgb(21 18 46 / 0.22);
+  --glow: 0 0 0 1px rgb(200 25 122 / 0.4), 0 0 20px -6px rgb(200 25 122 / 0.45);
+  --grid-line: rgb(21 18 46 / 0.045);
+  --backdrop: none;
 }
 
 @theme inline {
@@ -83,15 +94,15 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
-  --color-teal: var(--teal);
-  --color-teal-soft: var(--teal-soft);
-  --color-rose: var(--rose);
-  --color-rose-soft: var(--rose-soft);
-  --color-violet: var(--violet);
-  --color-violet-soft: var(--violet-soft);
+  --color-ref: var(--ref);
+  --color-ref-soft: var(--ref-soft);
+  --color-ref-ink: var(--ref-ink);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-note: var(--note);
+  --color-note-soft: var(--note-soft);
   --color-sky: var(--sky);
   --color-sky-soft: var(--sky-soft);
-  --color-lime: var(--lime);
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", monospace;
   --font-display: "Bricolage Grotesque Variable", "Geist Variable", ui-sans-serif, sans-serif;
@@ -107,7 +118,11 @@ body,
 }
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--backdrop);
+  background-size: auto, auto, 97px 89px, 41px 37px;
+  background-position: 0 0, 0 0, 13px 29px, 0 0;
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -213,23 +228,23 @@ pre {
   --st-fg: var(--accent-strong);
 }
 .st-compare {
-  --st-bg: var(--rose-soft);
-  --st-border: var(--rose);
-  --st-fg: var(--rose);
+  --st-bg: var(--warn-soft);
+  --st-border: var(--warn);
+  --st-fg: var(--warn);
 }
 .st-match {
-  --st-bg: var(--teal-soft);
-  --st-border: var(--teal);
-  --st-fg: var(--teal);
+  --st-bg: var(--ref-soft);
+  --st-border: var(--ref);
+  --st-fg: var(--ref);
 }
 .st-miss {
   --st-bg: var(--bg-elev-2);
-  --st-border: var(--rose);
+  --st-border: var(--warn);
   --st-fg: var(--text-muted);
 }
 .st-new {
-  --st-bg: var(--violet-soft);
-  --st-border: var(--violet);
+  --st-bg: var(--note-soft);
+  --st-border: var(--note);
   --st-fg: var(--text);
 }
 .st-changed {
@@ -244,13 +259,13 @@ pre {
 }
 .st-removed {
   --st-bg: transparent;
-  --st-border: var(--rose);
+  --st-border: var(--warn);
   --st-fg: var(--text-faint);
 }
 .st-oob {
-  --st-bg: var(--rose-soft);
-  --st-border: var(--rose);
-  --st-fg: var(--rose);
+  --st-bg: var(--warn-soft);
+  --st-border: var(--warn);
+  --st-fg: var(--warn);
 }
 
 @keyframes pop-in {

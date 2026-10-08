@@ -10,9 +10,9 @@ import { HeroDemo } from "./HeroDemo";
 
 const FEATURES = [
   { icon: Eye, tone: "text-accent", title: "Visualize your code", text: "Not just the reference answer - every variable, pointer, comparison and linked-list arrow of the code you wrote, synced to your editor." },
-  { icon: Bug, tone: "text-rose", title: "Failures, explained", text: "A fuzzer hunts for inputs you get wrong and shrinks them to the smallest example - then replays exactly where it breaks." },
-  { icon: Gauge, tone: "text-teal", title: "Complexity, measured", text: "Your growth curve next to brute force and optimal, a heatmap of hot lines, and hidden costs like `x in list` called out." },
-  { icon: Brain, tone: "text-violet", title: "Predict mode", text: "Guess every branch before it runs. Active recall inside the visualizer is how tricks stop being tricks." },
+  { icon: Bug, tone: "text-warn", title: "Failures, explained", text: "A fuzzer hunts for inputs you get wrong and shrinks them to the smallest example - then replays exactly where it breaks." },
+  { icon: Gauge, tone: "text-ref", title: "Complexity, measured", text: "Your growth curve next to brute force and optimal, a heatmap of hot lines, and hidden costs like `x in list` called out." },
+  { icon: Brain, tone: "text-note", title: "Predict mode", text: "Guess every branch before it runs. Active recall inside the visualizer is how tricks stop being tricks." },
   { icon: Microscope, tone: "text-sky", title: "Deterministic judge", text: "Time limits counted in operations, not milliseconds. Same code, same verdict - on any laptop, every time." },
   { icon: Repeat, tone: "text-accent", title: "Spaced repetition", text: "Solved problems come back right before you'd forget them, as recall cards: pattern, insight, the one-line trick." },
 ];
@@ -66,7 +66,7 @@ export function HomePage() {
         {started && (
           <section className="grid gap-4 md:grid-cols-[1.2fr_1fr_1fr]">
             <Panel className="p-5">
-              <div className="mb-3 flex items-center gap-2 text-[13px] font-semibold"><CalendarDays size={15} className="text-teal" /> Your activity</div>
+              <div className="mb-3 flex items-center gap-2 text-[13px] font-semibold"><CalendarDays size={15} className="text-ref" /> Your activity</div>
               <Heatmap activity={progress.activity} weeks={18} />
               <div className="mt-3 flex items-center gap-4 text-xs text-muted">
                 <span className="flex items-center gap-1"><Flame size={13} className="text-accent" /> {progress.streak}-day streak</span>
@@ -76,7 +76,7 @@ export function HomePage() {
               </div>
             </Panel>
             <Panel className="flex flex-col p-5">
-              <div className="mb-2 flex items-center gap-2 text-[13px] font-semibold"><Repeat size={15} className="text-violet" /> Due for review</div>
+              <div className="mb-2 flex items-center gap-2 text-[13px] font-semibold"><Repeat size={15} className="text-note" /> Due for review</div>
               <div className="font-display text-4xl font-extrabold">{due.length}</div>
               <p className="mt-1 flex-1 text-xs text-muted">
                 {due.length ? `${problemById.get(due[0])?.title} and friends are about to fade.` : "Nothing's fading yet. Solve something to seed your queue."}
@@ -119,7 +119,7 @@ export function HomePage() {
                   <Panel className="h-full p-4 transition-all group-hover:-translate-y-0.5 group-hover:border-line-strong">
                     <div className="flex items-start justify-between">
                       <div className="font-semibold">{p.name}</div>
-                      <ProgressRing value={m.mastery} size={34} tone="var(--teal)">
+                      <ProgressRing value={m.mastery} size={34} tone="var(--ref)">
                         <span className="text-[9px] font-bold text-muted">{m.solved}/{m.total}</span>
                       </ProgressRing>
                     </div>
@@ -146,7 +146,7 @@ export function HomePage() {
 
         <section className={cn("rounded-2xl border border-line bg-elev p-6 text-[13px] text-muted")}>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <span className="flex items-center gap-2"><ScanSearch size={15} className="text-violet" /> No accounts, no servers: your code and progress never leave this browser.</span>
+            <span className="flex items-center gap-2"><ScanSearch size={15} className="text-note" /> No accounts, no servers: your code and progress never leave this browser.</span>
             <span>Python 3.14 via WebAssembly (Pyodide)</span>
             <a className="text-accent hover:underline" href="https://github.com/Tahmudun/Feetcode" target="_blank" rel="noreferrer">How it works →</a>
           </div>

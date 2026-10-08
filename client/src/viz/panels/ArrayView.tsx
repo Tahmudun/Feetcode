@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import type { ArrayPanel, CellView } from "../scene";
 import { BarsView } from "./BarsView";
 
-export const TONE_VARS = ["var(--accent)", "var(--violet)", "var(--sky)", "var(--teal)", "var(--rose)"];
+export const TONE_VARS = ["var(--accent)", "var(--note)", "var(--sky)", "var(--ref)", "var(--warn)"];
 
 export function Cell({ cell, size = "md", className }: { cell: CellView; size?: "sm" | "md"; className?: string }) {
   return (
@@ -37,7 +37,7 @@ export function Probe({ probe }: { probe?: { text: string; hit: boolean } }) {
     <span
       className={cn(
         "anim-pop inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 font-mono text-[11px]",
-        probe.hit ? "border-teal/50 bg-teal-soft text-teal" : "border-rose/50 bg-rose-soft text-rose",
+        probe.hit ? "border-ref/50 bg-ref-soft text-ref" : "border-warn/50 bg-warn-soft text-warn",
       )}
     >
       {probe.text} {probe.hit ? "✓ found" : "✗ not found"}
@@ -58,7 +58,7 @@ export function ArrayView({ panel }: { panel: ArrayPanel }) {
       <PanelLabel names={panel.names}>
         <span className="text-faint">{panel.container === "str" ? `str · ${panel.cells.length}` : `${panel.container} · ${panel.truncated ?? panel.cells.length}`}</span>
         <Probe probe={panel.probe} />
-        {panel.marked && <span className="text-[11px] text-violet">● in {panel.marked.by}</span>}
+        {panel.marked && <span className="text-[11px] text-note">● in {panel.marked.by}</span>}
       </PanelLabel>
       <div className="overflow-x-auto pb-1">
         {panel.overlay?.kind === "index-graph" && <IndexArcs edges={panel.overlay.edges} hot={panel.overlay.hot} cw={cw} n={slots} />}
@@ -85,13 +85,13 @@ export function ArrayView({ panel }: { panel: ArrayPanel }) {
                 {cell ? (
                   <Cell cell={cell} className="w-[var(--cw)]" />
                 ) : i === panel.oob ? (
-                  <div className="st-oob flex h-10 w-[var(--cw)] items-center justify-center rounded-lg border border-dashed text-[10px] font-bold text-rose" style={{ borderColor: "var(--rose)" }}>
+                  <div className="st-oob flex h-10 w-[var(--cw)] items-center justify-center rounded-lg border border-dashed text-[10px] font-bold text-warn" style={{ borderColor: "var(--warn)" }}>
                     OOB
                   </div>
                 ) : (
                   <div className="flex h-10 w-[var(--cw)] items-center justify-center rounded-lg border border-dashed border-line text-[10px] text-faint">end</div>
                 )}
-                <span className={cn("font-mono text-[10px]", marked.has(i) ? "font-bold text-violet" : "text-faint")}>
+                <span className={cn("font-mono text-[10px]", marked.has(i) ? "font-bold text-note" : "text-faint")}>
                   {marked.has(i) ? "●" : ""}
                   {i}
                 </span>
@@ -100,16 +100,16 @@ export function ArrayView({ panel }: { panel: ArrayPanel }) {
           })}
           {panel.ghost && (
             <div className="relative flex flex-col items-center gap-1 opacity-60">
-              <div className="st-removed flex h-10 min-w-10 items-center justify-center rounded-lg border border-dashed px-1.5 font-mono text-[13px] line-through" style={{ borderColor: "var(--rose)", color: "var(--text-faint)" }}>
+              <div className="st-removed flex h-10 min-w-10 items-center justify-center rounded-lg border border-dashed px-1.5 font-mono text-[13px] line-through" style={{ borderColor: "var(--warn)", color: "var(--text-faint)" }}>
                 {panel.ghost.text}
               </div>
-              <span className="font-mono text-[10px] text-rose">popped</span>
+              <span className="font-mono text-[10px] text-warn">popped</span>
             </div>
           )}
         </div>
       </div>
       {panel.oob !== undefined && (
-        <div className="mt-1 text-[11px] text-rose">Index {panel.oob} is outside {panel.names[0]} (valid: 0…{panel.cells.length - 1}).</div>
+        <div className="mt-1 text-[11px] text-warn">Index {panel.oob} is outside {panel.names[0]} (valid: 0…{panel.cells.length - 1}).</div>
       )}
     </div>
   );
@@ -126,7 +126,7 @@ function IndexArcs({ edges, hot, cw, n }: { edges: [number, number][]; hot: Reco
     <svg width={width} height={height} className="block" aria-label="index arrows">
       <defs>
         <marker id="idx-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--violet)" />
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--note)" />
         </marker>
       </defs>
       {edges.map(([a, b]) => {
@@ -137,7 +137,7 @@ function IndexArcs({ edges, hot, cw, n }: { edges: [number, number][]; hot: Reco
             key={a}
             d={a === b ? `M ${x(a) - 6} ${height} C ${x(a) - 16} ${height - 22}, ${x(a) + 16} ${height - 22}, ${x(a) + 6} ${height - 2}` : `M ${x(a)} ${height} Q ${(x(a) + x(b)) / 2} ${height - Math.min(height - 4, lift)} ${x(b)} ${height - 2}`}
             fill="none"
-            stroke="var(--violet)"
+            stroke="var(--note)"
             strokeOpacity={isHot ? 1 : 0.35}
             strokeWidth={isHot ? 2 : 1.2}
             markerEnd="url(#idx-arrow)"

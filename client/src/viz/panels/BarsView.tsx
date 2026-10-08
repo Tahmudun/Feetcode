@@ -4,13 +4,13 @@ import { PanelLabel, Probe, TONE_VARS } from "./ArrayView";
 const FILL: Record<string, string> = {
   idle: "var(--bg-hover)",
   active: "var(--accent)",
-  compare: "var(--rose)",
-  match: "var(--teal)",
+  compare: "var(--warn)",
+  match: "var(--ref)",
   changed: "var(--accent)",
-  new: "var(--violet)",
+  new: "var(--note)",
   miss: "var(--bg-hover)",
   removed: "var(--bg-elev)",
-  oob: "var(--rose)",
+  oob: "var(--warn)",
 };
 
 /**
@@ -55,7 +55,7 @@ export function BarsView({ panel }: { panel: ArrayPanel }) {
           </span>
         )}
         {ov?.kind === "rect" && (
-          <span className="rounded-md bg-rose-soft px-1.5 py-0.5 text-[11px] font-semibold text-rose">
+          <span className="rounded-md bg-warn-soft px-1.5 py-0.5 text-[11px] font-semibold text-warn">
             rectangle = {ov.height} × {ov.to - ov.from + 1} = {ov.area}
           </span>
         )}
@@ -93,8 +93,8 @@ export function BarsView({ panel }: { panel: ArrayPanel }) {
               y={y(ov.height)}
               width={(ov.to - ov.from + 1) * slot - 2}
               height={base - y(ov.height)}
-              fill="var(--rose-soft)"
-              stroke="var(--rose)"
+              fill="var(--warn-soft)"
+              stroke="var(--warn)"
               strokeDasharray="4 3"
               style={{ transition: "all .3s" }}
             />
@@ -121,14 +121,14 @@ export function BarsView({ panel }: { panel: ArrayPanel }) {
                   rx={3}
                   fill={fill}
                   fillOpacity={cell.state === "idle" ? 1 : 0.85}
-                  stroke={marked.has(i) ? "var(--violet)" : cell.state === "idle" ? "var(--border-strong)" : fill}
+                  stroke={marked.has(i) ? "var(--note)" : cell.state === "idle" ? "var(--border-strong)" : fill}
                   strokeWidth={marked.has(i) ? 2 : 1}
                   style={{ transition: "y .25s, height .25s, fill .2s" }}
                 />
                 <text x={x(i) + barW / 2} y={Math.min(y(v), base) - 4} textAnchor="middle" fontSize={10} fill="var(--text-muted)">
                   {cell.text}
                 </text>
-                <text x={x(i) + barW / 2} y={base + 13} textAnchor="middle" fontSize={9} fill={marked.has(i) ? "var(--violet)" : "var(--text-faint)"}>
+                <text x={x(i) + barW / 2} y={base + 13} textAnchor="middle" fontSize={9} fill={marked.has(i) ? "var(--note)" : "var(--text-faint)"}>
                   {i}
                 </text>
                 {ptrs.map((p, k) => (
@@ -143,7 +143,7 @@ export function BarsView({ panel }: { panel: ArrayPanel }) {
             ov.levels.map((l) => {
               const x1 = x(l.from) - 2;
               const x2 = x(l.to) + barW + 2;
-              const color = l.side === "left" ? "var(--accent)" : "var(--violet)";
+              const color = l.side === "left" ? "var(--accent)" : "var(--note)";
               return (
                 <g key={l.name} style={{ transition: "all .3s" }}>
                   <line x1={x1} x2={x2} y1={y(l.value)} y2={y(l.value)} stroke={color} strokeWidth={l.bottleneck ? 2.5 : 1.5} strokeDasharray={l.bottleneck ? undefined : "5 4"} />

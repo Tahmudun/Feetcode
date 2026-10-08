@@ -82,7 +82,7 @@ export function VarsBar({ scene }: { scene: Scene }) {
           key={v.name}
           className={cn(
             "inline-flex items-center gap-1 rounded-lg border px-2 py-1 font-mono text-[12px] transition-colors",
-            v.state === "changed" ? "anim-flash border-accent/60 bg-accent-soft" : v.state === "new" ? "border-violet/50 bg-violet-soft" : "border-line bg-elev-2",
+            v.state === "changed" ? "anim-flash border-accent/60 bg-accent-soft" : v.state === "new" ? "border-note/50 bg-note-soft" : "border-line bg-elev-2",
           )}
         >
           <span className="text-muted">{v.name}</span>
@@ -224,16 +224,16 @@ export function Player({
         <div className="min-w-0 flex-1">
           {question ? (
             <div className="anim-fade-up">
-              <div className="flex items-center gap-2 text-[13px] font-semibold text-violet">
+              <div className="flex items-center gap-2 text-[13px] font-semibold text-note">
                 <Brain size={14} /> Predict: will this {question.kind === "while" ? "loop keep going" : "branch run"}?
               </div>
               <code className="mt-1 block truncate text-[12.5px] text-fg">line {question.line}: {question.code}</code>
               {question.values && <div className="mt-0.5 font-mono text-[11.5px] text-muted">{question.values}</div>}
               <div className="mt-2 flex gap-2">
-                <button onClick={() => answer(true)} className="rounded-lg bg-teal-soft px-3 py-1 text-xs font-semibold text-teal hover:brightness-125">
+                <button onClick={() => answer(true)} className="rounded-lg bg-ref-soft px-3 py-1 text-xs font-semibold text-ref hover:brightness-125">
                   True <Kbd className="ml-1">T</Kbd>
                 </button>
-                <button onClick={() => answer(false)} className="rounded-lg bg-rose-soft px-3 py-1 text-xs font-semibold text-rose hover:brightness-125">
+                <button onClick={() => answer(false)} className="rounded-lg bg-warn-soft px-3 py-1 text-xs font-semibold text-warn hover:brightness-125">
                   False <Kbd className="ml-1">F</Kbd>
                 </button>
               </div>
@@ -241,7 +241,7 @@ export function Player({
           ) : (
             <>
               {reveal && (
-                <div className={cn("anim-pop mb-1 text-[12px] font-bold", reveal.correct ? "text-teal" : "text-rose")}>
+                <div className={cn("anim-pop mb-1 text-[12px] font-bold", reveal.correct ? "text-ref" : "text-warn")}>
                   {reveal.correct ? "✓ Correct" : "✗ Not quite"} - it was {reveal.truth ? "True" : "False"}.
                 </div>
               )}
@@ -252,7 +252,7 @@ export function Player({
           )}
         </div>
         {predict && score.total > 0 && (
-          <span className="shrink-0 rounded-md bg-violet-soft px-2 py-0.5 font-mono text-[11px] font-bold text-violet">
+          <span className="shrink-0 rounded-md bg-note-soft px-2 py-0.5 font-mono text-[11px] font-bold text-note">
             {score.right}/{score.total}
           </span>
         )}
@@ -279,12 +279,12 @@ export function Player({
           <VarsBar scene={scene} />
           <CallStack scene={scene} />
           {scene.ret !== undefined && (
-            <div className="anim-pop inline-flex items-center gap-2 rounded-lg border border-teal/40 bg-teal-soft px-2.5 py-1 font-mono text-[12px] text-teal">
+            <div className="anim-pop inline-flex items-center gap-2 rounded-lg border border-ref/40 bg-ref-soft px-2.5 py-1 font-mono text-[12px] text-ref">
               <Sparkles size={13} /> returns {scene.ret}
             </div>
           )}
           {scene.exc && (
-            <div className="anim-pop rounded-lg border border-rose/40 bg-rose-soft px-2.5 py-1.5 font-mono text-[12px] text-rose">💥 {scene.exc}</div>
+            <div className="anim-pop rounded-lg border border-warn/40 bg-warn-soft px-2.5 py-1.5 font-mono text-[12px] text-warn">💥 {scene.exc}</div>
           )}
           {scene.stdout && (
             <pre className="max-h-24 overflow-auto rounded-lg border border-line bg-inset px-2.5 py-1.5 text-[11.5px] text-muted">{scene.stdout}</pre>
@@ -339,7 +339,7 @@ export function Player({
         </button>
         <button
           onClick={() => { setPredict((p) => !p); setQuestion(null); }}
-          className={cn("flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium", predict ? "bg-violet-soft text-violet" : "text-muted hover:bg-hover")}
+          className={cn("flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium", predict ? "bg-note-soft text-note" : "text-muted hover:bg-hover")}
           title="Pause at every decision and guess the outcome before seeing it"
         >
           <Brain size={13} /> Predict
@@ -388,7 +388,7 @@ function Scrubber({ trace, visible, index, onSeek }: { trace: Trace; visible: nu
       {n <= 400 &&
         visible.map((r, i) => {
           const st = trace.steps[r];
-          const mark = st.k === "exc" ? "bg-rose" : st.k === "call" ? "bg-violet" : st.k === "return" ? "bg-teal" : null;
+          const mark = st.k === "exc" ? "bg-warn" : st.k === "call" ? "bg-note" : st.k === "return" ? "bg-ref" : null;
           if (!mark) return null;
           return <span key={i} className={cn("absolute top-1/2 h-2.5 w-[3px] -translate-y-1/2 rounded-full", mark)} style={{ left: `${n > 1 ? (i / (n - 1)) * 100 : 0}%` }} />;
         })}

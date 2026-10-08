@@ -39,8 +39,8 @@ export function AnalysisView({ problem }: { problem: ProblemDetail }) {
         <div className="flex items-center gap-2 text-[14px] font-semibold"><Spinner className="text-accent" /> {submitStage || "Judging…"}</div>
         <ol className="space-y-2 text-[13px] text-muted">
           <li className="flex items-center gap-2"><Gauge size={14} className="text-accent" /> Hidden tests, with deterministic operation budgets</li>
-          <li className="flex items-center gap-2"><ScanSearch size={14} className="text-violet" /> Fuzzing small random inputs against the reference</li>
-          <li className="flex items-center gap-2"><Microscope size={14} className="text-teal" /> Profiling how your code grows with n</li>
+          <li className="flex items-center gap-2"><ScanSearch size={14} className="text-note" /> Fuzzing small random inputs against the reference</li>
+          <li className="flex items-center gap-2"><Microscope size={14} className="text-ref" /> Profiling how your code grows with n</li>
         </ol>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-elev-2"><div className="skeleton h-full w-full" /></div>
       </div>
@@ -62,8 +62,8 @@ export function AnalysisView({ problem }: { problem: ProblemDetail }) {
   if (res.verdict === "compile") {
     return (
       <div>
-        <div className="mb-2 text-lg font-bold text-rose">Syntax Error</div>
-        <pre className="rounded-xl border border-rose/40 bg-rose-soft p-3 font-mono text-[12.5px] text-rose">Line {res.error?.line}: {res.error?.message}</pre>
+        <div className="mb-2 text-lg font-bold text-warn">Syntax Error</div>
+        <pre className="rounded-xl border border-warn/40 bg-warn-soft p-3 font-mono text-[12.5px] text-warn">Line {res.error?.line}: {res.error?.message}</pre>
       </div>
     );
   }
@@ -93,7 +93,7 @@ function growthSeries(problem: ProblemDetail, baselines: Baselines | null, profi
       const b = baselines.solutions[s.id];
       if (!b) return;
       series.push({
-        id: s.id, label: s.name, points: b.points, color: s.optimal ? "var(--teal)" : SERIES_COLORS[i % SERIES_COLORS.length],
+        id: s.id, label: s.name, points: b.points, color: s.optimal ? "var(--ref)" : SERIES_COLORS[i % SERIES_COLORS.length],
         dashed: !s.optimal, fit: b.time,
       });
     });
@@ -133,7 +133,7 @@ function Findings({ profile }: { profile: Profile }) {
               <sup className="mt-1.5 font-mono text-[10px] font-bold text-accent">{i + 1}</sup>
               <span>
                 <span className="font-mono text-faint">L{h.line} </span>
-                <code className="text-fg">{h.probes[0]?.label}</code> costs <b className="text-rose">{h.cost.toLocaleString()}</b> hidden operations: {h.probes[0]?.hint}.
+                <code className="text-fg">{h.probes[0]?.label}</code> costs <b className="text-warn">{h.cost.toLocaleString()}</b> hidden operations: {h.probes[0]?.hint}.
               </span>
             </li>
           ))}
@@ -154,7 +154,7 @@ function Accepted({ problem, res, baselines }: { problem: ProblemDetail; res: Su
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-3">
-        <Stat label="Your time" value={yours ?? "-"} tone={slower ? "accent" : "teal"} />
+        <Stat label="Your time" value={yours ?? "-"} tone={slower ? "accent" : "ref"} />
         <Stat label="Your space" value={profile?.space?.label ?? "-"} tone="sky" />
         <Stat label="Optimal" value={`${optimal.time} · ${optimal.space}`} tone="muted" />
       </div>
@@ -166,8 +166,8 @@ function Accepted({ problem, res, baselines }: { problem: ProblemDetail; res: Su
           </button>
         </div>
       ) : (
-        <div className="rounded-xl border border-teal/40 bg-teal-soft p-3 text-[13px] text-fg">
-          <b className="text-teal">Optimal complexity.</b> {problem.insight.mnemonic} This problem is now in your review queue - you'll see it again in a day to lock it in.
+        <div className="rounded-xl border border-ref/40 bg-ref-soft p-3 text-[13px] text-fg">
+          <b className="text-ref">Optimal complexity.</b> {problem.insight.mnemonic} This problem is now in your review queue - you'll see it again in a day to lock it in.
         </div>
       )}
       {profile && (
@@ -186,8 +186,8 @@ function Accepted({ problem, res, baselines }: { problem: ProblemDetail; res: Su
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone: "teal" | "accent" | "sky" | "muted" }) {
-  const color = { teal: "text-teal", accent: "text-accent", sky: "text-sky", muted: "text-muted" }[tone];
+function Stat({ label, value, tone }: { label: string; value: string; tone: "ref" | "accent" | "sky" | "muted" }) {
+  const color = { ref: "text-ref", accent: "text-accent", sky: "text-sky", muted: "text-muted" }[tone];
   return (
     <div className="rounded-xl border border-line bg-elev-2/50 px-3 py-2">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-faint">{label}</div>
@@ -205,14 +205,14 @@ function Failure({ problem, res }: { problem: ProblemDetail; res: SubmitResult }
       {d?.found ? (
         <>
           <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted">
-            <Bug size={15} className="text-rose" />
+            <Bug size={15} className="text-warn" />
             {d.origin === "fuzz" ? (
               <span>Your code passed every hidden test, but the <b className="text-fg">fuzzer</b> found an input it gets wrong.</span>
             ) : (
               <span>Failed hidden test #{(f?.index ?? 0) + 1}{f?.argsSummary ? ` (${f.argsSummary})` : ""}.</span>
             )}
             {d.shrinkSteps !== undefined && d.originalSize !== undefined && d.size !== undefined && d.originalSize > d.size && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-violet-soft px-1.5 py-0.5 text-[11px] font-semibold text-violet">
+              <span className="inline-flex items-center gap-1 rounded-md bg-note-soft px-1.5 py-0.5 text-[11px] font-semibold text-note">
                 <Shrink size={11} /> shrunk from size {d.originalSize} → {d.size}
               </span>
             )}
@@ -223,14 +223,14 @@ function Failure({ problem, res }: { problem: ProblemDetail; res: SubmitResult }
             ))}
           </Block>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Block label="Expected" tone="teal">{lit(d.expected)}</Block>
+            <Block label="Expected" tone="ref">{lit(d.expected)}</Block>
             {d.error ? (
-              <Block label={d.error.type} tone="rose">
+              <Block label={d.error.type} tone="warn">
                 {d.error.message}
                 {d.error.line ? <div className="mt-1 text-[11px] opacity-80">at line {d.error.line}</div> : null}
               </Block>
             ) : (
-              <Block label="Your output" tone="rose">{lit(d.actual)}</Block>
+              <Block label="Your output" tone="warn">{lit(d.actual)}</Block>
             )}
           </div>
           {d.neighbour && (
@@ -269,8 +269,8 @@ function Failure({ problem, res }: { problem: ProblemDetail; res: SubmitResult }
               {Object.entries(f.args).map(([k, val]) => <div key={k}><span className="text-muted">{k} = </span>{lit(val)}</div>)}
             </Block>
           )}
-          {f.error ? <Block label={f.error.type} tone="rose">{f.error.message}</Block> : <Block label="Your output" tone="rose">{lit(f.output)}</Block>}
-          <Block label="Expected" tone="teal">{lit(f.expected)}</Block>
+          {f.error ? <Block label={f.error.type} tone="warn">{f.error.message}</Block> : <Block label="Your output" tone="warn">{lit(f.output)}</Block>}
+          <Block label="Expected" tone="ref">{lit(f.expected)}</Block>
         </div>
       ) : null}
       {problem.pitfalls.length > 0 && !d?.pitfalls?.length && (

@@ -14,8 +14,8 @@ export function ConsolePanel({ problem }: { problem: ProblemDetail }) {
   const sv = ws.submitResult ? VERDICT[ws.submitResult.verdict] : null;
   const tabs: { id: ConsoleTab; label: React.ReactNode }[] = [
     { id: "tests", label: "Testcases" },
-    { id: "result", label: <>Result {v && <span className={cn("h-1.5 w-1.5 rounded-full", ws.runResult?.verdict === "accepted" ? "bg-teal" : "bg-rose")} />}</> },
-    { id: "analysis", label: <>Submission {sv && <span className={cn("h-1.5 w-1.5 rounded-full", ws.submitResult?.verdict === "accepted" ? "bg-teal" : "bg-rose")} />}</> },
+    { id: "result", label: <>Result {v && <span className={cn("h-1.5 w-1.5 rounded-full", ws.runResult?.verdict === "accepted" ? "bg-ref" : "bg-warn")} />}</> },
+    { id: "analysis", label: <>Submission {sv && <span className={cn("h-1.5 w-1.5 rounded-full", ws.submitResult?.verdict === "accepted" ? "bg-ref" : "bg-warn")} />}</> },
   ];
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-elev">
@@ -25,7 +25,7 @@ export function ConsolePanel({ problem }: { problem: ProblemDetail }) {
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         {ws.error && (
-          <div className="mb-3 flex items-start gap-2 rounded-xl border border-rose/40 bg-rose-soft px-3 py-2 text-[13px] text-rose">
+          <div className="mb-3 flex items-start gap-2 rounded-xl border border-warn/40 bg-warn-soft px-3 py-2 text-[13px] text-warn">
             <CircleAlert size={15} className="mt-0.5 shrink-0" /> {ws.error}
           </div>
         )}
@@ -51,10 +51,10 @@ function CaseChips({ statuses }: { statuses?: (boolean | null)[] }) {
           )}
         >
           {statuses && statuses[i] !== undefined && statuses[i] !== null && (
-            <span className={cn("h-1.5 w-1.5 rounded-full", statuses[i] ? "bg-teal" : "bg-rose")} />
+            <span className={cn("h-1.5 w-1.5 rounded-full", statuses[i] ? "bg-ref" : "bg-warn")} />
           )}
           Case {i + 1}
-          {c.custom && <span className="text-[10px] text-violet">custom</span>}
+          {c.custom && <span className="text-[10px] text-note">custom</span>}
           {c.custom && cases.length > 1 && (
             <X size={11} className="opacity-0 group-hover:opacity-70" onClick={(e) => { e.stopPropagation(); removeCase(i); }} />
           )}
@@ -90,10 +90,10 @@ function FieldEditor({ name, value, onCommit }: { name: string; value: unknown; 
         }}
         className={cn(
           "h-9 w-full rounded-lg border bg-inset px-3 font-mono text-[13px] text-fg outline-none transition-colors",
-          bad ? "border-rose/60" : "border-line focus:border-accent/60",
+          bad ? "border-warn/60" : "border-line focus:border-accent/60",
         )}
       />
-      {bad && <span className="mt-0.5 block text-[11px] text-rose">Not valid JSON yet - use double quotes for strings, null for None.</span>}
+      {bad && <span className="mt-0.5 block text-[11px] text-warn">Not valid JSON yet - use double quotes for strings, null for None.</span>}
     </label>
   );
 }
@@ -129,7 +129,7 @@ function ResultView() {
     return (
       <div>
         <div className={cn("mb-2 text-lg font-bold", v.text)}>{v.label}</div>
-        <pre className="rounded-xl border border-rose/40 bg-rose-soft p-3 font-mono text-[12.5px] text-rose">
+        <pre className="rounded-xl border border-warn/40 bg-warn-soft p-3 font-mono text-[12.5px] text-warn">
           Line {runResult.error?.line}: {runResult.error?.message}
         </pre>
       </div>
@@ -154,12 +154,12 @@ function ResultView() {
             ))}
           </Block>
           {r.error ? (
-            <Block label={r.error.type} tone="rose">
+            <Block label={r.error.type} tone="warn">
               {r.error.message}
               {r.error.line && <div className="mt-1 text-[11px] opacity-80">at line {r.error.line}</div>}
             </Block>
           ) : (
-            <Block label="Output" tone={r.pass ? "teal" : "rose"}>{lit(r.output)}</Block>
+            <Block label="Output" tone={r.pass ? "ref" : "warn"}>{lit(r.output)}</Block>
           )}
           <Block label="Expected">{r.expected === null || r.expected === undefined ? <span className="text-faint">(computed by the reference solution)</span> : lit(r.expected)}</Block>
           {r.stdout && <Block label="Stdout"><pre className="whitespace-pre-wrap">{r.stdout}</pre></Block>}
@@ -174,14 +174,14 @@ function ResultView() {
   );
 }
 
-export function Block({ label, tone, children }: { label: string; tone?: "teal" | "rose"; children: React.ReactNode }) {
+export function Block({ label, tone, children }: { label: string; tone?: "ref" | "warn"; children: React.ReactNode }) {
   return (
     <div>
       <div className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-faint">{label}</div>
       <div
         className={cn(
           "overflow-x-auto rounded-lg border px-3 py-2 font-mono text-[12.5px]",
-          tone === "teal" ? "border-teal/30 bg-teal-soft text-teal" : tone === "rose" ? "border-rose/30 bg-rose-soft text-rose" : "border-line bg-inset text-fg",
+          tone === "ref" ? "border-ref/30 bg-ref-soft text-ref" : tone === "warn" ? "border-warn/30 bg-warn-soft text-warn" : "border-line bg-inset text-fg",
         )}
       >
         {children}
