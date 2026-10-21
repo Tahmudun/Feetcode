@@ -19,6 +19,7 @@ PATTERNS = {
     "two-pointers": "Two Pointers",
     "sliding-window": "Sliding Window",
     "stack": "Stack",
+    "binary-search": "Binary Search",
     "linked-list": "Linked List",
 }
 

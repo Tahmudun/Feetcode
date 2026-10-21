@@ -3,7 +3,7 @@
 import type { Trace } from "@/runtime/types";
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
-export type PatternId = "arrays-hashing" | "two-pointers" | "sliding-window" | "stack" | "linked-list";
+export type PatternId = "arrays-hashing" | "two-pointers" | "sliding-window" | "stack" | "binary-search" | "linked-list";
 
 export interface ProblemSummary {
   id: string;

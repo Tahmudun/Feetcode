@@ -222,7 +222,7 @@ Progress is an append-only list of events in `localStorage` (`fc:events:v1`): `r
 | Layer | How |
 | --- | --- |
 | Engine | pytest: tracer normalization on tricky control flow, identity, access recording, meter and budgets, judge verdicts, shrinking minimality, growth fitting. CI runs it on CPython 3.12 and 3.13 **and inside Pyodide** (`client/scripts/engine-in-pyodide.mjs`), because "same engine in two runtimes" has to be tested, not assumed. |
-| Content | The quality gate *is* the test suite for the 38 problems. CI runs it on every push, plus `build --check`. |
+| Content | The quality gate *is* the test suite for the 45 problems. CI runs it on every push, plus `build --check`. |
 | Pipeline | pytest: discovery, starter code for each signature kind, deterministic suites and budgets that separate complexity classes, canonical JSON, and the gate catching planted bad content (a wrong example, disagreeing solutions, a trigger-happy pitfall). |
 | Client | Vitest on the pure parts: the scene builder (against real traces from the generated lessons), inline values and tracks, divergence footnotes, progress derivation, scheduling, streaks, the session planner and session state, the path layout. |
 | End-to-end | Playwright against a production build, booting real Pyodide: run, submit (wrong → shrink → pitfall → divergence footnote → replay; TLE; accepted), visualize with the reference's run, lessons with Predict mode, the playground, an infinite loop that the op budget stops cleanly, and a whole session from the home page to done. |

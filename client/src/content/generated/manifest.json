@@ -1,6 +1,6 @@
 {
- "catalog": "2406216e631b3890",
- "engine": "e86b26ecfcdff413",
+ "catalog": "485e6fc6510e9e68",
+ "engine": "af33871c598a6e17",
  "pipeline": "2.0.0",
  "problems": {
   "3sum": {
@@ -11,7 +11,7 @@
     "suites": "254e4cf4f18d38bc"
    },
    "cases": 50,
-   "input": "85281e684cccaa61",
+   "input": "842a2da170826480",
    "module": "problems.two_pointers.three_sum",
    "summary": {
     "companies": {
@@ -63,7 +63,7 @@
     "suites": "60c76edff4163491"
    },
    "cases": 48,
-   "input": "417f6f3fa55abbe0",
+   "input": "e6e84f6044d11f6a",
    "module": "problems.linked_list.add_two_numbers",
    "summary": {
     "companies": {
@@ -114,7 +114,7 @@
     "suites": "52e8d7dbc141a6e8"
    },
    "cases": 49,
-   "input": "8d67937488e4ec90",
+   "input": "07915614b0948917",
    "module": "problems.sliding_window.best_time_to_buy_and_sell_stock",
    "summary": {
     "companies": {
@@ -158,6 +158,55 @@
     }
    }
   },
+  "binary-search": {
+   "artifacts": {
+    "baselines": "efdcf9f839f4b785",
+    "lessons": "9c9a82572d7e9491",
+    "problems": "01ad404650564134",
+    "suites": "a07a495f22242581"
+   },
+   "cases": 52,
+   "input": "b2c2c0bd1ecd306d",
+   "module": "problems.binary_search.binary_search",
+   "summary": {
+    "companies": {
+     "Adobe": 2,
+     "Amazon": 3,
+     "Apple": 2,
+     "Bloomberg": 2,
+     "Google": 3,
+     "Meta": 2,
+     "Microsoft": 3
+    },
+    "difficulty": "Easy",
+    "id": "binary-search",
+    "kind": "function",
+    "module": "problems.binary_search.binary_search",
+    "number": 704,
+    "oneLiner": "Probe the middle; sortedness tells you which half can't contain the target, so throw it away.",
+    "optimal": {
+     "space": "O(1)",
+     "time": "O(log n)"
+    },
+    "order": 1,
+    "pattern": "binary-search",
+    "title": "Binary Search",
+    "topics": [
+     "Array",
+     "Binary Search"
+    ]
+   },
+   "verdicts": {
+    "binary": {
+     "case": null,
+     "verdict": "accepted"
+    },
+    "scan": {
+     "case": 50,
+     "verdict": "tle"
+    }
+   }
+  },
   "car-fleet": {
    "artifacts": {
     "baselines": "d0a4a59bcbbf056e",
@@ -166,7 +215,7 @@
     "suites": "362a79f2f19b7888"
    },
    "cases": 49,
-   "input": "8c77cddb04b50a7f",
+   "input": "cfffe49eb5c18ef4",
    "module": "problems.stack.car_fleet",
    "summary": {
     "companies": {
@@ -216,7 +265,7 @@
     "suites": "3987aa22c13275b0"
    },
    "cases": 49,
-   "input": "87246f63ff8d3085",
+   "input": "31c08c1581492787",
    "module": "problems.two_pointers.container_with_most_water",
    "summary": {
     "companies": {
@@ -268,7 +317,7 @@
     "suites": "504f5a03f189ecd4"
    },
    "cases": 48,
-   "input": "f247a21c71725018",
+   "input": "89fb06d9dfecfd52",
    "module": "problems.arrays_hashing.contains_duplicate",
    "summary": {
     "companies": {
@@ -323,7 +372,7 @@
     "suites": "600e5c900c6819a2"
    },
    "cases": 44,
-   "input": "bad94170fdde9934",
+   "input": "94369da1b825d27a",
    "module": "problems.linked_list.copy_list_with_random_pointer",
    "summary": {
     "companies": {
@@ -372,7 +421,7 @@
     "suites": "9fd9d768198e41fc"
    },
    "cases": 49,
-   "input": "96c6b8e9b2a41392",
+   "input": "6d144e06cfcc9c4a",
    "module": "problems.stack.daily_temperatures",
    "summary": {
     "companies": {
@@ -422,7 +471,7 @@
     "suites": "a32e436cce221aa6"
    },
    "cases": 47,
-   "input": "37e90c5984f9845e",
+   "input": "772ab4491165d05a",
    "module": "problems.arrays_hashing.encode_decode_strings",
    "summary": {
     "companies": {
@@ -471,7 +520,7 @@
     "suites": "e40e88b1f62a238c"
    },
    "cases": 50,
-   "input": "dcf24627cd087809",
+   "input": "4103ad4901a7f6bb",
    "module": "problems.stack.evaluate_rpn",
    "summary": {
     "companies": {
@@ -512,6 +561,55 @@
     }
    }
   },
+  "find-minimum-in-rotated-sorted-array": {
+   "artifacts": {
+    "baselines": "4bd97cff1f859411",
+    "lessons": "04d0dce16b91ce06",
+    "problems": "09d43f952cbbc3c5",
+    "suites": "92b79132236544e6"
+   },
+   "cases": 49,
+   "input": "a7a84f19b0eb8c42",
+   "module": "problems.binary_search.find_minimum_in_rotated_sorted_array",
+   "summary": {
+    "companies": {
+     "Amazon": 4,
+     "Apple": 2,
+     "Bloomberg": 3,
+     "Goldman Sachs": 2,
+     "Google": 3,
+     "Meta": 3,
+     "Microsoft": 3
+    },
+    "difficulty": "Medium",
+    "id": "find-minimum-in-rotated-sorted-array",
+    "kind": "function",
+    "module": "problems.binary_search.find_minimum_in_rotated_sorted_array",
+    "number": 153,
+    "oneLiner": "Compare the middle with the right end: if it's bigger, the drop (and the minimum) is to the right.",
+    "optimal": {
+     "space": "O(1)",
+     "time": "O(log n)"
+    },
+    "order": 4,
+    "pattern": "binary-search",
+    "title": "Find Minimum in Rotated Sorted Array",
+    "topics": [
+     "Array",
+     "Binary Search"
+    ]
+   },
+   "verdicts": {
+    "binary": {
+     "case": null,
+     "verdict": "accepted"
+    },
+    "scan": {
+     "case": 47,
+     "verdict": "tle"
+    }
+   }
+  },
   "find-the-duplicate-number": {
    "artifacts": {
     "baselines": "6de5cb33c2bf474d",
@@ -520,7 +618,7 @@
     "suites": "9bc1c7897a589973"
    },
    "cases": 41,
-   "input": "193c78614cb0286a",
+   "input": "25d2a5a990993e88",
    "module": "problems.linked_list.find_the_duplicate_number",
    "summary": {
     "companies": {
@@ -571,7 +669,7 @@
     "suites": "0c541eba8471215e"
    },
    "cases": 6,
-   "input": "af0ecbe0fcafecc2",
+   "input": "4fa249dc5ddfaddd",
    "module": "problems.stack.generate_parentheses",
    "summary": {
     "companies": {
@@ -621,7 +719,7 @@
     "suites": "29ea8d711a818963"
    },
    "cases": 48,
-   "input": "5e40d61a62f6d645",
+   "input": "307fd61192275e92",
    "module": "problems.arrays_hashing.group_anagrams",
    "summary": {
     "companies": {
@@ -666,6 +764,55 @@
     }
    }
   },
+  "koko-eating-bananas": {
+   "artifacts": {
+    "baselines": "509edc7ffdcd8c62",
+    "lessons": "5561be273dcde5e4",
+    "problems": "7bb26d7ab5463ccc",
+    "suites": "85c39e72201dad28"
+   },
+   "cases": 52,
+   "input": "d8801641c1a970d5",
+   "module": "problems.binary_search.koko_eating_bananas",
+   "summary": {
+    "companies": {
+     "Airbnb": 2,
+     "Amazon": 3,
+     "Bloomberg": 2,
+     "Google": 3,
+     "Meta": 3,
+     "Microsoft": 2,
+     "Uber": 2
+    },
+    "difficulty": "Medium",
+    "id": "koko-eating-bananas",
+    "kind": "function",
+    "module": "problems.binary_search.koko_eating_bananas",
+    "number": 875,
+    "oneLiner": "The input isn't sorted, but the answers are: binary-search the speed, testing each guess with an O(n) check.",
+    "optimal": {
+     "space": "O(1)",
+     "time": "O(n log m)"
+    },
+    "order": 3,
+    "pattern": "binary-search",
+    "title": "Koko Eating Bananas",
+    "topics": [
+     "Array",
+     "Binary Search"
+    ]
+   },
+   "verdicts": {
+    "binary": {
+     "case": null,
+     "verdict": "accepted"
+    },
+    "brute": {
+     "case": 49,
+     "verdict": "tle"
+    }
+   }
+  },
   "largest-rectangle-in-histogram": {
    "artifacts": {
     "baselines": "1f460a1470487ff9",
@@ -674,7 +821,7 @@
     "suites": "390d7a405b997dd5"
    },
    "cases": 48,
-   "input": "2772c7fe76f83a8d",
+   "input": "3f79d9568300107b",
    "module": "problems.stack.largest_rectangle_in_histogram",
    "summary": {
     "companies": {
@@ -725,7 +872,7 @@
     "suites": "d540d3255a7c20af"
    },
    "cases": 46,
-   "input": "6b41d65f856f0450",
+   "input": "322c50a1774ffd35",
    "module": "problems.linked_list.linked_list_cycle",
    "summary": {
     "companies": {
@@ -775,7 +922,7 @@
     "suites": "27c8ba084b9b4b81"
    },
    "cases": 46,
-   "input": "1576962c260d7fa0",
+   "input": "d8d06ffe11c49e0b",
    "module": "problems.arrays_hashing.longest_consecutive",
    "summary": {
     "companies": {
@@ -825,7 +972,7 @@
     "suites": "b2d51f7e47ba0fa4"
    },
    "cases": 45,
-   "input": "ddd8988e633f934c",
+   "input": "3ca1b90ae1840d68",
    "module": "problems.sliding_window.longest_repeating_character_replacement",
    "summary": {
     "companies": {
@@ -874,7 +1021,7 @@
     "suites": "fa565d7400f952f4"
    },
    "cases": 48,
-   "input": "9cdb8165401b7f4d",
+   "input": "d3dee4c989162920",
    "module": "problems.sliding_window.longest_substring_without_repeating",
    "summary": {
     "companies": {
@@ -931,7 +1078,7 @@
     "suites": "cacc0dcd9076e99e"
    },
    "cases": 47,
-   "input": "3fa309b9fe4efcb6",
+   "input": "2309bccd77a1bed3",
    "module": "problems.linked_list.lru_cache",
    "summary": {
     "companies": {
@@ -977,6 +1124,58 @@
     }
    }
   },
+  "median-of-two-sorted-arrays": {
+   "artifacts": {
+    "baselines": "bf4e41df4cfa845f",
+    "lessons": "7938357ccc36324c",
+    "problems": "af26d136dc0a72e6",
+    "suites": "6b79f6c704c7ee01"
+   },
+   "cases": 53,
+   "input": "b858a5a3d717c02f",
+   "module": "problems.binary_search.median_of_two_sorted_arrays",
+   "summary": {
+    "companies": {
+     "Adobe": 3,
+     "Amazon": 4,
+     "Apple": 4,
+     "Bloomberg": 3,
+     "Goldman Sachs": 3,
+     "Google": 5,
+     "Meta": 3,
+     "Microsoft": 4,
+     "Uber": 2
+    },
+    "difficulty": "Hard",
+    "id": "median-of-two-sorted-arrays",
+    "kind": "function",
+    "module": "problems.binary_search.median_of_two_sorted_arrays",
+    "number": 4,
+    "oneLiner": "Don't merge - choose how many of the left half come from the shorter array, and binary-search that count.",
+    "optimal": {
+     "space": "O(1)",
+     "time": "O(log(min(m, n)))"
+    },
+    "order": 7,
+    "pattern": "binary-search",
+    "title": "Median of Two Sorted Arrays",
+    "topics": [
+     "Array",
+     "Binary Search",
+     "Divide and Conquer"
+    ]
+   },
+   "verdicts": {
+    "merge": {
+     "case": 51,
+     "verdict": "tle"
+    },
+    "partition": {
+     "case": null,
+     "verdict": "accepted"
+    }
+   }
+  },
   "merge-k-sorted-lists": {
    "artifacts": {
     "baselines": "180f4d98d7913580",
@@ -985,7 +1184,7 @@
     "suites": "102e81849b075c44"
    },
    "cases": 40,
-   "input": "ce9274559024b1cb",
+   "input": "07bea8d38c6ed793",
    "module": "problems.linked_list.merge_k_sorted_lists",
    "summary": {
     "companies": {
@@ -1042,7 +1241,7 @@
     "suites": "12b427b6955d8860"
    },
    "cases": 44,
-   "input": "53fa60fc77bf8387",
+   "input": "21f47b089ef8c58b",
    "module": "problems.linked_list.merge_two_sorted_lists",
    "summary": {
     "companies": {
@@ -1093,7 +1292,7 @@
     "suites": "daf7b73a1f2a60e7"
    },
    "cases": 46,
-   "input": "91e62a81e4d85619",
+   "input": "605e2ca85bcf33f1",
    "module": "problems.stack.min_stack",
    "summary": {
     "companies": {
@@ -1143,7 +1342,7 @@
     "suites": "76eedefcd889c1c4"
    },
    "cases": 51,
-   "input": "f690182bb3573017",
+   "input": "368e9de38d24dde7",
    "module": "problems.sliding_window.minimum_window_substring",
    "summary": {
     "companies": {
@@ -1195,7 +1394,7 @@
     "suites": "278a0885daacfb63"
    },
    "cases": 48,
-   "input": "d7e12d9732dd551c",
+   "input": "bd69e7d59f75ebaf",
    "module": "problems.sliding_window.permutation_in_string",
    "summary": {
     "companies": {
@@ -1245,7 +1444,7 @@
     "suites": "f28944b79cc45b5f"
    },
    "cases": 49,
-   "input": "5bc11a31663687fe",
+   "input": "beefc063120ce1ed",
    "module": "problems.arrays_hashing.product_except_self",
    "summary": {
     "companies": {
@@ -1300,7 +1499,7 @@
     "suites": "5e39492bd4126ddb"
    },
    "cases": 46,
-   "input": "727dcf16c3f21ac9",
+   "input": "790e3c917daba946",
    "module": "problems.linked_list.remove_nth_node_from_end",
    "summary": {
     "companies": {
@@ -1349,7 +1548,7 @@
     "suites": "76f754f967ee5484"
    },
    "cases": 46,
-   "input": "0ea273ddf1bc3145",
+   "input": "ebc20ed1faa90852",
    "module": "problems.linked_list.reorder_list",
    "summary": {
     "companies": {
@@ -1399,7 +1598,7 @@
     "suites": "769397a792a1f25e"
    },
    "cases": 44,
-   "input": "fe9c14d14a3d2107",
+   "input": "36329d562c145089",
    "module": "problems.linked_list.reverse_linked_list",
    "summary": {
     "companies": {
@@ -1450,7 +1649,7 @@
     "suites": "090d55c3d406c47c"
    },
    "cases": 47,
-   "input": "fd859a86da72d60e",
+   "input": "4f91db1e0a57f0e3",
    "module": "problems.linked_list.reverse_nodes_in_k_group",
    "summary": {
     "companies": {
@@ -1491,6 +1690,115 @@
     }
    }
   },
+  "search-a-2d-matrix": {
+   "artifacts": {
+    "baselines": "263d1ef50827da32",
+    "lessons": "28c5ecfce32eae28",
+    "problems": "bfa233e063065ae2",
+    "suites": "071d9b598ef88e0c"
+   },
+   "cases": 52,
+   "input": "141dbe6c98edb818",
+   "module": "problems.binary_search.search_a_2d_matrix",
+   "summary": {
+    "companies": {
+     "Adobe": 2,
+     "Amazon": 4,
+     "Apple": 2,
+     "Bloomberg": 3,
+     "Google": 3,
+     "Meta": 3,
+     "Microsoft": 3
+    },
+    "difficulty": "Medium",
+    "id": "search-a-2d-matrix",
+    "kind": "function",
+    "module": "problems.binary_search.search_a_2d_matrix",
+    "number": 74,
+    "oneLiner": "The matrix is a sorted list folded into rows; binary-search flat positions and unfold each probe with divmod.",
+    "optimal": {
+     "space": "O(1)",
+     "time": "O(log(m \u00b7 n))"
+    },
+    "order": 2,
+    "pattern": "binary-search",
+    "title": "Search a 2D Matrix",
+    "topics": [
+     "Array",
+     "Binary Search",
+     "Matrix"
+    ]
+   },
+   "verdicts": {
+    "flat": {
+     "case": null,
+     "verdict": "accepted"
+    },
+    "scan": {
+     "case": 51,
+     "verdict": "tle"
+    },
+    "two-searches": {
+     "case": null,
+     "verdict": "accepted"
+    }
+   }
+  },
+  "search-in-rotated-sorted-array": {
+   "artifacts": {
+    "baselines": "a1f1f36c68aaa93b",
+    "lessons": "ab05014c418088bf",
+    "problems": "07db592139ac2a74",
+    "suites": "52dbadd75e00206e"
+   },
+   "cases": 53,
+   "input": "5a4efacab59ffcc7",
+   "module": "problems.binary_search.search_in_rotated_sorted_array",
+   "summary": {
+    "companies": {
+     "Adobe": 2,
+     "Amazon": 4,
+     "Apple": 3,
+     "Bloomberg": 3,
+     "Google": 3,
+     "LinkedIn": 3,
+     "Meta": 4,
+     "Microsoft": 4,
+     "Uber": 2
+    },
+    "difficulty": "Medium",
+    "id": "search-in-rotated-sorted-array",
+    "kind": "function",
+    "module": "problems.binary_search.search_in_rotated_sorted_array",
+    "number": 33,
+    "oneLiner": "At every split one half is sorted; check whether target fits its range, and discard whichever half can't hold it.",
+    "optimal": {
+     "space": "O(1)",
+     "time": "O(log n)"
+    },
+    "order": 5,
+    "pattern": "binary-search",
+    "title": "Search in Rotated Sorted Array",
+    "topics": [
+     "Array",
+     "Binary Search"
+    ]
+   },
+   "verdicts": {
+    "one-pass": {
+     "case": null,
+     "verdict": "accepted"
+    },
+    "pivot": {
+     "case": null,
+     "verdict": "accepted"
+    },
+    "scan": {
+     "case": 52,
+     "verdict": "tle"
+    }
+   }
+  },
   "sliding-window-maximum": {
    "artifacts": {
     "baselines": "bf51a948cda03690",
@@ -1499,7 +1807,7 @@
     "suites": "3f1b1ab401f716ff"
    },
    "cases": 49,
-   "input": "e0b178509f33d057",
+   "input": "4df227a9e5048a08",
    "module": "problems.sliding_window.sliding_window_maximum",
    "summary": {
     "companies": {
@@ -1548,6 +1856,58 @@
     }
    }
   },
+  "time-based-key-value-store": {
+   "artifacts": {
+    "baselines": "a29f54cac5e94c4c",
+    "lessons": "27ff65019d2267b1",
+    "problems": "084366963edaf246",
+    "suites": "db3752201a607b0e"
+   },
+   "cases": 49,
+   "input": "fdcb1777350da231",
+   "module": "problems.binary_search.time_based_key_value_store",
+   "summary": {
+    "companies": {
+     "Amazon": 3,
+     "Databricks": 2,
+     "Google": 3,
+     "Lyft": 3,
+     "Meta": 2,
+     "Microsoft": 2,
+     "Netflix": 3,
+     "Uber": 3
+    },
+    "difficulty": "Medium",
+    "id": "time-based-key-value-store",
+    "kind": "design",
+    "module": "problems.binary_search.time_based_key_value_store",
+    "number": 981,
+    "oneLiner": "Appends arrive in time order, so each key's history is sorted; get binary-searches for the last timestamp \u2264 t.",
+    "optimal": {
+     "space": "O(n)",
+     "time": "O(log n)"
+    },
+    "order": 6,
+    "pattern": "binary-search",
+    "title": "Time Based Key-Value Store",
+    "topics": [
+     "Hash Table",
+     "String",
+     "Binary Search",
+     "Design"
+    ]
+   },
+   "verdicts": {
+    "binary": {
+     "case": null,
+     "verdict": "accepted"
+    },
+    "scan": {
+     "case": 48,
+     "verdict": "tle"
+    }
+   }
+  },
   "top-k-frequent-elements": {
    "artifacts": {
     "baselines": "d160607c8255ca3d",
@@ -1556,7 +1916,7 @@
     "suites": "db02161882b13619"
    },
    "cases": 47,
-   "input": "90d078e805b32ec4",
+   "input": "657983b5726d42e7",
    "module": "problems.arrays_hashing.top_k_frequent",
    "summary": {
     "companies": {
@@ -1614,7 +1974,7 @@
     "suites": "c9a1d2d104267d6c"
    },
    "cases": 50,
-   "input": "612ed869110f437c",
+   "input": "e64e0699adee782e",
    "module": "problems.two_pointers.trapping_rain_water",
    "summary": {
     "companies": {
@@ -1673,7 +2033,7 @@
     "suites": "8bbcd6ca0c3a21d1"
    },
    "cases": 49,
-   "input": "a5f3ba06c1e734aa",
+   "input": "041777971fe63874",
    "module": "problems.arrays_hashing.two_sum",
    "summary": {
     "companies": {
@@ -1725,7 +2085,7 @@
     "suites": "389266fafa1f3d91"
    },
    "cases": 48,
-   "input": "0f3420d8978d4bb3",
+   "input": "966da9bed5bb1a09",
    "module": "problems.two_pointers.two_sum_ii",
    "summary": {
     "companies": {
@@ -1775,7 +2135,7 @@
     "suites": "0d1a43e42a7d65bb"
    },
    "cases": 48,
-   "input": "c35842b48b3f4140",
+   "input": "23498ed4e409c365",
    "module": "problems.arrays_hashing.valid_anagram",
    "summary": {
     "companies": {
@@ -1825,7 +2185,7 @@
     "suites": "a122893218e86ac2"
    },
    "cases": 50,
-   "input": "85efcd91c0c39a7c",
+   "input": "45ff2eca8be6911d",
    "module": "problems.two_pointers.valid_palindrome",
    "summary": {
     "companies": {
@@ -1875,7 +2235,7 @@
     "suites": "e425ccd9c74df65e"
    },
    "cases": 44,
-   "input": "81dbb0cc02873779",
+   "input": "6aaac4d4181d065b",
    "module": "problems.stack.valid_parentheses",
    "summary": {
     "companies": {
@@ -1926,7 +2286,7 @@
     "suites": "c7e1277ffbc9b5e8"
    },
    "cases": 43,
-   "input": "7e1ca7916647d4da",
+   "input": "dd9e852060abab56",
    "module": "problems.arrays_hashing.valid_sudoku",
    "summary": {
     "companies": {

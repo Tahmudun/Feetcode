@@ -41,7 +41,7 @@ LeetCode tells you *that* you failed. NeetCode shows you a video of *someone els
 ## Features
 
 **Practice**
-- **38 problems**: the NeetCode 150 core for *Arrays & Hashing, Two Pointers, Sliding Window, Stack* and *Linked List*, in roadmap order. Each one has hidden test suites, edge cases and stress tests.
+- **45 problems**: the NeetCode 150 core for *Arrays & Hashing, Two Pointers, Sliding Window, Stack, Binary Search* and *Linked List*, in roadmap order. Each one has hidden test suites, edge cases and stress tests.
 - **Company tags** with a frequency score, plus a company filter and sort.
 - A **CodeMirror 6** editor with Python highlighting, optional **Vim mode**, a timer, notes, submission history, a command palette (`Ctrl K`), and `Ctrl Enter` / `Ctrl Shift Enter` / `Ctrl .` to run / submit / visualize.
 - **Deterministic judging**: limits are counted in *operations*, not milliseconds, so the same code gets the same verdict on any laptop.
@@ -126,7 +126,7 @@ engine/feetcode/      The analysis engine (pure Python, no dependencies) - runs 
   judge.py fuzz.py    run / submit, fuzz → shrink → pitfalls → neighbour
   complexity.py       growth-model fitting for time, space and recursion depth
   api.py              JSON in, JSON out - the whole browser contract
-problems/<pattern>/   38 problems as code (statement, generators, solutions, pitfalls, lens)
+problems/<pattern>/   45 problems as code (statement, generators, solutions, pitfalls, lens)
 pipeline/             quality gate + deterministic incremental build → client/src/content/generated
 client/               React 19 + TypeScript app
   src/runtime/        Pyodide worker, protocol, watchdog
@@ -167,7 +167,7 @@ Adding a problem means writing one Python module and running the build. See [doc
 | Engine (pytest) | tracer normalization, identity, accesses, meter, judge, fuzz/shrink, complexity fitting | `python -m pytest -q engine/tests` |
 | Engine in WebAssembly | the **same** pytest suite, run inside Pyodide under Node | `cd client && npm run test:engine` |
 | Pipeline (pytest) | discovery, starter code, deterministic suites and budgets, canonical JSON, the gate catching planted bad content | `cd pipeline && python -m pytest -q tests` |
-| Content gate | all 38 problems: examples, reference agreement, narration, pitfalls, complexity | `cd pipeline && python -m feetcode_pipeline check` |
+| Content gate | all 45 problems: examples, reference agreement, narration, pitfalls, complexity | `cd pipeline && python -m feetcode_pipeline check` |
 | Client unit (Vitest) | scene builder, event-sourced progress, SRS scheduling, streaks | `cd client && npm test` |
 | End-to-end (Playwright) | boots real Pyodide; run, submit, diagnose, visualize, lessons, playground | `cd client && npm run e2e` |
 

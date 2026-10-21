@@ -164,7 +164,7 @@ function Welcome() {
       <div className="mx-auto max-w-6xl space-y-14 px-4 pt-12 sm:px-6">
         <section>
           <div className="mb-3">
-            <h2 className="font-display text-2xl font-bold">The path: five patterns, {problems.length} problems</h2>
+            <h2 className="font-display text-2xl font-bold">The path: {patterns.length} patterns, {problems.length} problems</h2>
             <p className="text-[13px] text-muted">
               The NeetCode 150 core as one sky. Learn a pattern's trick once, then recognize it everywhere. Your first star is pulsing.
             </p>
