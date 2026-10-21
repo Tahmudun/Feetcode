@@ -14,7 +14,7 @@ import { ArrayView } from "./panels/ArrayView";
 import { GraphView } from "./panels/GraphView";
 import { GridView, MapView, ObjectView, SetView, StackView } from "./panels/Collections";
 import { scalarText } from "./decode";
-import { buildTracks, positionOf } from "./tracks";
+import { buildTracks, positionOf } from "./trackModel";
 import { Tracks } from "./Tracks";
 
 export interface PlayerProps {

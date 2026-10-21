@@ -205,7 +205,7 @@ The visualizer works on the same principle as the trace: **the renderer is a pur
 5. **Linked structures** (`graph.ts`) get a stable layout. A node's position is fixed the first time it appears, next to an already-placed neighbour, so when `curr.next = prev` runs only the arrow moves. Copied nodes line up under their originals. Doubly linked lists use a flow layout that is recomputed each step, so moving a node to the front visibly slides it. Random pointers draw as arcs.
 6. **Narration**: authored (`t`) for lessons; otherwise `narrate.ts` builds it from branch outcomes, accesses and the snapshot diff.
 7. `usePlayback.ts` drives the timeline: play/pause, speed, "every line" vs "key steps", and a **gate** that Predict mode uses to stop before each branch until the user answers.
-8. **In the editor.** `inline.ts` turns the current step into values shown at the end of the lines that assigned them (`l = 1, best = 2`, `returns 3`, `→ True`). `tracks.ts` turns the whole trace into one row per variable, a segment for each stretch of steps over which it held one value, so a wrong value is visible at a glance; a divergence adds a marker across every row and a dashed lane with the reference's value. Both are pure functions of the trace.
+8. **In the editor.** `inline.ts` turns the current step into values shown at the end of the lines that assigned them (`l = 1, best = 2`, `returns 3`, `→ True`). `trackModel.ts` turns the whole trace into one row per variable, a segment for each stretch of steps over which it held one value, so a wrong value is visible at a glance; a divergence adds a marker across every row and a dashed lane with the reference's value. Both are pure functions of the trace.
 
 ### 4.3 Study state
 

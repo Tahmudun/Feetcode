@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Lessons } from "@/content/types";
 import { assignedNames, inlineValues } from "./inline";
-import { buildTracks, positionOf } from "./tracks";
+import { buildTracks, positionOf } from "./trackModel";
 import twoSumLessons from "@/content/generated/lessons/two-sum.json";
 import substringLessons from "@/content/generated/lessons/longest-substring-without-repeating-characters.json";
 
