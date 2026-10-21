@@ -113,6 +113,37 @@ for i, x in enumerate(nums):
         "complexity": "Monotonic stacks are O(n) total: every index is pushed once and popped at most once.",
     },
     {
+        "id": "binary-search",
+        "name": "Binary Search",
+        "tagline": "Every comparison throws away half of what's left.",
+        "summary": "Binary search isn't really about sorted arrays - it's about any yes/no question whose answers flip "
+                   "exactly once along a range. Probe the middle, learn which side of the flip you're on, discard the other "
+                   "half. log₂ of a billion is 30, so 30 probes find anything.",
+        "signals": [
+            "Sorted (or rotated-sorted) input and an O(log n) target",
+            "\"Find the smallest x such that …\" or \"the largest x that still …\"",
+            "A feasibility check that gets easier as a number grows (speed, capacity, days)",
+            "Lookups by timestamp or position in data that only ever grows in order",
+        ],
+        "ideas": [
+            {"title": "Keep the invariant", "text": "Decide what lo and hi mean (answer is in [lo, hi]) and make every update preserve it."},
+            {"title": "Search the answer", "text": "When the input isn't sorted but the answer space is, binary-search the answer with a feasibility test."},
+            {"title": "Find the sorted half", "text": "In a rotated array one half of every split is sorted - check it first."},
+            {"title": "Leftmost true", "text": "For 'first x that works', keep hi on a known-good x and stop when lo == hi."},
+        ],
+        "template": '''lo, hi = 0, len(nums) - 1     # the answer, if any, is in [lo, hi]
+while lo <= hi:
+    mid = (lo + hi) // 2
+    if nums[mid] == target:
+        return mid
+    if nums[mid] < target:
+        lo = mid + 1             # mid and everything left of it is too small
+    else:
+        hi = mid - 1             # mid and everything right of it is too big
+return -1''',
+        "complexity": "O(log n) probes. Searching an answer space of size M with an O(n) check costs O(n log M).",
+    },
+    {
         "id": "linked-list",
         "name": "Linked List",
         "tagline": "It's all pointer surgery - draw the arrows before you move them.",

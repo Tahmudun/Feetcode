@@ -1,12 +1,12 @@
 /**
- * Variable tracks (see tracks.ts): one row per variable, segments for the stretches of
+ * Variable tracks (see trackModel.ts): one row per variable, segments for the stretches of
  * steps over which it held one value. Clicking a segment seeks there. An optional
  * marker draws a line across every row (e.g. where your run diverges from the reference)
  * and, on the marked variable's row, a dashed "ghost" lane with the other run's value.
  */
 import { Fragment } from "react";
 import { cn } from "@/lib/utils";
-import type { Track } from "./tracks";
+import type { Track } from "./trackModel";
 
 export interface TrackMarker {
   /** Position in the player's visible steps. */

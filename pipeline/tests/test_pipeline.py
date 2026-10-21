@@ -14,8 +14,8 @@ def problem(name):
 
 def test_discovers_every_problem():
     ids = {load(s).id for s in discover()}
-    assert len(ids) == 38
-    assert {"two-sum", "trapping-rain-water", "lru-cache", "min-stack"} <= ids
+    assert len(ids) == 45
+    assert {"two-sum", "trapping-rain-water", "lru-cache", "min-stack", "koko-eating-bananas"} <= ids
 
 
 def test_starter_code_function_design_and_linked_list():

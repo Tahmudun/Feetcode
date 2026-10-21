@@ -8,6 +8,7 @@ import type { PatternId } from "./types";
 export const ROADMAP: [from: PatternId, to: PatternId][] = [
   ["arrays-hashing", "two-pointers"],
   ["arrays-hashing", "stack"],
+  ["two-pointers", "binary-search"],
   ["two-pointers", "sliding-window"],
   ["two-pointers", "linked-list"],
 ];

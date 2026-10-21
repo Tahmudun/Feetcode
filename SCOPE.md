@@ -70,7 +70,7 @@ The tracer sees raw locals. Something has to know that `l, r` are pointers *into
 ## 5. Status: built (v3)
 
 **Content**
-- 38 problems: the NeetCode 150 core for Arrays & Hashing (9), Two Pointers (5), Sliding Window (6), Stack (7) and Linked List (11).
+- 45 problems: the NeetCode 150 core for Arrays & Hashing (9), Two Pointers (5), Sliding Window (6), Stack (7), Binary Search (7) and Linked List (11).
 - Each has 2–3 narrated solutions, pitfalls, hints, an insight card, company tags and a hidden suite (46 cases on average).
 
 **Engine**
@@ -110,7 +110,7 @@ The tracer sees raw locals. Something has to know that `l, r` are pointers *into
 3. **Approach fingerprinting.** Classify *how* the user solved it (two pointers vs hash map vs sort) from trace dynamics, and suggest the matching lesson.
 
 **Content**
-4. The rest of the NeetCode 150: binary search, trees, tries, heap / priority queue, backtracking, graphs, 1-D and 2-D DP, greedy, intervals, math and bits. Trees and graphs need a tree layout in `viz/graph.ts`, and the engine already preserves identity.
+4. The rest of the NeetCode 150: trees, tries, heap / priority queue, backtracking, graphs, 1-D and 2-D DP, greedy, intervals, math and bits. Trees and graphs need a tree layout in `viz/graph.ts`, and the engine already preserves identity.
 
 **Product**
 5. A mock-interview mode: timer, hidden hints, a scored debrief built from the event log.
